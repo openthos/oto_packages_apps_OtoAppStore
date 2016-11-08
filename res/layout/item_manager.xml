@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/item_manager_appIcon"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@mipmap/ic_launcher"
+        android:padding="5dp"
+        android:scaleType="centerCrop"
+        />
+
+    <TextView
+        android:id="@+id/item_manager_appName"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:text="@string/content"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:textSize="@dimen/second_title_size"
+        android:textColor="@color/text_black"
+        />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="10dp"
+        >
+        <TextView
+            android:id="@+id/item_manager_appVersion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/version"
+            android:textSize="@dimen/three_title_size"
+            android:textColor="@color/text_gray"
+            android:layout_marginTop="10dp"
+            />
+
+        <TextView
+            android:id="@+id/item_manager_appcontent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/content"
+            android:textSize="@dimen/three_title_size"
+            android:textColor="@color/text_gray"
+            />
+    </LinearLayout>
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_weight="1"
+        />
+
+    <Button
+        android:id="@+id/item_manager_apptask"
+        android:layout_width="60dp"
+        android:layout_height="40dp"
+        android:text="@string/update"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:textSize="@dimen/small_text_size"
+        />
+</LinearLayout>

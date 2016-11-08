@@ -1,0 +1,113 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:paddingLeft="50dp"
+    android:paddingRight="50dp"
+    tools:context="com.openthos.appstore.fragment.ManagerFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="10dp"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+            <TextView
+                android:id="@+id/fragment_manager_updateNum"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/updates"
+                android:textSize="@dimen/second_title_size"
+                android:layout_centerVertical="true"
+                />
+
+            <Button
+                android:id="@+id/fragment_manager_updateAll"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/updateAll"
+                android:layout_alignParentRight="true"
+                android:textSize="@dimen/second_title_size"
+                android:layout_centerVertical="true"
+                />
+        </RelativeLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/gray"/>
+
+        <com.openthos.appstore.view.CustomListView
+            android:id="@+id/fragment_manager_customListView1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="@null"
+            />
+
+        <Button
+            android:id="@+id/fragment_manager_launch1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/content_size"
+            android:text="@string/launch"/>
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="20dp"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+            <TextView
+                android:id="@+id/fragment_manager_downloadNum"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/downloads"
+                android:textSize="@dimen/second_title_size"
+                android:layout_centerVertical="true"
+                />
+
+            <Button
+                android:id="@+id/fragment_manager_startAll"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/startAll"
+                android:layout_alignParentRight="true"
+                android:textSize="@dimen/second_title_size"
+                android:layout_centerVertical="true"
+                />
+        </RelativeLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/gray"/>
+
+        <com.openthos.appstore.view.CustomListView
+            android:id="@+id/fragment_manager_customListView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="@null"
+            />
+
+        <Button
+            android:id="@+id/fragment_manager_launch2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/content_size"
+            android:text="@string/launch"/>
+            />
+    </LinearLayout>
+
+</LinearLayout>

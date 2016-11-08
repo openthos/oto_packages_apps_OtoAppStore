@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:id="@+id/app_layout_gridview_layout"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:descendantFocusability="blocksDescendants"
+    >
+
+    <ImageView
+        android:id="@+id/app_layout_gridview_icon"
+        android:layout_width="90dp"
+        android:layout_height="90dp"
+        android:src="@mipmap/ic_launcher"
+        android:layout_gravity="center_vertical"
+        android:scaleType="centerCrop"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="20dp"
+        android:orientation="vertical"
+        >
+        <TextView
+            android:id="@+id/app_layout_gridview_name"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_marginTop="5dp"
+            android:text="@string/name"
+            android:gravity="center_vertical"
+            />
+        <TextView
+            android:id="@+id/app_layout_gridview_type"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:text="@string/type"
+            android:gravity="center_vertical"
+            />
+
+        <Button
+            android:id="@+id/app_layout_gridview_install"
+            android:layout_width="50dp"
+            android:layout_height="30dp"
+            android:text="@string/install"
+            android:background="@null"
+            android:layout_marginBottom="5dp"
+            android:layout_gravity="left"
+            android:gravity="center"
+            />
+    </LinearLayout>
+</LinearLayout>

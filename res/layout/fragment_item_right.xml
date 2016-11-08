@@ -1,0 +1,16 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp"
+    android:background="@color/right_background"
+    tools:context="com.openthos.appstore.fragment.item.AppTypeFragment">
+
+    <com.openthos.appstore.view.CustomListView
+        android:id="@+id/fragment_app_type_listview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="@null"
+        />
+
+</FrameLayout>

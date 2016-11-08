@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_margin="10dp"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+        <TextView
+            android:id="@+id/app_type_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/name"
+            android:gravity="center_vertical"
+            android:textSize="@dimen/second_title_size"
+            android:textColor="@color/text_gray"
+            android:layout_centerVertical="true"
+            />
+        <TextView
+            android:id="@+id/app_type_more"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/more"
+            android:gravity="center_vertical"
+            android:textSize="@dimen/second_title_size"
+            android:textColor="@color/text_gray"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:drawableRight="@mipmap/more"
+            />
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/gray"/>
+
+    <com.openthos.appstore.view.CustomListView
+        android:id="@+id/app_type_listview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:divider="@null"
+        />
+
+    <View
+        android:layout_width="wrap_content"
+        android:layout_height="15dp"/>
+</LinearLayout>

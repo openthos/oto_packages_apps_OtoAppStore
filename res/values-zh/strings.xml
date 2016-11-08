@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">应用商店</string>
+    <string name="home">首页</string>
+    <string name="software">软件</string>
+    <string name="game">游戏</string>
+    <string name="manager">管理</string>
+    <string name="download">下载</string>
+    <string name="setting">设置</string>
+    <string name="update">更新</string>
+    <string name="not_install">安装</string>
+    <string name="have_installed">已安装</string>
+    <string name="continues">继续</string>
+    <string name="pause">暂停</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="author">评论人：</string>
+    <string name="submit_comment">提交评论</string>
+    <string name="cancel">取消</string>
+    <string name="comment_star">评分</string>
+    <string name="comment_and_commentscore">评论及评分</string>
+    <string name="whole">所有</string>
+    <string name="write_comment">撰写评论</string>
+    <string name="recomment">编辑推荐</string>
+    <string name="popular">最受欢迎</string>
+    <string name="favour">最受好评</string>
+    <string name="fold">收起</string>
+    <string name="launch">展开</string>
+    <string name="updates">更新(%1$d)</string>
+    <string name="downloads">下载(%1$d)</string>
+    <string name="updateAll">更新所有</string>
+    <string name="startAll">开始所有</string>
+
+    <string name="manager_fragment_toast">需要往将数据存储，暂未做</string>
+    <string name="toast_search">请输入搜索内容</string>
+    <string name="exit_app">您确定退出当前应用吗?</string>
+    <string name="install">安装</string>
+
+    <string name="news">news</string>
+    <string name="promulgator">promulgator：Neyese</string>
+    <string name="type">type:news</string>
+    <string name="size">size：12MB</string>
+    <string name="name">name</string>
+    <string name="more">more</string>
+    <string name="touch_star">点击评分</string>
+    <string name="write_your_commeent">写下您的评论</string>
+    <string name="comments">hfsklafjkljl;asjlsa\'k;lka;lgk</string>
+    <string name="content">content</string>
+    <string name="version">v3.0gengxin</string>
+
+    <string name="news_content">gdgdsgsdgdfgdfsgsdfgfdshfghfghfkdjfalkfjsdlafjklasjaafsd</string>
+    <string name="other_information">other information</string>
+</resources>

@@ -143,3 +143,5 @@ public class Constants {
         datas.add(managerInfo);
 
         return datas;
+    }
+}

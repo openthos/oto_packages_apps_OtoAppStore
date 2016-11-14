@@ -1,7 +1,8 @@
 package com.openthos.appstore.fragment;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import android.os.Handler;
+import android.os.Message;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -13,8 +14,10 @@ import android.widget.Toast;
 
 import com.openthos.appstore.R;
 import com.openthos.appstore.app.Constants;
-import com.openthos.appstore.fragment.item.AppLayoutFragment;
+import com.openthos.appstore.fragment.item.HomeAppLayoutFragment;
 import com.openthos.appstore.fragment.item.AppTypeFragment;
+import com.openthos.appstore.utils.NetUtils;
+import com.openthos.appstore.utils.Tools;
 import com.openthos.appstore.view.Kanner;
 
 /**
@@ -26,58 +29,48 @@ public class HomeFragment extends Fragment {
     private ImageView mForward;
     private Kanner mKanner;
 
+    private String recommend;
+    private String praise;
+    private String welcome;
+
     public HomeFragment() {
-        // Required empty public constructor
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View ret = inflater.inflate(R.layout.fragment_home, container, false);
-
-        return ret;
+        return inflater.inflate(R.layout.fragment_home, container, false);
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
+    public void onViewCreated(View view, Bundle savedInstanceState) {
         initView(view);
 
-        initFragment();
-
         initData();
+
+        initListener();
     }
 
-    private void initFragment() {
-        FragmentManager manager = getActivity().getFragmentManager();
+    private void initData() {
+        new Thread(new GetData()).start();
+    }
+
+    private void initFragment(String recommend, String praise, String welcome) {
+        FragmentManager manager = getChildFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
 
-        AppLayoutFragment appLayoutFragment = new AppLayoutFragment();
-        appLayoutFragment.setNumColumns(Constants.GRIDVIEW_NUM_COLUMS);
-        appLayoutFragment.setFromFragment(Constants.HOME_FRAGMENT);
-        appLayoutFragment.setAll(false);
-        appLayoutFragment.setDatas(Constants.getData());
-
-        AppLayoutFragment appLayoutFragments = new AppLayoutFragment();
-        appLayoutFragments.setNumColumns(Constants.GRIDVIEW_NUM_COLUMS);
-        appLayoutFragments.setFromFragment(Constants.HOME_FRAGMENT);
-        appLayoutFragments.setAll(false);
-        appLayoutFragments.setDatas(Constants.getData());
-
-        AppLayoutFragment appLayoutFragmentss = new AppLayoutFragment();
-        appLayoutFragmentss.setNumColumns(Constants.GRIDVIEW_NUM_COLUMS);
-        appLayoutFragmentss.setFromFragment(Constants.HOME_FRAGMENT);
-        appLayoutFragmentss.setAll(false);
-        appLayoutFragmentss.setDatas(Constants.getData());
+        HomeAppLayoutFragment homeAppLayoutFragment = new HomeAppLayoutFragment();
+        homeAppLayoutFragment.setFromFragment(Constants.HOME_FRAGMENT);
+        homeAppLayoutFragment.setAll(false);
+        homeAppLayoutFragment.setNumColumns(Constants.GRIDVIEW_NUM_COLUMS);
+        homeAppLayoutFragment.setDatas(recommend, praise, welcome);
+        transaction.replace(R.id.fragment_home_left, homeAppLayoutFragment);
 
         AppTypeFragment itemRightFragment = new AppTypeFragment();
         itemRightFragment.setFromFragment(Constants.HOME_FRAGMENT);
         itemRightFragment.setDatas(Constants.getDataItemRightInfo());
 
-        transaction.replace(R.id.fragment_home_recommand, appLayoutFragment);
-        transaction.replace(R.id.fragment_home_popular, appLayoutFragments);
-        transaction.replace(R.id.fragment_home_favour, appLayoutFragmentss);
         transaction.replace(R.id.fragment_home_right, itemRightFragment);
 
         transaction.commit();
@@ -89,14 +82,7 @@ public class HomeFragment extends Fragment {
         mBack = (ImageView) view.findViewById(R.id.fragment_home_back);
     }
 
-    private void initData() {
-
-        int images[] = new int[]{R.mipmap.back, R.mipmap.undown, R.mipmap.down};
-//        mKanner.setImagesUrl(Constants.getString());
-        String[] str = new String[Constants.getString().size()];
-        for (int i = 0; i < Constants.getString().size(); i++) {
-            str[i] = Constants.getString().get(i);
-        }
+    private void initListener() {
         mKanner.setImagesUrl(Constants.getString());
         mKanner.setOnItemClickListener(new Kanner.OnItemClickListener() {
             @Override
@@ -129,4 +115,28 @@ public class HomeFragment extends Fragment {
             }
         });
     }
+
+    class GetData implements Runnable {
+
+        @Override
+        public void run() {
+            recommend = NetUtils.getNetStr(Constants.BASEURL + "/list/recommend");
+            praise = NetUtils.getNetStr(Constants.BASEURL + "/list/praise");
+            welcome = NetUtils.getNetStr(Constants.BASEURL + "/list/welcome");
+            mHandler.sendEmptyMessage(0);
+        }
+    }
+
+    private Handler mHandler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message msg) {
+            switch (msg.what) {
+                case 0:
+                    initFragment(recommend, praise, welcome);
+                    break;
+            }
+
+            return false;
+        }
+    });
 }

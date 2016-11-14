@@ -23,8 +23,7 @@ import java.util.List;
 public class AppLayoutAdapter extends BasicAdapter implements View.OnClickListener {
     private int mNumColumns;
 
-    public AppLayoutAdapter(Context context, int numColumns, int fromFragment,
-                            boolean isAll) {
+    public AppLayoutAdapter(Context context, int numColumns, int fromFragment, boolean isAll) {
         super(context, isAll, fromFragment);
         mDatas = new ArrayList<AppLayoutInfo>();
         if (numColumns != 0) {
@@ -42,7 +41,8 @@ public class AppLayoutAdapter extends BasicAdapter implements View.OnClickListen
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
-            convertView = LayoutInflater.from(mContext).inflate(R.layout.app_layout, parent, false);
+            convertView = LayoutInflater.from(mContext).inflate(
+                                                    R.layout.app_layout, parent, false);
         }
         ViewHolder holder = (ViewHolder) convertView.getTag();
         if (holder == null) {
@@ -56,7 +56,7 @@ public class AppLayoutAdapter extends BasicAdapter implements View.OnClickListen
             AppLayoutGridviewAdapter appLayoutGridviewAdapter =
                     new AppLayoutGridviewAdapter(mContext, mFromFragment, mIsAll);
             holder.gridView.setAdapter(appLayoutGridviewAdapter);
-            appLayoutGridviewAdapter.addDatas(appLayoutInfo.getAppLayoutGridviewInfos());
+            appLayoutGridviewAdapter.addDatas(appLayoutInfo.getAppLayoutGridviewList());
 
             if (mIsAll) {
                 holder.more.setVisibility(View.GONE);
@@ -96,8 +96,18 @@ public class AppLayoutAdapter extends BasicAdapter implements View.OnClickListen
     }
 
     public void addDatas(List<AppLayoutInfo> datas) {
-        mDatas.clear();
-        mDatas.addAll(datas);
-        notifyDataSetChanged();
+        if (datas != null) {
+            mDatas.clear();
+            mDatas.addAll(datas);
+            notifyDataSetChanged();
+        }
+    }
+
+    public void addItem(AppLayoutInfo datas) {
+        if (datas != null) {
+            mDatas.clear();
+            mDatas.add(datas);
+            notifyDataSetChanged();
+        }
     }
 }

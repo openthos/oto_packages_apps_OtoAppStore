@@ -5,7 +5,6 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.view.View;
@@ -23,8 +22,9 @@ import com.openthos.appstore.fragment.HomeFragment;
 import com.openthos.appstore.fragment.ManagerFragment;
 import com.openthos.appstore.fragment.SoftwareFragment;
 import com.openthos.appstore.utils.ActivityTitileUtils;
-import com.openthos.appstore.utils.GetFragment;
 import com.openthos.appstore.utils.Tools;
+import com.openthos.appstore.utils.download.DownLoadService;
+import com.openthos.appstore.app.StoreApplication;
 
 public class MainActivity extends BaseActivity implements RadioGroup.OnCheckedChangeListener {
 
@@ -36,6 +36,7 @@ public class MainActivity extends BaseActivity implements RadioGroup.OnCheckedCh
     private Fragment[] mFragments;
     private long mTime;
     private int mFromFragment;
+    private FragmentTransaction mManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +44,10 @@ public class MainActivity extends BaseActivity implements RadioGroup.OnCheckedCh
         setContentView(R.layout.activity_main);
 
         mFromFragment = ActivityTitileUtils.checked(this, getIntent());
+
         initView(mFromFragment);
+
+        Tools.toast(this, StoreApplication.getDownLoadManager()+"");
 
         loadData();
 
@@ -117,14 +121,14 @@ public class MainActivity extends BaseActivity implements RadioGroup.OnCheckedCh
                 R.drawable.select_home_drawable,
                 R.drawable.select_software_drawable,
                 R.drawable.select_game_drawable,
-                R.drawable.select_manager_drawable,
+                R.drawable.select_manager_drawable
             };
 
             int[] rids = new int[] {
                 R.id.rb_home,
                 R.id.rb_software,
                 R.id.rb_game,
-                R.id.rb_manager,
+                R.id.rb_manager
             };
             Resources res = getResources();
             for (int i = 0; i < rids.length; i++) {
@@ -136,46 +140,52 @@ public class MainActivity extends BaseActivity implements RadioGroup.OnCheckedCh
             }
         }
 
-        FragmentManager manager = getFragmentManager();
-        FragmentTransaction transaction = manager.beginTransaction();
+        mManager = getFragmentManager().beginTransaction();
         mFragments = new Fragment[Constants.FRAGMENT_COUNT];
         mHomeFragment = new HomeFragment();
         mSoftwareFragment = new SoftwareFragment();
         mGameFragment = new GameFragment();
         mManagerFragment = new ManagerFragment();
 
-        mFragments[Constants.HOME_FRAGMENT] = mHomeFragment;
-        mFragments[Constants.SOFTWARE_FRAGMENT] = mSoftwareFragment;
-        mFragments[Constants.GAME_FRAGMENT] = mGameFragment;
-        mFragments[Constants.MANAGER_FRAGMENT] = mManagerFragment;
+        mFragments[0] = mHomeFragment;
+        mFragments[1] = mSoftwareFragment;
+        mFragments[2] = mGameFragment;
+        mFragments[3] = mManagerFragment;
 
-        transaction.replace(R.id.main_fragment_container, mFragments[fragmentNum]);
+        mManager.add(R.id.main_fragment_container, mFragments[0])
+                .add(R.id.main_fragment_container, mFragments[1])
+                .add(R.id.main_fragment_container, mFragments[2])
+                .add(R.id.main_fragment_container, mFragments[3]);
 
-        transaction.commit();
+        changeFragment(mManager, fragmentNum);
+    }
+
+    private void changeFragment(FragmentTransaction manager, int i) {
+        ActivityTitileUtils.checked(this,i);
+        manager.hide(mFragments[0])
+               .hide(mFragments[1])
+               .hide(mFragments[2])
+               .hide(mFragments[3])
+               .show(mFragments[i]).commitAllowingStateLoss();
     }
 
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
-        FragmentManager manager = getFragmentManager();
-        FragmentTransaction transaction = manager.beginTransaction();
-        Fragment fragment = null;
+        int whichFragment = 0;
         switch (checkedId) {
             case R.id.rb_home:
-                fragment = GetFragment.getFragment(Constants.HOME_FRAGMENT);
+                whichFragment = Constants.HOME_FRAGMENT;
                 break;
             case R.id.rb_software:
-                fragment = GetFragment.getFragment(Constants.SOFTWARE_FRAGMENT);
+                whichFragment = Constants.SOFTWARE_FRAGMENT;
                 break;
             case R.id.rb_game:
-                fragment = GetFragment.getFragment(Constants.GAME_FRAGMENT);
+                whichFragment = Constants.GAME_FRAGMENT;
                 break;
             case R.id.rb_manager:
-                fragment = GetFragment.getFragment(Constants.MANAGER_FRAGMENT);
+                whichFragment = Constants.MANAGER_FRAGMENT;
                 break;
         }
-        if (fragment != null) {
-            transaction.replace(R.id.main_fragment_container, fragment);
-        }
-        transaction.commit();
+        changeFragment(getFragmentManager().beginTransaction(),whichFragment);
     }
 }

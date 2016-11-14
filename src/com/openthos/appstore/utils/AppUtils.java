@@ -6,9 +6,10 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.graphics.drawable.Drawable;
-
 import com.openthos.appstore.bean.SQLAppInstallInfo;
-
+import android.content.Intent;
+import android.net.Uri;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -93,5 +94,16 @@ public class AppUtils {
             }
         }
         return datas;
+    }
+
+    public static void installApk(Context mContext, String saveFileName) {
+        File apkfile = new File(saveFileName);
+        if (!apkfile.exists()) {
+            return;
+        }
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setDataAndType(Uri.parse("file://" + apkfile.toString()),
+                "application/vnd.android.package-archive");
+        mContext.startActivity(i);
     }
 }

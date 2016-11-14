@@ -137,6 +137,11 @@ public class ActivityTitileUtils {
     public static int checked(BaseActivity activity, Intent intent) {
         int fromFragment = intent.getIntExtra(Constants.FROM_FRAGMENT,
                 Constants.HOME_FRAGMENT);
+
+        return checked(activity, fromFragment);
+     }
+
+    public static int checked(BaseActivity activity, int fromFragment) {
         RadioButton home = (RadioButton) activity.findViewById(R.id.rb_home);
         RadioButton software = (RadioButton) activity.findViewById(R.id.rb_software);
         RadioButton game = (RadioButton) activity.findViewById(R.id.rb_game);

@@ -1,10 +1,3 @@
-//
-//  SQLiteHelper.java
-//  FeOA
-//
-//  Created by LuTH on 2011-12-17.
-//  Copyright 2011 flyrise. All rights reserved.
-//
 package com.openthos.appstore.utils.sql;
 
 import android.content.Context;

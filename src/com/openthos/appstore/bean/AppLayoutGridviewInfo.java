@@ -16,6 +16,9 @@ public class AppLayoutGridviewInfo implements Serializable {
     private int state;
     private String appPackageName;
     private String appUrl;
+    private String download;
+    private long size;
+    private String version;
 
     public AppLayoutGridviewInfo(long id, String iconUrl, String name,
                                  String type, int state) {
@@ -28,11 +31,12 @@ public class AppLayoutGridviewInfo implements Serializable {
 
     public AppLayoutGridviewInfo(JSONObject obj) throws JSONException {
         this.id = obj.getLong("id");
-        this.iconUrl = obj.getString("iconUrl");
+        this.size = obj.getLong("size");
+        this.iconUrl = obj.getString("icon");
         this.name = obj.getString("name");
-        this.type = obj.getString("type");
-        this.appPackageName = obj.getString("appPackageName");
-        this.appUrl = obj.getString("appUrl");
+        this.appPackageName = obj.getString("packagename");
+        this.version = obj.getString("version");
+        this.download = obj.getString("download");
     }
 
     public long getId() {
@@ -73,5 +77,57 @@ public class AppLayoutGridviewInfo implements Serializable {
 
     public void setState(int state) {
         this.state = state;
+    }
+
+    public String getAppPackageName() {
+        return appPackageName;
+    }
+
+    public void setAppPackageName(String appPackageName) {
+        this.appPackageName = appPackageName;
+    }
+
+    public String getAppUrl() {
+        return appUrl;
+    }
+
+    public void setAppUrl(String appUrl) {
+        this.appUrl = appUrl;
+    }
+
+    public String getDownload() {
+        return download;
+    }
+
+    public void setDownload(String download) {
+        this.download = download;
+    }
+
+    public long getSize() {
+        return size;
+    }
+
+    public void setSize(long size) {
+        this.size = size;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    @Override
+    public String toString() {
+        return "AppLayoutGridviewInfo{" +
+                "download='" + download + '\'' +
+                ", size=" + size +
+                ", version='" + version + '\'' +
+                ", appPackageName='" + appPackageName + '\'' +
+                ", name='" + name + '\'' +
+                ", id=" + id +
+                '}';
     }
 }

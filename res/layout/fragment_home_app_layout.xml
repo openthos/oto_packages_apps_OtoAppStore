@@ -1,0 +1,141 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/white"
+              android:orientation="vertical"
+              tools:context="com.openthos.appstore.fragment.item.HomeAppLayoutFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="@string/recomment"
+            android:textColor="@color/text_gray"
+            android:textSize="@dimen/first_title_size"
+            />
+
+        <Button
+            android:id="@+id/fragment_home_recommand_look"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/shape_button_white_gray"
+            android:gravity="center"
+            />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginRight="10dp"
+        android:background="@color/view_line"/>
+
+    <com.openthos.appstore.view.CustomListView
+        android:id="@+id/fragment_home_app_layout_recommand_software"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="5dp"/>
+
+    <com.openthos.appstore.view.CustomListView
+        android:id="@+id/fragment_home_app_layout_recommand_game"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="5dp"
+        />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="@string/popular"
+            android:textColor="@color/text_gray"
+            android:textSize="@dimen/first_title_size"
+            />
+
+        <Button
+            android:id="@+id/fragment_home_popular_look"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/shape_button_white_gray"
+            android:gravity="center"
+            />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginRight="10dp"
+        android:background="@color/view_line"/>
+
+    <com.openthos.appstore.view.CustomListView
+        android:id="@+id/fragment_home_app_layout_welcome_software"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="5dp"/>
+
+    <com.openthos.appstore.view.CustomListView
+        android:id="@+id/fragment_home_app_layout_welcome_game"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="5dp"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="@string/favour"
+            android:textColor="@color/text_gray"
+            android:textSize="@dimen/first_title_size"
+            />
+
+        <Button
+            android:id="@+id/fragment_home_favour_look"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/shape_button_white_gray"
+            android:gravity="center"
+            />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginRight="10dp"
+        android:background="@color/view_line"/>
+
+    <com.openthos.appstore.view.CustomListView
+        android:id="@+id/fragment_home_app_layout_praise_software"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="5dp"/>
+
+    <com.openthos.appstore.view.CustomListView
+        android:id="@+id/fragment_home_app_layout_praise_game"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="5dp"/>
+</LinearLayout>

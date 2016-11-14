@@ -14,24 +14,28 @@ import java.util.List;
 public class AppLayoutInfo implements Serializable {
     private long id;
     private String type;
-    private List<AppLayoutGridviewInfo> appLayoutGridviewInfos;
+    private List<AppLayoutGridviewInfo> appLayoutGridviewList;
 
     public AppLayoutInfo(long id, String type, List<AppLayoutGridviewInfo>
-            appLayoutGridviewInfos) {
+            appLayoutGridviewList) {
         this.id = id;
         this.type = type;
-        this.appLayoutGridviewInfos = appLayoutGridviewInfos;
+        this.appLayoutGridviewList = appLayoutGridviewList;
+    }
+
+    public AppLayoutInfo() {
+        appLayoutGridviewList = new ArrayList<>();
     }
 
     public AppLayoutInfo(JSONObject obj) throws JSONException {
         this.id = obj.getLong("id");
         this.type = obj.getString("type");
-        this.appLayoutGridviewInfos = new ArrayList<>();
+        this.appLayoutGridviewList = new ArrayList<>();
         JSONArray info = obj.getJSONArray("info");
         AppLayoutGridviewInfo leftGridviewInfo = null;
         for (int i = 0; i < info.length(); i++) {
             leftGridviewInfo = new AppLayoutGridviewInfo(info.getJSONObject(i));
-            this.appLayoutGridviewInfos.add(leftGridviewInfo);
+            this.appLayoutGridviewList.add(leftGridviewInfo);
         }
     }
 
@@ -51,12 +55,20 @@ public class AppLayoutInfo implements Serializable {
         this.type = type;
     }
 
-    public List<AppLayoutGridviewInfo> getAppLayoutGridviewInfos() {
-        return appLayoutGridviewInfos;
+    public List<AppLayoutGridviewInfo> getAppLayoutGridviewList() {
+        return appLayoutGridviewList;
     }
 
-    public void setAppLayoutGridviewInfos(List<AppLayoutGridviewInfo>
+    public void setAppLayoutGridviewList(List<AppLayoutGridviewInfo>
                                                   appLayoutGridviewInfos) {
-        this.appLayoutGridviewInfos = appLayoutGridviewInfos;
+        this.appLayoutGridviewList = appLayoutGridviewInfos;
+    }
+
+    @Override
+    public String toString() {
+        return "AppLayoutInfo{" +
+                "type='" + type + '\'' +
+                ", appLayoutGridviewList=" + appLayoutGridviewList +
+                '}';
     }
 }

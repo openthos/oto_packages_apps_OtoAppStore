@@ -2,7 +2,6 @@ package com.openthos.appstore.fragment;
 
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,14 +10,16 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.openthos.appstore.R;
+import com.openthos.appstore.adapter.ManagerDownloadAdapter;
 import com.openthos.appstore.adapter.ManagerUpdateAdapter;
 import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.bean.SQLAppInstallInfo;
 import com.openthos.appstore.utils.AppUtils;
 import com.openthos.appstore.utils.Tools;
-//import com.openthos.appstore.utils.download.DownLoadService;
+import com.openthos.appstore.utils.download.DownLoadManager;
+import com.openthos.appstore.utils.download.DownLoadService;
 import com.openthos.appstore.view.CustomListView;
-
+import com.openthos.appstore.app.StoreApplication;
 import java.util.List;
 
 /**
@@ -35,8 +36,12 @@ public class ManagerFragment extends Fragment implements View.OnClickListener {
     private CustomListView mUpdatelistview;
     private CustomListView mDownloadlistview;
     private ManagerUpdateAdapter mUpdateAdapter;
-//    private ManagerDownloadAdapter mDownloadAdapter;
+    private ManagerDownloadAdapter mDownloadAdapter;
     private List<SQLAppInstallInfo> mAppInfo;
+    private DownLoadManager mDownLoadManager;
+
+    private final int mUpdaAdapter = 0;
+    private final int mDownAdapter = 1;
 
     public ManagerFragment() {
 
@@ -45,18 +50,20 @@ public class ManagerFragment extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View ret = inflater.inflate(R.layout.fragment_manager, container, false);
-
-        return ret;
+        return inflater.inflate(R.layout.fragment_manager, container, false);
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        mDownLoadManager = StoreApplication.getDownLoadManager();
 
         initView(view);
 
-        initData();
+        if(mDownLoadManager != null) {
+            initData();
+        }
     }
 
     private void initData() {
@@ -76,14 +83,19 @@ public class ManagerFragment extends Fragment implements View.OnClickListener {
             e.printStackTrace();
         }
 
-//        mDownloadAdapter = new ManagerDownloadAdapter(getActivity(),
-//                                      DownLoadService.getDownLoadManager());
-//        mDownloadAdapter.setAll(false);
-//        mDownloadlistview.setAdapter(mDownloadAdapter);
+        mDownloadAdapter = new ManagerDownloadAdapter(getActivity(), mDownLoadManager);
+        mDownloadAdapter.setAll(false);
+        mDownloadlistview.setAdapter(mDownloadAdapter);
+        if (mDownLoadManager != null) {
+            mDownloadAdapter.addData(mDownLoadManager.getAllTask());
+        }
+
         mUpdateNum.setText(String.format(getResources().getString(R.string.updates),
                 mAppInfo.size()));
-        mDownloadNum.setText(String.format(getResources().getString(R.string.downloads),
-                Constants.getManagerInfo().size()));
+        if (mDownLoadManager != null) {
+            mDownloadNum.setText(String.format(getResources().getString(R.string.downloads),
+                    mDownLoadManager.getAllTask().size()));
+        }
 
         mLaunchUpdate.setOnClickListener(this);
         mLaunchDownload.setOnClickListener(this);
@@ -116,14 +128,14 @@ public class ManagerFragment extends Fragment implements View.OnClickListener {
                 break;
             case R.id.fragment_manager_launch1://updateFold
                 try {
-                    foldOrLaunch(mUpdateAdapter,
+                    foldOrLaunch(mUpdaAdapter,
                                  AppUtils.getAppPackageInfo(getActivity()), mLaunchUpdate);
                 } catch (PackageManager.NameNotFoundException e) {
                     e.printStackTrace();
                 }
                 break;
             case R.id.fragment_manager_launch2://downloadFold
-//                foldOrLaunch(mDownloadAdapter, Constants.getManagerInfo(), mLaunchUpdate);
+                foldOrLaunch(mDownAdapter, mDownLoadManager.getAllTask(), mLaunchDownload);
                 break;
             default:
                 break;
@@ -140,22 +152,37 @@ public class ManagerFragment extends Fragment implements View.OnClickListener {
 
     /**
      * The logical function of unfolding and folding buttons
-     * @param adapter
+     *
+     * @param whichAdapter
      * @param datas
      * @param button
      */
-    private void foldOrLaunch(ManagerUpdateAdapter adapter,
-                              List<SQLAppInstallInfo> datas, Button button) {
+    private void foldOrLaunch(int whichAdapter,
+                              List datas, Button button) {
         String launch = getResources().getString(R.string.launch);
         String fold = getResources().getString(R.string.fold);
         String str = button.getText().toString();
-        if (str.equals(launch)) {
-            adapter.setAll(true);
-            button.setText(fold);
-        } else {
-            adapter.setAll(false);
-            button.setText(launch);
+        switch (whichAdapter) {
+            case mUpdaAdapter:
+                if (str.equals(launch)) {
+                    mUpdateAdapter.setAll(true);
+                    button.setText(fold);
+                } else {
+                    mUpdateAdapter.setAll(false);
+                    button.setText(launch);
+                }
+                mUpdateAdapter.setAppInfo(datas);
+                break;
+            case mDownAdapter:
+                if (str.equals(launch)) {
+                    mDownloadAdapter.setAll(true);
+                    button.setText(fold);
+                } else {
+                    mDownloadAdapter.setAll(false);
+                    button.setText(launch);
+                }
+                mDownloadAdapter.addData(datas);
+                break;
         }
-        adapter.setAppInfo(datas);
     }
 }

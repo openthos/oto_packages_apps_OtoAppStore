@@ -15,26 +15,35 @@ import com.openthos.appstore.R;
 import com.openthos.appstore.activity.DetailActivity;
 import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.bean.AppLayoutGridviewInfo;
+import com.openthos.appstore.bean.TaskInfo;
+import com.openthos.appstore.utils.download.DownLoadManager;
+import com.openthos.appstore.utils.download.DownLoadService;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.openthos.appstore.app.StoreApplication;
 
 /**
  * Created by luojunhuan on 16-10-26.
  */
-public class AppLayoutGridviewAdapter extends BasicAdapter
-        implements View.OnClickListener {
+public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnClickListener {
+    private DownLoadManager mManager;
 
     public AppLayoutGridviewAdapter(Context context, int fromFragment, boolean isAll) {
         super(context, isAll);
         mFromFragment = fromFragment;
         mDatas = new ArrayList<>();
+        mManager = StoreApplication.getDownLoadManager();
+        if (mManager != null) {
+            mManager.changeUser(Constants.USER_ID);
+            mManager.setSupportBreakpoint(false);
+        }
     }
 
     @Override
     public long getItemId(int position) {
-        return mDatas == null ? -1 : ((AppLayoutGridviewInfo)mDatas.get(position)).getId();
+        return mDatas == null ? -1 : ((AppLayoutGridviewInfo) mDatas.get(position)).getId();
     }
 
     @Override
@@ -52,34 +61,27 @@ public class AppLayoutGridviewAdapter extends BasicAdapter
         if (mDatas != null && mDatas.size() != 0) {
             AppLayoutGridviewInfo appLayoutGridviewInfo =
                                       (AppLayoutGridviewInfo) mDatas.get(position);
-//            LogUtils.printLog("info1",itemListGridviewInfo.getIconUrl());
             Picasso.with(mContext).load(appLayoutGridviewInfo.getIconUrl()).into(holder.icon);
+            Picasso.with(mContext).load(Constants.BASEURL + "/" +
+                                            appLayoutGridviewInfo.getIconUrl()).into(holder.icon);
             holder.name.setText(appLayoutGridviewInfo.getName());
             holder.type.setText(appLayoutGridviewInfo.getType());
             switch (appLayoutGridviewInfo.getState()) {
                 case Constants.INSTALL_BUTTON_NOT_INSTALL:
-                    holder.install.setText(R.string.not_install);
-                    holder.install.setBackgroundResource(R.drawable.shape_button_white_cyan);
-                    holder.install.setTextColor(mContext.getResources().getColor(
-                            R.color.button_cyan));
+                    setContent(holder.install, R.string.not_install,
+                                          R.drawable.shape_button_white_cyan, R.color.button_cyan);
                     break;
                 case Constants.INSTALL_BUTTON_HAVE_INSTALLED:
-                    holder.install.setText(R.string.have_installed);
-                    holder.icon.setBackgroundResource(R.drawable.shape_button_gray);
-                    holder.install.setTextColor(mContext.getResources().getColor(
-                            R.color.button_gray));
+                    setContent(holder.install, R.string.have_installed,
+                                          R.drawable.shape_button_gray, R.color.button_gray);
                     break;
                 case Constants.INSTALL_BUTTON_CONTINUE:
-                    holder.install.setText(R.string.continues);
-                    holder.install.setBackgroundResource(R.drawable.shape_button_white_cyan);
-                    holder.install.setTextColor(mContext.getResources().getColor(
-                            R.color.button_cyan));
+                    setContent(holder.install, R.string.continues,
+                                          R.drawable.shape_button_white_cyan, R.color.button_cyan);
                     break;
                 case Constants.INSTALL_BUTTON_PAUSE:
-                    holder.install.setText(R.string.pause);
-                    holder.install.setBackgroundResource(R.drawable.shape_button_white_cyan);
-                    holder.install.setTextColor(mContext.getResources().getColor(
-                            R.color.button_cyan));
+                    setContent(holder.install, R.string.pause, R.drawable.shape_button_white_cyan,
+                                          R.color.button_cyan);
                     break;
                 default:
                     break;
@@ -98,20 +100,35 @@ public class AppLayoutGridviewAdapter extends BasicAdapter
         return convertView;
     }
 
+    private void setContent(Button btn, int text, int background, int color) {
+        btn.setText(text);
+        btn.setBackgroundResource(background);
+        btn.setTextColor(mContext.getResources().getColor(color));
+    }
+
     @Override
     public void onClick(View v) {
-        int tag = (int) v.getTag();
+        int possition = (int) v.getTag();
+        AppLayoutGridviewInfo appInfo = (AppLayoutGridviewInfo) mDatas.get(possition);
+
         switch (v.getId()) {
             case R.id.app_layout_gridview_install:
                 Button install = (Button) v;
                 String btnStr = install.getText().toString();
 
-                if (btnStr.equals(mContext.getResources().getString(R.string.continues))) {
-                    install.setText(mContext.getResources().getString(R.string.pause));
-                } else if (btnStr.equals(mContext.getResources().getString(R.string.pause))) {
-                    install.setText(mContext.getResources().getString(R.string.continues));
-                } else if (btnStr.equals(mContext.getResources().getString(R.string.install))) {
-                    install.setText(mContext.getResources().getString(R.string.continues));
+                String continues = mContext.getResources().getString(R.string.continues);
+                String pause = mContext.getResources().getString(R.string.pause);
+                String installs = mContext.getResources().getString(R.string.install);
+                if (btnStr.equals(continues)) {
+                    install.setText(pause);
+                    mManager.stopTask(appInfo.getId() + "");
+                } else if (btnStr.equals(pause)) {
+                    install.setText(continues);
+                    mManager.startTask(appInfo.getId() + "");
+                } else if (btnStr.equals(installs)) {
+                    install.setText(pause);
+                    mManager.addTask(appInfo.getId() + "", Constants.BASEURL + "/" +appInfo.getDownload(),
+                            appInfo.getName(), null);
                 } else {
 
                 }
@@ -119,7 +136,7 @@ public class AppLayoutGridviewAdapter extends BasicAdapter
                 break;
 
             default:
-                Toast.makeText(mContext, tag + "", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, possition + "", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(mContext, DetailActivity.class);
                 intent.putExtra(Constants.FROM_FRAGMENT, mFromFragment);
                 Bundle bundle = new Bundle();
@@ -144,7 +161,7 @@ public class AppLayoutGridviewAdapter extends BasicAdapter
     }
 
     public void addDatas(List<AppLayoutGridviewInfo> datas) {
-        mDatas.clear();
+        this.mDatas.clear();
         if (mIsAll) {
             mDatas.addAll(datas);
         } else {

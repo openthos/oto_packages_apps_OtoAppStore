@@ -17,10 +17,10 @@ import java.util.List;
  * Created by luojunhuan on 16-10-25.
  */
 public class Constants {
-    public static final String BASEURL = "";
+    public static final String BASEURL = "http://192.168.0.180/openthos/appstore";
     public static String USER_ID = "admin";
-    public static String BASE_FILEPATH = Environment.getExternalStorageDirectory().toString() +
-            "/opthos";
+    public static String BASE_FILEPATH = Environment.getExternalStorageDirectory().
+                                                 toString() + "/OASDownloads";
     public static String DOWNFILEPATH = BASE_FILEPATH + "/" + USER_ID + "/FILETEMP";
     public static String TEMP_FILEPATH = BASE_FILEPATH + "/" + USER_ID + "/TEMPDir";
     public static final String[] WRONG_CHARS = {
@@ -118,7 +118,6 @@ public class Constants {
     }
 
     public static List<CommentInfo> getComment() {
-        // The hard code number is dummy data.
         CommentInfo commentInfo = new CommentInfo(1, "gdafgasfsdagsag", 48, "asgsd", "2016.10.24");
         List<CommentInfo> data = new ArrayList<>();
         data.add(commentInfo);

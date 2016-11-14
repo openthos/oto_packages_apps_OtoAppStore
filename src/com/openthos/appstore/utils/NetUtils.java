@@ -6,6 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 /**
  * Created by luojunhuan on 16-10-31.
@@ -50,5 +53,41 @@ public class NetUtils {
         intent.setComponent(cm);
         intent.setAction("android.intent.action.VIEW");
         activity.startActivityForResult(intent, 0);
+    }
+
+    public static String getNetStr(String path) {
+        InputStream is = null;
+        HttpURLConnection conn = null;
+        try {
+            URL url = new URL(path);
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setConnectTimeout(5 * 1000);
+            conn.setRequestMethod("GET");
+            conn.setDoInput(true);
+            conn.setDoOutput(true);
+            conn.connect();
+            int code = conn.getResponseCode();
+
+            if (code == HttpURLConnection.HTTP_OK) {
+                is = conn.getInputStream();
+                int len = -1;
+                StringBuffer buffer = new StringBuffer();
+                byte[] bytes = new byte[1024];
+                while ((len = is.read(bytes)) != -1) {
+                    buffer.append(new String(bytes, 0, len));
+                }
+                return buffer.toString();
+            } else {
+                return "fail";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "fail";
+        } finally {
+            Tools.closeStream(is);
+            if (conn != null){
+                conn.disconnect();
+            }
+        }
     }
 }

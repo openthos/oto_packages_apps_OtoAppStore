@@ -90,6 +90,7 @@ public class ManagerDownloadAdapter extends BasicAdapter {
     }
 
     public void addData(List<TaskInfo> listdata) {
+        mDatas.clear();
         if (mIsAll) {
             mDatas = listdata;
         } else {
@@ -158,7 +159,7 @@ public class ManagerDownloadAdapter extends BasicAdapter {
             // the progress of the delete task
             for (TaskInfo taskInfo : (ArrayList<TaskInfo>) mDatas) {
                 if (taskInfo.getTaskID().equals(sqlDownLoadInfo.getTaskID())) {
-                    mDatas.remove(taskInfo);
+//                    mDatas.remove(taskInfo);
                     ManagerDownloadAdapter.this.notifyDataSetChanged();
                     break;
                 }
@@ -168,7 +169,7 @@ public class ManagerDownloadAdapter extends BasicAdapter {
         }
 
         @Override
-        public void onError(SQLDownLoadInfo sqlDownLoadInfo) {
+        public void onError(SQLDownLoadInfo sqlDownLoadInfo, String error) {
             //According to listen to the information to find a list of corresponding tasks,
             // the progress of the stop task
             for (TaskInfo taskInfo : (ArrayList<TaskInfo>) mDatas) {
@@ -178,7 +179,7 @@ public class ManagerDownloadAdapter extends BasicAdapter {
                     break;
                 }
             }
-            Tools.toast(mContext, "error");
+            Tools.toast(mContext, error);
         }
     }
 }

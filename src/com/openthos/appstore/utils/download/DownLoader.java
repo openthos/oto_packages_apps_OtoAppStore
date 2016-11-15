@@ -200,7 +200,11 @@ public class DownLoader {
                             new File(TEMP_FILEPATH + "/("
                                      + FileHelper.filterIDChars(mSQLDownLoadInfo.getTaskID())
                                      + ")" + mSQLDownLoadInfo.getFileName()).delete();
-                            handler.sendEmptyMessage(TASK_ERROR);
+                            //handler.sendEmptyMessage(TASK_ERROR);
+                            Message msg = handler.obtainMessage();
+                            msg.what = TASK_ERROR;
+                            msg.obj = "filepath error";
+                            handler.sendMessage(msg);
                         }
                         mDatakeeper.deleteDownLoadInfo(mUserID, mSQLDownLoadInfo.getTaskID());
                         mDownLoadThread = null;
@@ -218,14 +222,22 @@ public class DownLoader {
                                 mPool.remove(mDownLoadThread);
                                 mDownLoadThread = null;
                                 mOndownload = false;
-                                handler.sendEmptyMessage(TASK_ERROR);
+                              //  handler.sendEmptyMessage(TASK_ERROR);
+                                Message msg = handler.obtainMessage();
+                                msg.what = TASK_ERROR;
+                                msg.obj = e.toString();
+                                handler.sendMessage(msg);
                             }
                         } else {
                             mDownFileSize = 0;
                             mDownloadtimes = mMaxdownloadtimes;
                             mOndownload = false;
                             mDownLoadThread = null;
-                            handler.sendEmptyMessage(TASK_ERROR);
+                        //    handler.sendEmptyMessage(TASK_ERROR);
+                            Message msg = handler.obtainMessage();
+                            msg.obj = e.toString();
+                            msg.what = TASK_ERROR;
+                            handler.sendMessage(msg);
                         }
 
                     } else {
@@ -332,13 +344,13 @@ public class DownLoader {
         }
     }
 
-    private void errorNotice() {
+    private void errorNotice(String error) {
         if (!mListenerMap.isEmpty()) {
             Collection<DownLoadListener> c = mListenerMap.values();
             Iterator<DownLoadListener> it = c.iterator();
             while (it.hasNext()) {
                 DownLoadListener listener = (DownLoadListener) it.next();
-                listener.onError(getSQLDownLoadInfo());
+                listener.onError(getSQLDownLoadInfo(), error);
             }
         }
     }
@@ -372,7 +384,7 @@ public class DownLoader {
             } else if (msg.what == TASK_PROGESS) {
                 onProgressNotice();
             } else if (msg.what == TASK_ERROR) {
-                errorNotice();
+                errorNotice((String) msg.obj);
             } else if (msg.what == TASK_SUCCESS) {
                 successNotice();
             }

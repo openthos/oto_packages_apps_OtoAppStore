@@ -1,6 +1,5 @@
 package com.openthos.appstore.utils.sql;
 
-import android.os.Environment;
 import com.openthos.appstore.app.Constants;
 
 import java.io.File;
@@ -43,10 +42,18 @@ public class FileHelper {
     }
 
     public static String getFileDefaultPath() {
+        File file = new File(Constants.DOWNFILEPATH);
+        if (!file.exists()) {
+            file.mkdirs();
+        }
         return Constants.DOWNFILEPATH;
     }
 
     public static String getTempDirPath() {
+        File file = new File(Constants.TEMP_FILEPATH);
+        if (!file.exists()) {
+            file.mkdirs();
+        }
         return Constants.TEMP_FILEPATH;
     }
 

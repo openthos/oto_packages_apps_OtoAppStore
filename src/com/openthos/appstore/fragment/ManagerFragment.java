@@ -1,11 +1,13 @@
 package com.openthos.appstore.fragment;
 
 import android.content.pm.PackageManager;
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -14,18 +16,23 @@ import com.openthos.appstore.adapter.ManagerDownloadAdapter;
 import com.openthos.appstore.adapter.ManagerUpdateAdapter;
 import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.bean.SQLAppInstallInfo;
+import com.openthos.appstore.bean.TaskInfo;
+import com.openthos.appstore.utils.DialogUtils;
 import com.openthos.appstore.utils.AppUtils;
 import com.openthos.appstore.utils.Tools;
+import com.openthos.appstore.utils.sql.DownloadKeeper;
 import com.openthos.appstore.utils.download.DownLoadManager;
 import com.openthos.appstore.utils.download.DownLoadService;
 import com.openthos.appstore.view.CustomListView;
 import com.openthos.appstore.app.StoreApplication;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ManagerFragment extends Fragment implements View.OnClickListener {
+public class ManagerFragment extends Fragment
+                    implements View.OnClickListener, AdapterView.OnItemClickListener {
 
     private TextView mUpdateNum;
     private TextView mDownloadNum;
@@ -101,7 +108,7 @@ public class ManagerFragment extends Fragment implements View.OnClickListener {
         mLaunchDownload.setOnClickListener(this);
         mStartAll.setOnClickListener(this);
         mUpdateAll.setOnClickListener(this);
-
+        mDownloadlistview.setOnItemClickListener(this);
     }
 
     private void initView(View view) {
@@ -118,10 +125,10 @@ public class ManagerFragment extends Fragment implements View.OnClickListener {
     }
 
     @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
+    public void onClick(View view) {
+        switch (view.getId()) {
             case R.id.fragment_manager_startAll:
-                startAll();
+                startAll(view);
                 break;
             case R.id.fragment_manager_updateAll:
                 updateAll();
@@ -142,8 +149,51 @@ public class ManagerFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    private void startAll() {
-        Tools.toast(getActivity(), getResources().getString(R.string.manager_fragment_toast));
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        final TaskInfo taskInfo = mDownLoadManager.getAllTask().get(position);
+        final String fileName = taskInfo.getFileName();
+        final String taskID = taskInfo.getTaskID();
+        new DialogUtils().dialogDownload(getActivity(), new DialogUtils.DownloadManager() {
+            @Override
+            public void install(AlertDialog dialog) {
+                boolean isSuccess = AppUtils.installApk(getActivity(),
+                        mDownLoadManager.getInstallFilepath(fileName, taskID, null));
+                if (!isSuccess) {
+                    Tools.toast(getActivity(), getActivity().
+                            getResources().getString(R.string.this_file_is_not_exist));
+                }
+                dialog.cancel();
+            }
+
+            @Override
+            public void removeTask(AlertDialog dialog) {
+                new DownloadKeeper(getActivity()).deleteDownLoadInfo(Constants.USER_ID, taskID);
+                ArrayList<TaskInfo> allTask = mDownLoadManager.getAllTask();
+               // allTask.remove(taskInfo);
+                mDownloadAdapter.addData(allTask);
+                dialog.cancel();
+            }
+        });
+    }
+
+    private void startAll(View view) {
+        Button btn = (Button) view;
+        String btnStr = btn.getText().toString();
+        String startAll = getResources().getString(R.string.startAll);
+        String stopAll = getResources().getString(R.string.stopAll);
+        ArrayList<TaskInfo> allTask = mDownLoadManager.getAllTask();
+        if (allTask != null && allTask.size() != 0) {
+            if ((startAll).equals(btnStr)){
+                btn.setText(stopAll);
+                mDownLoadManager.startAllTask();
+            } else {
+                btn.setText(startAll);
+                mDownLoadManager.stopAllTask();
+            }
+        } else {
+            Tools.toast(getActivity(), getResources().getString(R.string.no_task));
+        }
     }
 
     private void updateAll() {

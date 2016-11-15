@@ -96,14 +96,21 @@ public class AppUtils {
         return datas;
     }
 
-    public static void installApk(Context mContext, String saveFileName) {
+    public static boolean installApk(Context mContext, String saveFileName) {
         File apkfile = new File(saveFileName);
         if (!apkfile.exists()) {
-            return;
+            return false;
         }
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setDataAndType(Uri.parse("file://" + apkfile.toString()),
                 "application/vnd.android.package-archive");
         mContext.startActivity(i);
+        return true;
+    }
+
+    public static void uninstallApk(Context context, String packageName) {
+        Uri uri = Uri.parse("package:" + packageName);
+        Intent intent = new Intent(Intent.ACTION_DELETE, uri);
+        context.startActivity(intent);
     }
 }

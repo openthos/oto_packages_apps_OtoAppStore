@@ -10,7 +10,7 @@ public interface DownLoadListener {
 
     public void onStop(SQLDownLoadInfo sqlDownLoadInfo, boolean isSupportBreakpoint);
 
-    public void onError(SQLDownLoadInfo sqlDownLoadInfo);
+    public void onError(SQLDownLoadInfo sqlDownLoadInfo, String error);
 
     public void onSuccess(SQLDownLoadInfo sqlDownLoadInfo);
 }

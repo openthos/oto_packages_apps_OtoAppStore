@@ -107,6 +107,15 @@ public class DownLoadManager {
         return mUserID;
     }
 
+    public String getInstallFilepath(String fileName, String TaskID, String filePath) {
+        if (filePath != null) {
+            return filePath;
+        } else {
+            return FileHelper.getFileDefaultPath() + "/(" +
+                    FileHelper.filterIDChars(TaskID) + ")" + fileName;
+        }
+    }
+
     public int addTask(String TaskID, String url, String fileName) {
         return addTask(TaskID, url, fileName, null);
     }
@@ -130,10 +139,10 @@ public class DownLoadManager {
         if (filepath == null) {
             String filePath = FileHelper.getFileDefaultPath() + "/(" +
                     FileHelper.filterIDChars(TaskID) + ")" + fileName;
-            File file = new File(filePath);
-            if (file.exists()){
-                file.delete();
-            }
+//            File file = new File(filePath);
+//            if (file.exists()){
+//                file.delete();
+//            }
             downloadinfo.setFilePath(filePath);
         } else {
             downloadinfo.setFilePath(filepath);

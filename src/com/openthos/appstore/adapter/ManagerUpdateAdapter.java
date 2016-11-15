@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.openthos.appstore.R;
@@ -96,6 +97,7 @@ public class ManagerUpdateAdapter extends BasicAdapter
         private TextView appVersion;
         private TextView appContent;
         private Button appTask;
+        private LinearLayout layout;
 
         public ViewHolder(View view) {
             appIcon = ((ImageView) view.findViewById(R.id.item_manager_appIcon));
@@ -103,6 +105,7 @@ public class ManagerUpdateAdapter extends BasicAdapter
             appVersion = (TextView) view.findViewById(R.id.item_manager_appVersion);
             appContent = (TextView) view.findViewById(R.id.item_manager_appcontent);
             appTask = ((Button) view.findViewById(R.id.item_manager_apptask));
+            layout = ((LinearLayout) view.findViewById(R.id.item_manager_layout));
         }
     }
 

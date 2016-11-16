@@ -170,7 +170,7 @@ public class ManagerFragment extends Fragment
             public void removeTask(AlertDialog dialog) {
                 new DownloadKeeper(getActivity()).deleteDownLoadInfo(Constants.USER_ID, taskID);
                 ArrayList<TaskInfo> allTask = mDownLoadManager.getAllTask();
-               // allTask.remove(taskInfo);
+                allTask.remove(taskInfo);
                 mDownloadAdapter.addData(allTask);
                 dialog.cancel();
             }

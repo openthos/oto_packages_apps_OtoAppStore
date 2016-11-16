@@ -48,7 +48,7 @@ public class DownLoadManager {
                 for (int i = 0; i < taskSize; i++) {
                     DownLoader deletedownloader = mTaskList.get(i);
                     if (deletedownloader.getTaskID().equals(TaskID)) {
-                        mTaskList.remove(deletedownloader);
+    //                    mTaskList.remove(deletedownloader);
                         return;
                     }
                 }
@@ -139,10 +139,10 @@ public class DownLoadManager {
         if (filepath == null) {
             String filePath = FileHelper.getFileDefaultPath() + "/(" +
                     FileHelper.filterIDChars(TaskID) + ")" + fileName;
-//            File file = new File(filePath);
-//            if (file.exists()){
-//                file.delete();
-//            }
+            File file = new File(filePath);
+            if (file.exists()){
+                file.delete();
+            }
             downloadinfo.setFilePath(filePath);
         } else {
             downloadinfo.setFilePath(filepath);

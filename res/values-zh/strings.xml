@@ -49,10 +49,10 @@
 
     <string name="news_content">gdgdsgsdgdfgdfsgsdfgfdshfghfghfkdjfalkfjsdlafjklasjaafsd</string>
     <string name="other_information">other information</string>
-    <string name="touch_look">点击查看<>
-    <string name="uninstall">卸载</s>
-    <string name="remove_task">移除任�
-    <string name="this_file_is_not_exist">该安装文件不
-    <string name="stopAll">停止所有</s
-    <string name="no_task">当前没有下�
+    <string name="touch_look">点击查看</string>
+    <string name="uninstall">卸载</string>
+    <string name="remove_task">移除任务</string>
+    <string name="this_file_is_not_exist">该安装文件不存在</string>
+    <string name="stopAll">停止所有</string>
+    <string name="no_task">当前没有下载任务</string>
 </resources>

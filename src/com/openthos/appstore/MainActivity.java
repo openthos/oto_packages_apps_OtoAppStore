@@ -16,7 +16,6 @@ import android.widget.RadioGroup;
 import com.openthos.appstore.activity.BaseActivity;
 import com.openthos.appstore.activity.SearchActivity;
 import com.openthos.appstore.app.Constants;
-import com.openthos.appstore.app.StoreApplication;
 import com.openthos.appstore.fragment.GameFragment;
 import com.openthos.appstore.fragment.HomeFragment;
 import com.openthos.appstore.fragment.ManagerFragment;
@@ -47,8 +46,6 @@ public class MainActivity extends BaseActivity implements RadioGroup.OnCheckedCh
 
         initView(mFromFragment);
 
-        Tools.toast(this, StoreApplication.getDownLoadManager()+"");
-
         loadData();
 
         initListener();
@@ -58,6 +55,7 @@ public class MainActivity extends BaseActivity implements RadioGroup.OnCheckedCh
         ImageView back = (ImageView) findViewById(R.id.activity_title_back);
         ImageView forward = (ImageView) findViewById(R.id.activity_title_forward);
         ImageView search = (ImageView) findViewById(R.id.activity_title_search);
+        back.setVisibility(View.GONE);
         final EditText content = (EditText) findViewById(R.id.activity_title_content);
         final Intent[] intent = {null};
         back.setOnClickListener(new View.OnClickListener() {

@@ -1,5 +1,6 @@
 package com.openthos.appstore.adapter;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,8 @@ import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.bean.SQLAppInstallInfo;
 import com.openthos.appstore.bean.ManagerInfo;
 import com.openthos.appstore.utils.Tools;
+import com.openthos.appstore.utils.AppUtils;
+import com.openthos.appstore.utils.DialogUtils;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -82,13 +85,30 @@ public class ManagerUpdateAdapter extends BasicAdapter
             Tools.printLog("IMA", SQLAppInstallInfo.toString());
             holder.appTask.setOnClickListener(this);
             holder.appTask.setTag(position);
+            holder.layout.setOnClickListener(this);
+            holder.layout.setTag(position);
         }
         return convertView;
     }
 
     @Override
     public void onClick(View v) {
-        Tools.toast(mContext, "gengxin");
+        final int position = (int)v.getTag();
+        switch(v.getId()){
+            case R.id.item_manager_apptask:
+                Tools.toast(mContext,"gengxin");
+                break;
+            default:
+                new DialogUtils().dialogUpdate(mContext, new DialogUtils.UpdateManager(){
+                    @Override
+                    public void uninstall(AlertDialog dialog){
+                        AppUtils.uninstallApk(mContext,
+                                 ((SQLAppInstallInfo) mDatas.get(position)).getPackageName());
+                        dialog.cancel();
+                    }
+                });
+                break;
+        }
     }
 
     class ViewHolder {

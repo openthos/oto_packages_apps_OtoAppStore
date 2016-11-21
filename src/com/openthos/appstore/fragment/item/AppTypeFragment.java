@@ -1,8 +1,6 @@
 package com.openthos.appstore.fragment.item;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,26 +8,16 @@ import android.view.ViewGroup;
 import com.openthos.appstore.R;
 import com.openthos.appstore.adapter.AppTypeAdapter;
 import com.openthos.appstore.bean.AppTypeInfo;
+import com.openthos.appstore.fragment.BaseFragment;
 import com.openthos.appstore.view.CustomListView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A simple {@link Fragment} subclass.
- */
-public class AppTypeFragment extends Fragment {
+public class AppTypeFragment extends BaseFragment {
 
     private CustomListView mListView;
-    private int mFromFragment;
     private List<AppTypeInfo> mDatas = new ArrayList<>();
-
-    public AppTypeFragment() {
-    }
-
-    public void setFromFragment(int fromFragment) {
-        mFromFragment = fromFragment;
-    }
 
     public void setDatas(List<AppTypeInfo> datas) {
         mDatas = datas;
@@ -42,10 +30,10 @@ public class AppTypeFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mListView = ((CustomListView) view.findViewById(R.id.fragment_app_type_listview));
-        AppTypeAdapter adapter = new AppTypeAdapter(getActivity(), mFromFragment);
+        AppTypeAdapter adapter = new AppTypeAdapter(getActivity());
         mListView.setAdapter(adapter);
         adapter.addDatas(mDatas);
     }

@@ -1,4 +1,5 @@
 package com.openthos.appstore.utils.download;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -48,7 +49,7 @@ public class DownLoadManager {
                 for (int i = 0; i < taskSize; i++) {
                     DownLoader deletedownloader = mTaskList.get(i);
                     if (deletedownloader.getTaskID().equals(TaskID)) {
-    //                    mTaskList.remove(deletedownloader);
+                        //                    mTaskList.remove(deletedownloader);
                         return;
                     }
                 }
@@ -56,12 +57,16 @@ public class DownLoadManager {
         };
         mSharedPreferences = mContext.getSharedPreferences("UserInfo",
                 Context.MODE_PRIVATE);
-        mUserID = mSharedPreferences.getString("UserID", "luffy");
+        mUserID = mSharedPreferences.getString("UserID", Constants.USER_ID);
         recoverData(mContext, mUserID);
     }
 
     private void recoverData(Context context, String userID) {
         stopAllTask();
+        mTaskList = getTaskList(context, userID);
+    }
+
+    public ArrayList<DownLoader> getTaskList(Context context, String userID) {
         mTaskList = new ArrayList<DownLoader>();
         DownloadKeeper datakeeper = new DownloadKeeper(context);
         ArrayList<SQLDownLoadInfo> sqlDownloadInfoList = null;
@@ -81,6 +86,7 @@ public class DownLoadManager {
                 mTaskList.add(sqlDownLoader);
             }
         }
+        return mTaskList;
     }
 
     public void setSupportBreakpoint(boolean isSupportBreakpoint) {
@@ -107,12 +113,11 @@ public class DownLoadManager {
         return mUserID;
     }
 
-    public String getInstallFilepath(String fileName, String TaskID, String filePath) {
+    public String getInstallFilepath(String fileName, String filePath) {
         if (filePath != null) {
             return filePath;
         } else {
-            return FileHelper.getFileDefaultPath() + "/(" +
-                    FileHelper.filterIDChars(TaskID) + ")" + fileName;
+            return FileHelper.getFileDefaultPath() + "/" + fileName;
         }
     }
 
@@ -137,18 +142,17 @@ public class DownLoadManager {
         downloadinfo.setFileName(fileName);
         downloadinfo.setUrl(url);
         if (filepath == null) {
-            String filePath = FileHelper.getFileDefaultPath() + "/(" +
-                    FileHelper.filterIDChars(TaskID) + ")" + fileName;
+            String filePath = FileHelper.getFileDefaultPath() + "/" + fileName;
             File file = new File(filePath);
-            if (file.exists()){
+            if (file.exists()) {
                 file.delete();
             }
             downloadinfo.setFilePath(filePath);
         } else {
             downloadinfo.setFilePath(filepath);
         }
-        DownLoader taskDownLoader =
-                new DownLoader(mContext, downloadinfo, mPool, mUserID, mIsSupportBreakpoint, true);
+        DownLoader taskDownLoader = new DownLoader(mContext,
+                downloadinfo, mPool, mUserID, mIsSupportBreakpoint, true);
         taskDownLoader.setDownLodSuccesslistener(mDownloadsuccessListener);
         if (mIsSupportBreakpoint) {
             taskDownLoader.setSupportBreakpoint(true);
@@ -162,7 +166,6 @@ public class DownLoadManager {
     }
 
     private int getAttachmentState(String TaskID, String fileName, String filepath) {
-
         int taskSize = mTaskList.size();
         for (int i = 0; i < taskSize; i++) {
             DownLoader downloader = mTaskList.get(i);
@@ -172,8 +175,7 @@ public class DownLoadManager {
         }
         File file = null;
         if (filepath == null) {
-            file = new File(FileHelper.getFileDefaultPath() + "/("
-                            + FileHelper.filterIDChars(TaskID) + ")" + fileName);
+            file = new File(FileHelper.getFileDefaultPath() + "/" + fileName);
             if (file.exists()) {
                 return -1;
             }
@@ -208,10 +210,12 @@ public class DownLoadManager {
         return taskIDlist;
     }
 
-    public ArrayList<TaskInfo> getAllTask() {
+    public ArrayList<TaskInfo> getAllTask(boolean refresh) {
         ArrayList<TaskInfo> taskInfolist = new ArrayList<TaskInfo>();
-        int listSize = mTaskList.size();
-        for (int i = 0; i < listSize; i++) {
+        if (refresh) {
+            mTaskList = getTaskList(mContext, Constants.USER_ID);
+        }
+        for (int i = 0; i < mTaskList.size(); i++) {
             DownLoader deletedownloader = mTaskList.get(i);
             SQLDownLoadInfo sqldownloadinfo = deletedownloader.getSQLDownLoadInfo();
             TaskInfo taskinfo = new TaskInfo();

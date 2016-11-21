@@ -1,12 +1,5 @@
 package com.openthos.appstore.bean;
 
-/**
- * 类功能描述：下载任务对象</br>
- * @author zhuiji7
- * @version 1.0
- *          </p>
- * @email 470508081@qq.com
- */
 public class SQLDownLoadInfo {
     private String userID;
     private String taskID;
@@ -15,6 +8,7 @@ public class SQLDownLoadInfo {
     private String fileName;
     private long fileSize;
     private long downloadSize;
+    private boolean isSuccess;
 
     public String getUserID() {
         return userID;
@@ -72,9 +66,11 @@ public class SQLDownLoadInfo {
         this.downloadSize = downloadSize;
     }
 
-    @Override
-    public String toString() {
-        return "userID=" + userID + ";taskID=" + taskID + ";url=" + url + ";filePath=" + filePath
-         + ";fileName=" + fileName + ";fileSize=" + fileSize + ";downloadSize=" + downloadSize;
+    public boolean isSuccess() {
+        return fileSize == downloadSize;
+    }
+
+    public void setIsSuccess(boolean isSuccess) {
+        this.isSuccess = isSuccess;
     }
 }

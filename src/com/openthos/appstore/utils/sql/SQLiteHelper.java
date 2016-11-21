@@ -9,7 +9,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     private static final String mDatabasename = "openthos";
     private static CursorFactory mFactory = null;
-    private static final int mVersion = 1;
+    private static final int mVersion = 2;
     public static final String DOWNLOAD_INFO = "downloadinfo";
     public static final String APP_INSTALL = "appinstall";
 
@@ -32,7 +32,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 + "filePath VARCHAR, "
                 + "fileName VARCHAR, "
                 + "fileSize VARCHAR, "
-                + "downLoadSize VARCHAR "
+                + "downLoadSize VARCHAR, "
+                + "isSuccess VARCHAR "
                 + ")";
         db.execSQL(downloadsql);
 
@@ -48,7 +49,9 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+        if (newVersion > oldVersion) {
+            onCreate(db);
+        }
     }
 
     @Override

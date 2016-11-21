@@ -1,10 +1,9 @@
 package com.openthos.appstore.fragment;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,26 +14,24 @@ import com.openthos.appstore.fragment.item.AppLayoutFragment;
 import com.openthos.appstore.fragment.item.AppTypeFragment;
 import com.openthos.appstore.bean.AppLayoutInfo;
 import com.openthos.appstore.bean.GameInfo;
-import com.openthos.appstore.utils.Tools;
 import com.openthos.appstore.utils.NetUtils;
+
 import android.os.Handler;
 import android.os.Message;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class GameFragment extends Fragment {
+public class GameFragment extends BaseFragment {
 
     public static final int STATE_CODE_SEND_DATA = 0;
     private List<AppLayoutInfo> mListAppLayoutInfo;
-
-    public GameFragment() {
-        // Required empty public constructor
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -43,7 +40,7 @@ public class GameFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         initData();
@@ -52,17 +49,15 @@ public class GameFragment extends Fragment {
     }
 
     private void initFragment(List<AppLayoutInfo> listAppLayoutInfo) {
-        FragmentManager manager = getActivity().getFragmentManager();
+        FragmentManager manager = getChildFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
 
         AppLayoutFragment appLayoutFragment = new AppLayoutFragment();
         appLayoutFragment.setNumColumns(Constants.GRIDVIEW_NUM_COLUMS);
-        appLayoutFragment.setFromFragment(Constants.GAME_FRAGMENT);
         appLayoutFragment.setAll(false);
         appLayoutFragment.setDatas(listAppLayoutInfo);
 
         AppTypeFragment appTypeFragment = new AppTypeFragment();
-        appTypeFragment.setFromFragment(Constants.GAME_FRAGMENT);
         appTypeFragment.setDatas(Constants.getDataItemRightInfo());
 
         transaction.replace(R.id.fragment_game_left, appLayoutFragment);
@@ -81,13 +76,13 @@ public class GameFragment extends Fragment {
             try {
                 mListAppLayoutInfo = getListData(NetUtils.getNetStr(Constants.BASEURL + "/list/1"));
             } catch (JSONException e) {
-                    e.printStackTrace();
+                e.printStackTrace();
             }
             mHandler.sendEmptyMessage(STATE_CODE_SEND_DATA);
         }
     }
 
-    private Handler mHandler = new Handler(new Handler.Callback(){
+    private Handler mHandler = new Handler(new Handler.Callback() {
         @Override
         public boolean handleMessage(Message msg) {
             switch (msg.what) {

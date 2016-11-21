@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -13,8 +12,6 @@ import com.openthos.appstore.R;
 import com.openthos.appstore.bean.AppTypeInfo;
 import com.openthos.appstore.view.CustomListView;
 
-import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,9 +20,8 @@ import java.util.List;
 public class AppTypeAdapter extends BasicAdapter
         implements View.OnClickListener, AdapterView.OnItemClickListener {
 
-    public AppTypeAdapter(Context context, int fromFragment) {
-        super(context, fromFragment);
-        mDatas = new ArrayList<>();
+    public AppTypeAdapter(Context context) {
+        super(context);
     }
 
     @Override
@@ -50,7 +46,7 @@ public class AppTypeAdapter extends BasicAdapter
             holder.name.setText(appTypeInfo.getName());
             holder.more.setOnClickListener(this);
             holder.more.setTag(position);
-            AppTypeListviewAdapter adapter = new AppTypeListviewAdapter(mContext, mFromFragment);
+            AppTypeListviewAdapter adapter = new AppTypeListviewAdapter(mContext);
             holder.listview.setAdapter(adapter);
             adapter.addDatas(appTypeInfo.getList());
             holder.listview.setOnItemClickListener(this);
@@ -64,18 +60,12 @@ public class AppTypeAdapter extends BasicAdapter
         int tag = (int) v.getTag();
         Toast.makeText(mContext, tag + "wei zuo tiao zhuan",
                 Toast.LENGTH_SHORT).show();
-//        Intent intent = new Intent(context, MoreActivity.class);
-//        intent.putExtra(Constants.FROM_FRAGMENT,fromFragment);
-        //TODO
-//
-//        context.startActivity(intent);
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Toast.makeText(mContext, position + "", Toast.LENGTH_SHORT).show();
         //TODO
-
     }
 
     class ViewHolder {

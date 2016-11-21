@@ -1,8 +1,7 @@
 package com.openthos.appstore.fragment.item;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +9,7 @@ import android.view.ViewGroup;
 import com.openthos.appstore.R;
 import com.openthos.appstore.adapter.AppLayoutAdapter;
 import com.openthos.appstore.bean.AppLayoutInfo;
+import com.openthos.appstore.fragment.BaseFragment;
 import com.openthos.appstore.view.CustomListView;
 
 import java.util.ArrayList;
@@ -18,25 +18,16 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class AppLayoutFragment extends Fragment {
+public class AppLayoutFragment extends BaseFragment {
 
     private CustomListView mListView;
     private AppLayoutAdapter mAdapter;
     private int mNumColumns;
-    private int mFromFragment;
     private boolean mIsAll;
     private List<AppLayoutInfo> mDatas = new ArrayList<>();
 
-    public AppLayoutFragment() {
-
-    }
-
     public void setNumColumns(int numColumns) {
         mNumColumns = numColumns;
-    }
-
-    public void setFromFragment(int fromFragment) {
-        mFromFragment = fromFragment;
     }
 
     public void setAll(boolean all) {
@@ -44,14 +35,14 @@ public class AppLayoutFragment extends Fragment {
     }
 
     public void setDatas(List<AppLayoutInfo> datas) {
-        if (mDatas != null) {
+        if (mDatas != null && datas != null) {
             mDatas.clear();
             mDatas = datas;
         }
     }
 
     public void setDatas(AppLayoutInfo appLayoutInfo) {
-        if (mDatas != null) {
+        if (mDatas != null && appLayoutInfo != null) {
             mDatas.clear();
             mDatas.add(appLayoutInfo);
         }
@@ -64,9 +55,9 @@ public class AppLayoutFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(View view, Bundle savedInstanceState) {
         mListView = ((CustomListView) view.findViewById(R.id.fragment_app_layout_listview));
-        mAdapter = new AppLayoutAdapter(getActivity(), mNumColumns, mFromFragment, mIsAll);
+        mAdapter = new AppLayoutAdapter(getActivity(), mNumColumns, mIsAll);
         mListView.setAdapter(mAdapter);
 
         mAdapter.addDatas(mDatas);

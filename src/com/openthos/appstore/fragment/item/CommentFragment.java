@@ -1,9 +1,8 @@
 package com.openthos.appstore.fragment.item;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.app.Fragment;
+import android.os.Message;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,11 +13,12 @@ import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.openthos.appstore.MainActivity;
 import com.openthos.appstore.R;
-import com.openthos.appstore.activity.CommentActivity;
 import com.openthos.appstore.adapter.CommentAdapter;
 import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.bean.CommentInfo;
+import com.openthos.appstore.fragment.BaseFragment;
 import com.openthos.appstore.utils.Tools;
 
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CommentFragment extends Fragment implements View.OnClickListener {
+public class CommentFragment extends BaseFragment implements View.OnClickListener {
 
     private ListView mListView;
     private CommentAdapter mAdapter;
@@ -39,16 +39,7 @@ public class CommentFragment extends Fragment implements View.OnClickListener {
     private EditText mContent;
     private LinearLayout mCommentLayout;
     private TextView mTouchComment;
-    private int mFromFragment;
     private List<CommentInfo> mDatas = new ArrayList<>();
-
-    public CommentFragment() {
-        // Required empty public constructor
-    }
-
-    public void setFromFragment(int fromFragment) {
-        mFromFragment = fromFragment;
-    }
 
     public void setAll(boolean isAll) {
         mIsAll = isAll;
@@ -65,7 +56,7 @@ public class CommentFragment extends Fragment implements View.OnClickListener {
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(View view, Bundle savedInstanceState) {
         initView(view);
 
         loadData();
@@ -84,7 +75,7 @@ public class CommentFragment extends Fragment implements View.OnClickListener {
     }
 
     private void loadData() {
-        mAdapter = new CommentAdapter(getActivity(), mIsAll, mFromFragment);
+        mAdapter = new CommentAdapter(getActivity(), mIsAll);
         mListView.setAdapter(mAdapter);
         mAdapter.addDatas(mDatas);
 
@@ -104,7 +95,7 @@ public class CommentFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.fragment_comment_whole:
-                startActivitys();
+                startComment();
                 break;
             case R.id.fragment_comment_submit:
                 submitOperate();
@@ -124,10 +115,10 @@ public class CommentFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    private void startActivitys() {
-        Intent intent = new Intent(getActivity(), CommentActivity.class);
-        intent.putExtra(Constants.FROM_FRAGMENT, mFromFragment);
-        startActivity(intent);
+    private void startComment() {
+        Message message = MainActivity.mHandler.obtainMessage();
+        message.what = Constants.COMMENT_FRAGMENT;
+        MainActivity.mHandler.sendMessage(message);
     }
 
     private void submitOperate() {
@@ -143,12 +134,10 @@ public class CommentFragment extends Fragment implements View.OnClickListener {
         } else {
             float rating = mRatingBar.getRating();
             String contents = mContent.getText().toString();
-            //TODO
-            Tools.toast(getActivity(), rating + "-->" + contents);
             mSubmit.setText(writeComment);
             mCancel.setVisibility(View.GONE);
             mCommentLayout.setVisibility(View.GONE);
-            startActivitys();
+            startComment();
         }
     }
 }

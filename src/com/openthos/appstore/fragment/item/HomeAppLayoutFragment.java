@@ -1,7 +1,7 @@
 package com.openthos.appstore.fragment.item;
 
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +11,7 @@ import com.openthos.appstore.R;
 import com.openthos.appstore.adapter.AppLayoutAdapter;
 import com.openthos.appstore.bean.AppLayoutInfo;
 import com.openthos.appstore.bean.HomeDataInfo;
+import com.openthos.appstore.fragment.BaseFragment;
 import com.openthos.appstore.view.CustomListView;
 
 import org.json.JSONException;
@@ -19,7 +20,7 @@ import org.json.JSONObject;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class HomeAppLayoutFragment extends Fragment {
+public class HomeAppLayoutFragment extends BaseFragment {
 
     private CustomListView mRecGameListView;
     private CustomListView mRecSoftListView;
@@ -28,16 +29,11 @@ public class HomeAppLayoutFragment extends Fragment {
     private CustomListView mWelGameListView;
     private CustomListView mWelSoftListView;
     private int mNumColumns;
-    private int mFromFragment;
     private boolean mIsAll;
 
     private String mRecommend;
     private String mPraise;
     private String mWelcome;
-
-    public HomeAppLayoutFragment() {
-
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -107,9 +103,9 @@ public class HomeAppLayoutFragment extends Fragment {
         AppLayoutInfo gameInfo = dataInfo.getAppLayoutInfo().getAppLayoutGameInfo();
         AppLayoutInfo softwareInfo = dataInfo.getAppLayoutInfo().getAppLayoutSoftwareInfo();
         AppLayoutAdapter gameAdapter = new AppLayoutAdapter(
-                getActivity(), mNumColumns, mFromFragment, mIsAll);
+                getActivity(), mNumColumns, mIsAll);
         AppLayoutAdapter softwareAdapter = new AppLayoutAdapter(
-                getActivity(), mNumColumns, mFromFragment, mIsAll);
+                getActivity(), mNumColumns, mIsAll);
         softwareListView.setAdapter(softwareAdapter);
         softwareAdapter.addItem(softwareInfo);
         gameListView.setAdapter(gameAdapter);
@@ -118,10 +114,6 @@ public class HomeAppLayoutFragment extends Fragment {
 
     public void setNumColumns(int numColumns) {
         mNumColumns = numColumns;
-    }
-
-    public void setFromFragment(int fromFragment) {
-        mFromFragment = fromFragment;
     }
 
     public void setAll(boolean all) {

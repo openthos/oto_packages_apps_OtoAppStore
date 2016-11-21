@@ -44,6 +44,10 @@ public class DownLoader {
     private boolean mOndownload = false;
     private ThreadPoolExecutor mPool;
 
+    private static final int HTTPURL_CONNECT_TIMEOUT = 500;
+    private static final int HTTPURL_READ_TIMEOUT = 1000;
+    private static final int BUFFREAD_BYTE_LENGTH = 512 * 1024;
+
     public DownLoader(Context context, SQLDownLoadInfo sqlFileInfo, ThreadPoolExecutor pool,
                       String userID, boolean isSupportBreakpoint, boolean isNewTask) {
         mIsSupportBreakpoint = isSupportBreakpoint;
@@ -103,14 +107,13 @@ public class DownLoader {
     }
 
     public void destroy() {
+        saveDownloadInfo();//last add
         if (mDownLoadThread != null) {
             mDownLoadThread.stopDownLoad();
             mDownLoadThread = null;
         }
-        mDatakeeper.deleteDownLoadInfo(mUserID, mSQLDownLoadInfo.getTaskID());
-        File downloadFile = new File(TEMP_FILEPATH + "/(" +
-                FileHelper.filterIDChars(mSQLDownLoadInfo.getTaskID()) + ")" +
-                mSQLDownLoadInfo.getFileName());
+//        mDatakeeper.deleteDownLoadInfo(mUserID, mSQLDownLoadInfo.getTaskID());
+        File downloadFile = new File(TEMP_FILEPATH + "/" + mSQLDownLoadInfo.getFileName());
         if (downloadFile.exists()) {
             downloadFile.delete();
         }
@@ -145,8 +148,7 @@ public class DownLoader {
         public void run() {
             while (mDownloadtimes < mMaxdownloadtimes) {
                 try {
-                    if (mDownFileSize == mFileSize
-                            && mFileSize > 0) {
+                    if (mDownFileSize == mFileSize && mFileSize > 0) {
                         mOndownload = false;
                         Message msg = new Message();
                         msg.what = TASK_PROGESS;
@@ -160,17 +162,15 @@ public class DownLoader {
                     urlConn = (HttpURLConnection) url.openConnection();
                     urlConn.setDoOutput(true);
                     urlConn.setDoInput(true);
-                    urlConn.setConnectTimeout(5000);
-//                    urlConn.setReadTimeout(10000);
+                    urlConn.setConnectTimeout(HTTPURL_CONNECT_TIMEOUT);
+                  //  urlConn.setReadTimeout(HTTPURL_READ_TIMEOUT);
                     if (mFileSize < 1) {
                         openConnention();
                     } else {
-                        if (new File(TEMP_FILEPATH + "/(" + FileHelper.filterIDChars(
-                                mSQLDownLoadInfo.getTaskID()) + ")" +
+                        if (new File(TEMP_FILEPATH + "/" +
                                 mSQLDownLoadInfo.getFileName()).exists()) {
-                            localFile = new RandomAccessFile(TEMP_FILEPATH + "/(" +
-                                    FileHelper.filterIDChars(mSQLDownLoadInfo.getTaskID()) +
-                                    ")" + mSQLDownLoadInfo.getFileName(), "rwd");
+                            localFile = new RandomAccessFile(TEMP_FILEPATH + "/" +
+                                    mSQLDownLoadInfo.getFileName(), "rwd");
                             localFile.seek(mDownFileSize);
                             urlConn.setRequestProperty("Range", "bytes=" + mDownFileSize + "-");
                         } else {
@@ -181,7 +181,7 @@ public class DownLoader {
                         }
                     }
                     inputStream = urlConn.getInputStream();
-                    byte[] buffer = new byte[1024];
+                    byte[] buffer = new byte[BUFFREAD_BYTE_LENGTH];
                     int length = -1;
                     while ((length = inputStream.read(buffer)) != -1 && isdownloading) {
                         localFile.write(buffer, 0, length);
@@ -196,17 +196,17 @@ public class DownLoader {
                         boolean renameResult = RenameFile();
                         if (renameResult) {
                             handler.sendEmptyMessage(TASK_SUCCESS);
+                            saveDownloadInfo();
                         } else {
-                            new File(TEMP_FILEPATH + "/("
-                                     + FileHelper.filterIDChars(mSQLDownLoadInfo.getTaskID())
-                                     + ")" + mSQLDownLoadInfo.getFileName()).delete();
+                            new File(TEMP_FILEPATH + "/" +
+                                    mSQLDownLoadInfo.getFileName()).delete();
                             //handler.sendEmptyMessage(TASK_ERROR);
                             Message msg = handler.obtainMessage();
                             msg.what = TASK_ERROR;
                             msg.obj = "filepath error";
                             handler.sendMessage(msg);
                         }
-                        mDatakeeper.deleteDownLoadInfo(mUserID, mSQLDownLoadInfo.getTaskID());
+//                        mDatakeeper.deleteDownLoadInfo(mUserID, mSQLDownLoadInfo.getTaskID());
                         mDownLoadThread = null;
                         mOndownload = false;
                     }
@@ -222,7 +222,7 @@ public class DownLoader {
                                 mPool.remove(mDownLoadThread);
                                 mDownLoadThread = null;
                                 mOndownload = false;
-                              //  handler.sendEmptyMessage(TASK_ERROR);
+                                //  handler.sendEmptyMessage(TASK_ERROR);
                                 Message msg = handler.obtainMessage();
                                 msg.what = TASK_ERROR;
                                 msg.obj = e.toString();
@@ -233,7 +233,7 @@ public class DownLoader {
                             mDownloadtimes = mMaxdownloadtimes;
                             mOndownload = false;
                             mDownLoadThread = null;
-                        //    handler.sendEmptyMessage(TASK_ERROR);
+                            //    handler.sendEmptyMessage(TASK_ERROR);
                             Message msg = handler.obtainMessage();
                             msg.obj = e.toString();
                             msg.what = TASK_ERROR;
@@ -245,14 +245,14 @@ public class DownLoader {
                     }
                     e.printStackTrace();
                 } finally {
-                    //Tools.closeStream(inputStream, localFile);
-                    //try {
-                      //  if (urlConn != null) {
-                        //    urlConn.disconnect();
-                   //     }
-                   // } catch (Exception e) {
-                     //   e.printStackTrace();
-                   // }
+//                    Tools.closeStream(inputStream, localFile);
+//                    try {
+//                      if (urlConn != null) {
+//                        urlConn.disconnect();
+//                         }
+//                     } catch (Exception e) {
+//                       e.printStackTrace();
+//                     }
                 }
             }
         }
@@ -270,8 +270,7 @@ public class DownLoader {
             long urlfilesize = urlConn.getContentLength();
             if (urlfilesize > 0) {
                 isFolderExist();
-                localFile = new RandomAccessFile(TEMP_FILEPATH + "/(" +
-                        FileHelper.filterIDChars(mSQLDownLoadInfo.getTaskID()) + ")" +
+                localFile = new RandomAccessFile(TEMP_FILEPATH + "/" +
                         mSQLDownLoadInfo.getFileName(), "rwd");
                 localFile.setLength(urlfilesize);
                 mSQLDownLoadInfo.setFileSize(urlfilesize);
@@ -396,9 +395,7 @@ public class DownLoader {
         if (newfile.exists()) {
             newfile.delete();
         }
-        File olefile = new File(TEMP_FILEPATH + "/("
-                                + FileHelper.filterIDChars(mSQLDownLoadInfo.getTaskID())
-                                + ")" + mSQLDownLoadInfo.getFileName());
+        File olefile = new File(TEMP_FILEPATH + "/" + mSQLDownLoadInfo.getFileName());
 
         String filepath = mSQLDownLoadInfo.getFilePath();
         filepath = filepath.substring(0, filepath.lastIndexOf("/"));

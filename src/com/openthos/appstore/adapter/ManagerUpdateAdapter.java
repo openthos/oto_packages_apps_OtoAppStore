@@ -5,7 +5,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -18,7 +17,6 @@ import com.openthos.appstore.bean.ManagerInfo;
 import com.openthos.appstore.utils.Tools;
 import com.openthos.appstore.utils.AppUtils;
 import com.openthos.appstore.utils.DialogUtils;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,12 +27,12 @@ import java.util.List;
 public class ManagerUpdateAdapter extends BasicAdapter
         implements View.OnClickListener {
 
-    public ManagerUpdateAdapter(Context context, boolean isAll, int fragment) {
-        super(context, isAll, fragment);
+    public ManagerUpdateAdapter(Context context, boolean isAll) {
+        super(context, isAll);
     }
 
     public void setAppInfo(List<SQLAppInstallInfo> datas) {
-        if (mDatas == null){
+        if (mDatas == null) {
             mDatas = new ArrayList<SQLAppInstallInfo>();
         }
         mDatas.clear();
@@ -80,9 +78,8 @@ public class ManagerUpdateAdapter extends BasicAdapter
             SQLAppInstallInfo SQLAppInstallInfo = (SQLAppInstallInfo) mDatas.get(position);
             holder.appIcon.setImageDrawable(SQLAppInstallInfo.getIcon());
             holder.appName.setText(SQLAppInstallInfo.getName());
-            holder.appVersion.setText(SQLAppInstallInfo.getVersionCode() + "");
+            holder.appVersion.setText(SQLAppInstallInfo.getVersionName());
             holder.appContent.setText(SQLAppInstallInfo.getPackageName());
-            Tools.printLog("IMA", SQLAppInstallInfo.toString());
             holder.appTask.setOnClickListener(this);
             holder.appTask.setTag(position);
             holder.layout.setOnClickListener(this);
@@ -93,17 +90,17 @@ public class ManagerUpdateAdapter extends BasicAdapter
 
     @Override
     public void onClick(View v) {
-        final int position = (int)v.getTag();
-        switch(v.getId()){
+        final int position = (int) v.getTag();
+        switch (v.getId()) {
             case R.id.item_manager_apptask:
-                Tools.toast(mContext,"gengxin");
+                Tools.toast(mContext, "gengxin");
                 break;
             default:
-                new DialogUtils().dialogUpdate(mContext, new DialogUtils.UpdateManager(){
+                new DialogUtils().dialogUpdate(mContext, new DialogUtils.UpdateManager() {
                     @Override
-                    public void uninstall(AlertDialog dialog){
+                    public void uninstall(AlertDialog dialog) {
                         AppUtils.uninstallApk(mContext,
-                                 ((SQLAppInstallInfo) mDatas.get(position)).getPackageName());
+                                ((SQLAppInstallInfo) mDatas.get(position)).getPackageName());
                         dialog.cancel();
                     }
                 });

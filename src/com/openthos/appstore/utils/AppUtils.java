@@ -6,9 +6,13 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.graphics.drawable.Drawable;
+
+import com.openthos.appstore.R;
 import com.openthos.appstore.bean.SQLAppInstallInfo;
+
 import android.content.Intent;
 import android.net.Uri;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -96,21 +100,28 @@ public class AppUtils {
         return datas;
     }
 
-    public static boolean installApk(Context mContext, String saveFileName) {
+    public static String installApk(Context mContext, String saveFileName) {
         File apkfile = new File(saveFileName);
         if (!apkfile.exists()) {
-            return false;
+            return mContext.getString(R.string.this_file_is_not_exist);
         }
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setDataAndType(Uri.parse("file://" + apkfile.toString()),
                 "application/vnd.android.package-archive");
         mContext.startActivity(i);
-        return true;
+        return "";
     }
 
     public static void uninstallApk(Context context, String packageName) {
         Uri uri = Uri.parse("package:" + packageName);
         Intent intent = new Intent(Intent.ACTION_DELETE, uri);
         context.startActivity(intent);
+    }
+
+    public static String getAppName(String downloadUrl) {
+        if (downloadUrl == null) {
+            return " ";
+        }
+        return downloadUrl.substring(downloadUrl.lastIndexOf("/") + 1, downloadUrl.length());
     }
 }

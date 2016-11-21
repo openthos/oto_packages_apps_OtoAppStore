@@ -1,5 +1,8 @@
 package com.openthos.appstore.bean;
 
+import com.openthos.appstore.MainActivity;
+import com.openthos.appstore.app.Constants;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -12,13 +15,12 @@ public class AppLayoutGridviewInfo implements Serializable {
     private long id;
     private String iconUrl;
     private String name;
-    private String type;
-    private int state;
     private String appPackageName;
-    private String appUrl;
-    private String download;
+    private String downloadUrl;
     private long size;
-    private String version;
+    private String versionName;
+    private int state;
+    private String type;
 
     public AppLayoutGridviewInfo(long id, String iconUrl, String name,
                                  String type, int state) {
@@ -35,8 +37,9 @@ public class AppLayoutGridviewInfo implements Serializable {
         this.iconUrl = obj.getString("icon");
         this.name = obj.getString("name");
         this.appPackageName = obj.getString("packagename");
-        this.version = obj.getString("version");
-        this.download = obj.getString("download");
+        this.versionName = obj.getString("version");
+        this.downloadUrl = obj.getString("download");
+        this.state = setState();
     }
 
     public long getId() {
@@ -63,22 +66,6 @@ public class AppLayoutGridviewInfo implements Serializable {
         this.name = name;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public int getState() {
-        return state;
-    }
-
-    public void setState(int state) {
-        this.state = state;
-    }
-
     public String getAppPackageName() {
         return appPackageName;
     }
@@ -87,20 +74,12 @@ public class AppLayoutGridviewInfo implements Serializable {
         this.appPackageName = appPackageName;
     }
 
-    public String getAppUrl() {
-        return appUrl;
+    public String getDownloadUrl() {
+        return downloadUrl;
     }
 
-    public void setAppUrl(String appUrl) {
-        this.appUrl = appUrl;
-    }
-
-    public String getDownload() {
-        return download;
-    }
-
-    public void setDownload(String download) {
-        this.download = download;
+    public void setDownloadUrl(String downloadUrl) {
+        this.downloadUrl = downloadUrl;
     }
 
     public long getSize() {
@@ -111,23 +90,40 @@ public class AppLayoutGridviewInfo implements Serializable {
         this.size = size;
     }
 
-    public String getVersion() {
-        return version;
+    public String getVersionName() {
+        return versionName;
     }
 
-    public void setVersion(String version) {
-        this.version = version;
+    public void setVersionName(String versionName) {
+        this.versionName = versionName;
     }
 
-    @Override
-    public String toString() {
-        return "AppLayoutGridviewInfo{" +
-                "download='" + download + '\'' +
-                ", size=" + size +
-                ", version='" + version + '\'' +
-                ", appPackageName='" + appPackageName + '\'' +
-                ", name='" + name + '\'' +
-                ", id=" + id +
-                '}';
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    private int setState() {
+        for (SQLAppInstallInfo sqlAppInstallInfo : MainActivity.mAppPackageInfo) {
+            if (appPackageName.equals(sqlAppInstallInfo.getPackageName())) {
+                if (versionName.equals(sqlAppInstallInfo.getVersionName())) {
+                    return Constants.APP_HAVE_INSTALLED;
+                } else {
+                    return Constants.APP_NEED_UPDATE;
+                }
+            }
+        }
+        return Constants.APP_NOT_INSTALL;
     }
 }

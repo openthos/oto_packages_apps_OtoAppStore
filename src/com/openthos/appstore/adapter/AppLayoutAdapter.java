@@ -1,15 +1,15 @@
 package com.openthos.appstore.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.openthos.appstore.MainActivity;
 import com.openthos.appstore.R;
-import com.openthos.appstore.activity.MoreActivity;
 import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.bean.AppLayoutInfo;
 import com.openthos.appstore.view.CustomGridView;
@@ -23,8 +23,8 @@ import java.util.List;
 public class AppLayoutAdapter extends BasicAdapter implements View.OnClickListener {
     private int mNumColumns;
 
-    public AppLayoutAdapter(Context context, int numColumns, int fromFragment, boolean isAll) {
-        super(context, isAll, fromFragment);
+    public AppLayoutAdapter(Context context, int numColumns, boolean isAll) {
+        super(context, isAll);
         mDatas = new ArrayList<AppLayoutInfo>();
         if (numColumns != 0) {
             mNumColumns = numColumns;
@@ -42,7 +42,7 @@ public class AppLayoutAdapter extends BasicAdapter implements View.OnClickListen
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
             convertView = LayoutInflater.from(mContext).inflate(
-                                                    R.layout.app_layout, parent, false);
+                    R.layout.app_layout, parent, false);
         }
         ViewHolder holder = (ViewHolder) convertView.getTag();
         if (holder == null) {
@@ -54,7 +54,7 @@ public class AppLayoutAdapter extends BasicAdapter implements View.OnClickListen
             AppLayoutInfo appLayoutInfo = (AppLayoutInfo) mDatas.get(position);
             holder.name.setText(appLayoutInfo.getType());
             AppLayoutGridviewAdapter appLayoutGridviewAdapter =
-                    new AppLayoutGridviewAdapter(mContext, mFromFragment, mIsAll);
+                    new AppLayoutGridviewAdapter(mContext, mIsAll);
             holder.gridView.setAdapter(appLayoutGridviewAdapter);
             appLayoutGridviewAdapter.addDatas(appLayoutInfo.getAppLayoutGridviewList());
 
@@ -74,13 +74,13 @@ public class AppLayoutAdapter extends BasicAdapter implements View.OnClickListen
     @Override
     public void onClick(View v) {
         int tag = (int) v.getTag();
-        Intent intent = new Intent(mContext, MoreActivity.class);
-        intent.putExtra(Constants.FROM_FRAGMENT, mFromFragment);
         AppLayoutInfo appLayoutInfo = (AppLayoutInfo) mDatas.get(tag);
         Bundle bundle = new Bundle();
         bundle.putSerializable(Constants.APP_LAYOUT_INFO, appLayoutInfo);
-        intent.putExtra(Constants.BUNDLE, bundle);
-        mContext.startActivity(intent);
+        Message message = MainActivity.mHandler.obtainMessage();
+        message.what = Constants.MORE_FRAGMENT;
+        message.setData(bundle);
+        MainActivity.mHandler.sendMessage(message);
     }
 
     class ViewHolder {

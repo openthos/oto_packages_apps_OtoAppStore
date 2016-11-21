@@ -4,13 +4,11 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.openthos.appstore.R;
 import com.openthos.appstore.bean.AppTypeListviewInfo;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,9 +16,8 @@ import java.util.List;
  */
 public class AppTypeListviewAdapter extends BasicAdapter {
 
-    public AppTypeListviewAdapter(Context context,int fromFragment) {
-        super(context,fromFragment);
-        mDatas = new ArrayList<>();
+    public AppTypeListviewAdapter(Context context) {
+        super(context);
     }
 
     @Override

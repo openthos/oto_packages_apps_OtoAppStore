@@ -20,7 +20,7 @@ public class Constants {
     public static final String BASEURL = "http://dev.openthos.org/openthos/appstore";
     public static String USER_ID = "admin";
     public static String BASE_FILEPATH = Environment.getExternalStorageDirectory().
-                                                 toString() + "/OASDownloads";
+            toString() + "/OASDownloads";
     public static String DOWNFILEPATH = BASE_FILEPATH + "/" + USER_ID + "/FILETEMP";
     public static String TEMP_FILEPATH = BASE_FILEPATH + "/" + USER_ID + "/TEMPDir";
     public static final String[] WRONG_CHARS = {
@@ -30,13 +30,17 @@ public class Constants {
     public static final String BUNDLE = "bundle";
     public static final String APP_LAYOUT_INFO = "applayoutinfo";
 
-
     public static final int HOME_FRAGMENT = 0;
     public static final int SOFTWARE_FRAGMENT = 1;
     public static final int GAME_FRAGMENT = 2;
     public static final int MANAGER_FRAGMENT = 3;
     public static final int APP_LAYOUT_FRAGMENT = 4;
     public static final int APP_TYPE_FRAGMENT = 5;
+    public static final int DETAIL_FRAGMENT = 6;
+    public static final int MORE_FRAGMENT = 7;
+    public static final int COMMENT_FRAGMENT = 8;
+    public static final int SEARCH_FRAGMENT = 9;
+
 
     public static final int MANAGER_UPDATE = 11;
     public static final int MANAGER_DOWNLOAD = 12;
@@ -50,10 +54,11 @@ public class Constants {
     public static final int DRAWABLE_SIZE = 20;
     public static final int HEIGHT_MASK = 0x3fffffff;
 
-    public static final int INSTALL_BUTTON_NOT_INSTALL = 0;
-    public static final int INSTALL_BUTTON_HAVE_INSTALLED = 1;
-    public static final int INSTALL_BUTTON_CONTINUE = 2;
-    public static final int INSTALL_BUTTON_PAUSE = 3;
+    public static final int APP_NOT_INSTALL = 0;
+    public static final int APP_HAVE_INSTALLED = 1;
+    public static final int APP_DOWNLOAD_CONTINUE = 2;
+    public static final int APP_DOWNLOAD_PAUSE = 3;
+    public static final int APP_NEED_UPDATE = 4;
 
     public static final int DELAY_TIME_2 = 2000;
     public static final int DELAY_TIME_3 = 3000;
@@ -113,10 +118,6 @@ public class Constants {
         return data;
     }
 
-    public static int[] getImages() {
-        return new int[]{R.mipmap.back, R.mipmap.undown, R.mipmap.down};
-    }
-
     public static List<CommentInfo> getComment() {
         CommentInfo commentInfo = new CommentInfo(1, "gdafgasfsdagsag", 48, "asgsd", "2016.10.24");
         List<CommentInfo> data = new ArrayList<>();
@@ -127,20 +128,5 @@ public class Constants {
         data.add(commentInfo);
         data.add(commentInfo);
         return data;
-    }
-
-    public static List<ManagerInfo> getManagerInfo() {
-        ManagerInfo managerInfo = new ManagerInfo(1,
-                                     "http://www.99danji.com/upload/20128/2012081537367909.jpg",
-                                     "afdsf", "12", "fhjaskfh");
-        List<ManagerInfo> datas = new ArrayList<>();
-        datas.add(managerInfo);
-        datas.add(managerInfo);
-        datas.add(managerInfo);
-        datas.add(managerInfo);
-        datas.add(managerInfo);
-        datas.add(managerInfo);
-
-        return datas;
     }
 }

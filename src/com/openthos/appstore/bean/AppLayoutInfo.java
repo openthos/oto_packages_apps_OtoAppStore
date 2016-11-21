@@ -60,7 +60,7 @@ public class AppLayoutInfo implements Serializable {
     }
 
     public void setAppLayoutGridviewList(List<AppLayoutGridviewInfo>
-                                                  appLayoutGridviewInfos) {
+                                                 appLayoutGridviewInfos) {
         this.appLayoutGridviewList = appLayoutGridviewInfos;
     }
 

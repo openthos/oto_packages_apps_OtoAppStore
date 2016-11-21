@@ -1,4 +1,5 @@
-package com.openthos.appstore.fragment;
+package com.openthos.appstore.fragment.item;
+
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,46 +11,49 @@ import android.view.ViewGroup;
 
 import com.openthos.appstore.R;
 import com.openthos.appstore.app.Constants;
-import com.openthos.appstore.fragment.item.AppLayoutFragment;
-import com.openthos.appstore.fragment.item.AppTypeFragment;
+import com.openthos.appstore.bean.AppLayoutInfo;
+import com.openthos.appstore.fragment.BaseFragment;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class SoftwareFragment extends BaseFragment {
+public class MoreFragment extends BaseFragment {
+    private AppLayoutInfo mAppLayoutInfo;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_software, container, false);
+        return inflater.inflate(R.layout.fragment_more, container, false);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        initData(view);
+        initView();
 
         initFragment();
+    }
+
+    public void setData(AppLayoutInfo appLayoutInfo) {
+        mAppLayoutInfo = appLayoutInfo;
+    }
+
+    private void initView() {
+
     }
 
     private void initFragment() {
         FragmentManager manager = getChildFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
+
         AppLayoutFragment appLayoutFragment = new AppLayoutFragment();
         appLayoutFragment.setNumColumns(Constants.GRIDVIEW_NUM_COLUMS);
-        appLayoutFragment.setAll(false);
-        appLayoutFragment.setDatas(Constants.getData());
+        appLayoutFragment.setAll(true);
+        appLayoutFragment.setDatas(mAppLayoutInfo);
 
-        AppTypeFragment appTypeFragment = new AppTypeFragment();
-        appTypeFragment.setDatas(Constants.getDataItemRightInfo());
+        transaction.replace(R.id.fragment_more_left, appLayoutFragment);
 
-        transaction.replace(R.id.fragment_software_left, appLayoutFragment);
-        transaction.replace(R.id.fragment_software_right, appTypeFragment);
         transaction.commit();
-    }
-
-    private void initData(View view) {
-
     }
 }

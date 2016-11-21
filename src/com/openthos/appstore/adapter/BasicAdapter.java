@@ -15,7 +15,6 @@ public class BasicAdapter extends BaseAdapter {
     protected Context mContext;
     protected boolean mIsAll;
     protected List mDatas;
-    protected int mFromFragment;
 
     public BasicAdapter(Context context) {
         mDatas = new ArrayList();
@@ -25,16 +24,6 @@ public class BasicAdapter extends BaseAdapter {
     public BasicAdapter(Context context, boolean isAll) {
         this(context);
         mIsAll = isAll;
-    }
-
-    public BasicAdapter(Context context, int fromFragment) {
-        this(context);
-        mFromFragment = fromFragment;
-    }
-
-    public BasicAdapter(Context context, boolean isAll, int fromFragment) {
-        this(context, isAll);
-        mFromFragment = fromFragment;
     }
 
     @Override

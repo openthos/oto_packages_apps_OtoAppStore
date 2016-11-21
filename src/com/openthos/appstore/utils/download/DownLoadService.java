@@ -14,7 +14,7 @@ public class DownLoadService extends Service {
     }
 
     //public static DownLoadManager getDownLoadManager() {
-    //    return downLoadManager;
+    //    return mDownLoadManager;
     //}
 
     @Override

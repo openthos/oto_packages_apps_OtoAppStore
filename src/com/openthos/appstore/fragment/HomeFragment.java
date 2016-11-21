@@ -3,9 +3,9 @@ package com.openthos.appstore.fragment;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,13 +17,12 @@ import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.fragment.item.HomeAppLayoutFragment;
 import com.openthos.appstore.fragment.item.AppTypeFragment;
 import com.openthos.appstore.utils.NetUtils;
-import com.openthos.appstore.utils.Tools;
 import com.openthos.appstore.view.Kanner;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class HomeFragment extends Fragment {
+public class HomeFragment extends BaseFragment {
 
     private ImageView mBack;
     private ImageView mForward;
@@ -32,10 +31,6 @@ public class HomeFragment extends Fragment {
     private String recommend;
     private String praise;
     private String welcome;
-
-    public HomeFragment() {
-
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -61,14 +56,12 @@ public class HomeFragment extends Fragment {
         FragmentTransaction transaction = manager.beginTransaction();
 
         HomeAppLayoutFragment homeAppLayoutFragment = new HomeAppLayoutFragment();
-        homeAppLayoutFragment.setFromFragment(Constants.HOME_FRAGMENT);
         homeAppLayoutFragment.setAll(false);
         homeAppLayoutFragment.setNumColumns(Constants.GRIDVIEW_NUM_COLUMS);
         homeAppLayoutFragment.setDatas(recommend, praise, welcome);
         transaction.replace(R.id.fragment_home_left, homeAppLayoutFragment);
 
         AppTypeFragment itemRightFragment = new AppTypeFragment();
-        itemRightFragment.setFromFragment(Constants.HOME_FRAGMENT);
         itemRightFragment.setDatas(Constants.getDataItemRightInfo());
 
         transaction.replace(R.id.fragment_home_right, itemRightFragment);

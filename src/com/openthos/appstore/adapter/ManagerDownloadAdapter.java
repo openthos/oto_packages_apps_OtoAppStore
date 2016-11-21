@@ -1,8 +1,6 @@
 package com.openthos.appstore.adapter;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -150,7 +148,7 @@ public class ManagerDownloadAdapter extends BasicAdapter {
 
         @Override
         public void onStop(SQLDownLoadInfo sqlDownLoadInfo, boolean isSupportBreakpoint) {
-            Tools.toast(mContext, "start download");
+
         }
 
         @Override

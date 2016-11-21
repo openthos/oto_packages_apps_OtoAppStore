@@ -1,28 +1,23 @@
 package com.openthos.appstore.adapter;
 
 import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.openthos.appstore.MainActivity;
 import com.openthos.appstore.R;
-import com.openthos.appstore.activity.DetailActivity;
 import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.bean.AppLayoutGridviewInfo;
-import com.openthos.appstore.bean.TaskInfo;
+import com.openthos.appstore.utils.AppUtils;
 import com.openthos.appstore.utils.download.DownLoadManager;
-import com.openthos.appstore.utils.download.DownLoadService;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.openthos.appstore.app.StoreApplication;
 
 /**
  * Created by luojunhuan on 16-10-26.
@@ -30,14 +25,13 @@ import com.openthos.appstore.app.StoreApplication;
 public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnClickListener {
     private DownLoadManager mManager;
 
-    public AppLayoutGridviewAdapter(Context context, int fromFragment, boolean isAll) {
+    public AppLayoutGridviewAdapter(Context context, boolean isAll) {
         super(context, isAll);
-        mFromFragment = fromFragment;
         mDatas = new ArrayList<>();
-        mManager = StoreApplication.getDownLoadManager();
+        mManager = MainActivity.mDownLoadManager;
         if (mManager != null) {
             mManager.changeUser(Constants.USER_ID);
-            mManager.setSupportBreakpoint(false);
+            mManager.setSupportBreakpoint(true);
         }
     }
 
@@ -60,28 +54,31 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
 
         if (mDatas != null && mDatas.size() != 0) {
             AppLayoutGridviewInfo appLayoutGridviewInfo =
-                                      (AppLayoutGridviewInfo) mDatas.get(position);
-            Picasso.with(mContext).load(appLayoutGridviewInfo.getIconUrl()).into(holder.icon);
+                    (AppLayoutGridviewInfo) mDatas.get(position);
             Picasso.with(mContext).load(Constants.BASEURL + "/" +
-                                            appLayoutGridviewInfo.getIconUrl()).into(holder.icon);
+                    appLayoutGridviewInfo.getIconUrl()).into(holder.icon);
             holder.name.setText(appLayoutGridviewInfo.getName());
             holder.type.setText(appLayoutGridviewInfo.getType());
             switch (appLayoutGridviewInfo.getState()) {
-                case Constants.INSTALL_BUTTON_NOT_INSTALL:
+                case Constants.APP_NOT_INSTALL:
                     setContent(holder.install, R.string.not_install,
-                                          R.drawable.shape_button_white_cyan, R.color.button_cyan);
+                            R.drawable.shape_button_white_cyan, R.color.button_cyan);
                     break;
-                case Constants.INSTALL_BUTTON_HAVE_INSTALLED:
+                case Constants.APP_HAVE_INSTALLED:
                     setContent(holder.install, R.string.have_installed,
-                                          R.drawable.shape_button_gray, R.color.button_gray);
+                            R.drawable.shape_button_white_gray, R.color.button_gray);
                     break;
-                case Constants.INSTALL_BUTTON_CONTINUE:
+                case Constants.APP_DOWNLOAD_CONTINUE:
                     setContent(holder.install, R.string.continues,
-                                          R.drawable.shape_button_white_cyan, R.color.button_cyan);
+                            R.drawable.shape_button_white_cyan, R.color.button_cyan);
                     break;
-                case Constants.INSTALL_BUTTON_PAUSE:
-                    setContent(holder.install, R.string.pause, R.drawable.shape_button_white_cyan,
-                                          R.color.button_cyan);
+                case Constants.APP_DOWNLOAD_PAUSE:
+                    setContent(holder.install, R.string.pause,
+                            R.drawable.shape_button_white_cyan, R.color.button_cyan);
+                    break;
+                case Constants.APP_NEED_UPDATE:
+                    setContent(holder.install, R.string.update, R.drawable.shape_button_white_cyan,
+                            R.color.button_cyan);
                     break;
                 default:
                     break;
@@ -119,6 +116,7 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
                 String continues = mContext.getResources().getString(R.string.continues);
                 String pause = mContext.getResources().getString(R.string.pause);
                 String installs = mContext.getResources().getString(R.string.install);
+                String update = mContext.getResources().getString(R.string.update);
                 if (btnStr.equals(continues)) {
                     install.setText(pause);
                     mManager.stopTask(appInfo.getId() + "");
@@ -127,21 +125,17 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
                     mManager.startTask(appInfo.getId() + "");
                 } else if (btnStr.equals(installs)) {
                     install.setText(pause);
-                    mManager.addTask(appInfo.getId() + "", Constants.BASEURL + "/" +appInfo.getDownload(),
-                            appInfo.getName(), null);
-                } else {
-
+                    mManager.addTask(appInfo.getId() + "", Constants.BASEURL + "/" +
+                            appInfo.getDownloadUrl(), AppUtils.getAppName(
+                            appInfo.getDownloadUrl()));
+                } else if (btnStr.equals(update)) {
+                    install.setText(pause);
+                    mManager.startTask(appInfo.getId() + "");
                 }
-
                 break;
 
             default:
-                Toast.makeText(mContext, possition + "", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(mContext, DetailActivity.class);
-                intent.putExtra(Constants.FROM_FRAGMENT, mFromFragment);
-                Bundle bundle = new Bundle();
-                //TODO
-                mContext.startActivity(intent);
+                MainActivity.mHandler.sendEmptyMessage(Constants.DETAIL_FRAGMENT);
                 break;
         }
     }
@@ -166,7 +160,7 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
             mDatas.addAll(datas);
         } else {
             int len = datas == null ? 0 : (datas.size() > Constants.APP_NUM_FALSE
-                                               ? Constants.APP_NUM_FALSE : datas.size());
+                    ? Constants.APP_NUM_FALSE : datas.size());
             for (int i = 0; i < len; i++) {
                 mDatas.add(datas.get(i));
             }

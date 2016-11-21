@@ -1,6 +1,6 @@
 package com.openthos.appstore.utils;
 
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 
 import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.fragment.GameFragment;

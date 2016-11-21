@@ -42,19 +42,20 @@ public class FileHelper {
     }
 
     public static String getFileDefaultPath() {
-        File file = new File(Constants.DOWNFILEPATH);
-        if (!file.exists()) {
-            file.mkdirs();
-        }
+        newDirFile(new File(Constants.DOWNFILEPATH));
         return Constants.DOWNFILEPATH;
     }
 
     public static String getTempDirPath() {
-        File file = new File(Constants.TEMP_FILEPATH);
-        if (!file.exists()) {
-            file.mkdirs();
-        }
+        newDirFile(new File(Constants.TEMP_FILEPATH));
         return Constants.TEMP_FILEPATH;
+    }
+
+    public static String getTempFilePath(String flieName) {
+        if (flieName == null || "".equals(flieName)) {
+            return null;
+        }
+        return getTempDirPath() + "/" + flieName;
     }
 
     public static boolean copyFile(String oldPath, String newPath) {
@@ -104,31 +105,12 @@ public class FileHelper {
         return Constants.USER_ID;
     }
 
-    public static String filterIDChars(String attID) {
-        if (attID != null) {
-            for (int i = 0; i < Constants.WRONG_CHARS.length; i++) {
-                String c = Constants.WRONG_CHARS[i];
-                if (attID.contains(c)) {
-                    attID = attID.replaceAll(c, "");
-                }
-            }
+    public static boolean deleteFile(String fileName) {
+        File file = new File(getTempFilePath(fileName));
+        if (file.exists()) {
+            file.delete();
+            return true;
         }
-        return attID;
-    }
-
-    public static String getFilterFileName(String flieName) {
-        if (flieName == null || "".equals(flieName)) {
-            return flieName;
-        }
-        boolean isNeedFilter = flieName.startsWith("(");
-        int index = flieName.indexOf(")");
-        if (isNeedFilter && index != -1) {
-            int startIndex = index + 1;
-            int endIndex = flieName.length();
-            if (startIndex < endIndex) {
-                return flieName.substring(startIndex, endIndex);
-            }
-        }
-        return flieName;
+        return false;
     }
 }

@@ -128,7 +128,6 @@ public class HomeFragment extends BaseFragment {
                     initFragment(recommend, praise, welcome);
                     break;
             }
-
             return false;
         }
     });

@@ -13,7 +13,6 @@ import com.openthos.appstore.R;
 import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.bean.AppLayoutGridviewInfo;
 import com.openthos.appstore.utils.AppUtils;
-import com.openthos.appstore.utils.download.DownLoadManager;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -23,16 +22,10 @@ import java.util.List;
  * Created by luojunhuan on 16-10-26.
  */
 public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnClickListener {
-    private DownLoadManager mManager;
 
     public AppLayoutGridviewAdapter(Context context, boolean isAll) {
         super(context, isAll);
         mDatas = new ArrayList<>();
-        mManager = MainActivity.mDownLoadManager;
-        if (mManager != null) {
-            mManager.changeUser(Constants.USER_ID);
-            mManager.setSupportBreakpoint(true);
-        }
     }
 
     @Override
@@ -107,7 +100,6 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
     public void onClick(View v) {
         int possition = (int) v.getTag();
         AppLayoutGridviewInfo appInfo = (AppLayoutGridviewInfo) mDatas.get(possition);
-
         switch (v.getId()) {
             case R.id.app_layout_gridview_install:
                 Button install = (Button) v;
@@ -119,18 +111,18 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
                 String update = mContext.getResources().getString(R.string.update);
                 if (btnStr.equals(continues)) {
                     install.setText(pause);
-                    mManager.stopTask(appInfo.getId() + "");
+                    MainActivity.binder.stopTask(appInfo.getId() + "");
                 } else if (btnStr.equals(pause)) {
                     install.setText(continues);
-                    mManager.startTask(appInfo.getId() + "");
+                    MainActivity.binder.startTask(appInfo.getId() + "");
                 } else if (btnStr.equals(installs)) {
                     install.setText(pause);
-                    mManager.addTask(appInfo.getId() + "", Constants.BASEURL + "/" +
+                    MainActivity.binder.addTask(appInfo.getId() + "", Constants.BASEURL + "/" +
                             appInfo.getDownloadUrl(), AppUtils.getAppName(
                             appInfo.getDownloadUrl()));
                 } else if (btnStr.equals(update)) {
                     install.setText(pause);
-                    mManager.startTask(appInfo.getId() + "");
+                    MainActivity.binder.startTask(appInfo.getId() + "");
                 }
                 break;
 

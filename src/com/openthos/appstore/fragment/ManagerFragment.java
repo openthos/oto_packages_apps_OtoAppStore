@@ -21,6 +21,7 @@ import com.openthos.appstore.bean.TaskInfo;
 import com.openthos.appstore.utils.DialogUtils;
 import com.openthos.appstore.utils.AppUtils;
 import com.openthos.appstore.utils.Tools;
+import com.openthos.appstore.utils.download.DownLoadService;
 import com.openthos.appstore.utils.sql.DownloadKeeper;
 import com.openthos.appstore.utils.download.DownLoadManager;
 import com.openthos.appstore.utils.sql.FileHelper;
@@ -60,7 +61,7 @@ public class ManagerFragment extends BaseFragment
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mDownLoadManager = MainActivity.mDownLoadManager;
+        mDownLoadManager = DownLoadService.getDownLoadManager();
 
         initView(view);
 
@@ -79,7 +80,7 @@ public class ManagerFragment extends BaseFragment
         mDownloadAdapter.setAll(false);
         mDownloadlistview.setAdapter(mDownloadAdapter);
         if (mDownLoadManager != null) {
-            mDownloadAdapter.addData(mDownLoadManager.getAllTask(false));
+            mDownloadAdapter.addData(mDownLoadManager.getAllTask());
         }
 
         int mAppPackageSize = MainActivity.mAppPackageInfo.size();
@@ -90,7 +91,7 @@ public class ManagerFragment extends BaseFragment
         }
         mUpdateNum.setText(getNumText(R.string.updates, mAppPackageSize));
 
-        int mDownloadSize = mDownLoadManager.getAllTask(false).size();
+        int mDownloadSize = mDownLoadManager.getAllTask().size();
         if (mDownloadSize > Constants.MANAGER_NUM_FALSE) {
             mLaunchDownload.setVisibility(View.VISIBLE);
         } else {
@@ -140,7 +141,7 @@ public class ManagerFragment extends BaseFragment
                 }
                 break;
             case R.id.fragment_manager_launch2://downloadFold
-                foldOrLaunch(mDownAdapter, mDownLoadManager.getAllTask(false), mLaunchDownload);
+                foldOrLaunch(mDownAdapter, mDownLoadManager.getAllTask(), mLaunchDownload);
                 break;
             default:
                 break;
@@ -149,7 +150,7 @@ public class ManagerFragment extends BaseFragment
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        final TaskInfo taskInfo = mDownLoadManager.getAllTask(false).get(position);
+        final TaskInfo taskInfo = mDownLoadManager.getAllTask().get(position);
         final String fileName = taskInfo.getFileName();
         final String taskID = taskInfo.getTaskID();
         new DialogUtils().dialogDownload(getActivity(), new DialogUtils.DownloadManager() {
@@ -166,7 +167,8 @@ public class ManagerFragment extends BaseFragment
             @Override
             public void removeTask(AlertDialog dialog) {
                 new DownloadKeeper(getActivity()).deleteDownLoadInfo(Constants.USER_ID, taskID);
-                ArrayList<TaskInfo> allTask = mDownLoadManager.getAllTask(true);
+                mDownLoadManager.deleteTask(taskID);
+                ArrayList<TaskInfo> allTask = mDownLoadManager.getAllTask();
                 FileHelper.deleteFile(fileName);
                 mDownloadAdapter.addData(allTask);
                 mDownloadNum.setText(getNumText(R.string.downloads, allTask.size()));
@@ -180,14 +182,14 @@ public class ManagerFragment extends BaseFragment
         String btnStr = btn.getText().toString();
         String startAll = getResources().getString(R.string.startAll);
         String stopAll = getResources().getString(R.string.stopAll);
-        ArrayList<TaskInfo> allTask = mDownLoadManager.getAllTask(true);
+        ArrayList<TaskInfo> allTask = mDownLoadManager.getAllTask();
         if (allTask != null && allTask.size() != 0) {
             if ((startAll).equals(btnStr)) {
                 btn.setText(stopAll);
-                mDownLoadManager.startAllTask();
+                MainActivity.binder.startAllTask();
             } else {
                 btn.setText(startAll);
-                mDownLoadManager.stopAllTask();
+                MainActivity.binder.stopAllTask();
             }
         } else {
             Tools.toast(getActivity(), getResources().getString(R.string.no_task));

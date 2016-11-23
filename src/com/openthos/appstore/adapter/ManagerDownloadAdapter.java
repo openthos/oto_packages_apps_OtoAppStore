@@ -9,6 +9,7 @@ import android.widget.CompoundButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.openthos.appstore.MainActivity;
 import com.openthos.appstore.R;
 import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.bean.SQLDownLoadInfo;
@@ -17,8 +18,8 @@ import com.openthos.appstore.utils.AppUtils;
 import com.openthos.appstore.utils.Tools;
 import com.openthos.appstore.utils.download.DownLoadListener;
 import com.openthos.appstore.utils.download.DownLoadManager;
+import com.openthos.appstore.utils.sql.FileHelper;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,6 +80,7 @@ public class ManagerDownloadAdapter extends BasicAdapter {
             textProgress = (TextView) view.findViewById(R.id.file_size);
             fileProgress = (ProgressBar) view.findViewById(R.id.progressbar);
             downloadIcon = (CheckBox) view.findViewById(R.id.checkbox);
+            downloadIcon.setVisibility(View.GONE);
         }
     }
 
@@ -115,11 +117,11 @@ public class ManagerDownloadAdapter extends BasicAdapter {
             if (isChecked) {
                 // continue download
                 mTaskInfo.setOnDownloading(true);
-                mDownLoadManager.startTask(mTaskInfo.getTaskID());
+                MainActivity.binder.startTask(mTaskInfo.getTaskID());
             } else {
                 //stop download
                 mTaskInfo.setOnDownloading(false);
-                mDownLoadManager.stopTask(mTaskInfo.getTaskID());
+                MainActivity.binder.stopTask(mTaskInfo.getTaskID());
             }
             ManagerDownloadAdapter.this.notifyDataSetChanged();
         }
@@ -173,6 +175,9 @@ public class ManagerDownloadAdapter extends BasicAdapter {
             for (TaskInfo taskInfo : (ArrayList<TaskInfo>) mDatas) {
                 if (taskInfo.getTaskID().equals(sqlDownLoadInfo.getTaskID())) {
                     taskInfo.setOnDownloading(false);
+                    FileHelper.deleteFile(sqlDownLoadInfo.getFileName());
+                    taskInfo.setDownFileSize(0);
+                    taskInfo.setFileSize(0);
                     ManagerDownloadAdapter.this.notifyDataSetChanged();
                     break;
                 }

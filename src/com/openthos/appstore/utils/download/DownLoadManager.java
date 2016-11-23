@@ -210,11 +210,8 @@ public class DownLoadManager {
         return taskIDlist;
     }
 
-    public ArrayList<TaskInfo> getAllTask(boolean refresh) {
+    public ArrayList<TaskInfo> getAllTask() {
         ArrayList<TaskInfo> taskInfolist = new ArrayList<TaskInfo>();
-        if (refresh) {
-            mTaskList = getTaskList(mContext, Constants.USER_ID);
-        }
         for (int i = 0; i < mTaskList.size(); i++) {
             DownLoader deletedownloader = mTaskList.get(i);
             SQLDownLoadInfo sqldownloadinfo = deletedownloader.getSQLDownLoadInfo();
@@ -241,8 +238,7 @@ public class DownLoadManager {
     }
 
     public void stopTask(String taskID) {
-        int listSize = mTaskList.size();
-        for (int i = 0; i < listSize; i++) {
+        for (int i = 0; i < mTaskList.size(); i++) {
             DownLoader deletedownloader = mTaskList.get(i);
             if (deletedownloader.getTaskID().equals(taskID)) {
                 deletedownloader.stop();

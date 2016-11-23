@@ -2,6 +2,7 @@ package com.openthos.appstore.utils.download;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Binder;
 import android.os.IBinder;
 
 public class DownLoadService extends Service {
@@ -9,13 +10,12 @@ public class DownLoadService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO Auto-generated method stub
-        return null;
+        return new AppStoreBinder();
     }
 
-    //public static DownLoadManager getDownLoadManager() {
-    //    return mDownLoadManager;
-    //}
+    public static DownLoadManager getDownLoadManager() {
+        return downLoadManager;
+    }
 
     @Override
     public void onCreate() {
@@ -40,9 +40,28 @@ public class DownLoadService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-	if (downLoadManager == null) {
-            downLoadManager = new DownLoadManager(DownLoadService.this);
-        }
         return super.onStartCommand(intent, flags, startId);
+    }
+
+    public class AppStoreBinder extends Binder {
+        public void stopTask(String taskId) {
+            downLoadManager.stopTask(taskId);
+        }
+
+        public void startTask(String taskId) {
+            downLoadManager.startTask(taskId);
+        }
+
+        public void addTask(String task, String url, String fileName) {
+            downLoadManager.addTask(task, url, fileName);
+        }
+
+        public void startAllTask() {
+            downLoadManager.startAllTask();
+        }
+
+        public void stopAllTask() {
+            downLoadManager.stopAllTask();
+        }
     }
 }

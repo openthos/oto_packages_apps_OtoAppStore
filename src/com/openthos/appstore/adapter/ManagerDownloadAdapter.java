@@ -18,7 +18,7 @@ import com.openthos.appstore.utils.AppUtils;
 import com.openthos.appstore.utils.Tools;
 import com.openthos.appstore.utils.download.DownLoadListener;
 import com.openthos.appstore.utils.download.DownLoadManager;
-import com.openthos.appstore.utils.sql.FileHelper;
+import com.openthos.appstore.utils.FileHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -131,7 +131,7 @@ public class ManagerDownloadAdapter extends BasicAdapter {
 
         @Override
         public void onStart(SQLDownLoadInfo sqlDownLoadInfo) {
-            Tools.toast(mContext, "start download");
+            Tools.toast(mContext, mContext.getString(R.string.start_download));
         }
 
         @Override

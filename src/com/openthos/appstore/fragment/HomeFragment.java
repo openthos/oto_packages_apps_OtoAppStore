@@ -16,8 +16,13 @@ import com.openthos.appstore.R;
 import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.fragment.item.HomeAppLayoutFragment;
 import com.openthos.appstore.fragment.item.AppTypeFragment;
+import com.openthos.appstore.utils.AppUtils;
+import com.openthos.appstore.utils.FileHelper;
 import com.openthos.appstore.utils.NetUtils;
 import com.openthos.appstore.view.Kanner;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -73,6 +78,8 @@ public class HomeFragment extends BaseFragment {
         mKanner = ((Kanner) view.findViewById(R.id.fragment_home_kanner));
         mForward = (ImageView) view.findViewById(R.id.fragment_home_forward);
         mBack = (ImageView) view.findViewById(R.id.fragment_home_back);
+        mBack.setVisibility(View.GONE);
+        mForward.setVisibility(View.GONE);
     }
 
     private void initListener() {
@@ -113,9 +120,20 @@ public class HomeFragment extends BaseFragment {
 
         @Override
         public void run() {
-            recommend = NetUtils.getNetStr(Constants.BASEURL + "/list/recommend");
-            praise = NetUtils.getNetStr(Constants.BASEURL + "/list/praise");
-            welcome = NetUtils.getNetStr(Constants.BASEURL + "/list/welcome");
+            String recommandUrl = Constants.BASEURL + "/list/recommend";
+            String praiseUrl = Constants.BASEURL + "/list/praise";
+            String welcomeUrl = Constants.BASEURL + "/list/welcome";
+            String format = new SimpleDateFormat("yyyyMMdd").
+                    format(new Date(System.currentTimeMillis()));
+            recommend = FileHelper.readFile(AppUtils.getAppName(recommandUrl) + format);
+            praise = FileHelper.readFile(AppUtils.getAppName(praiseUrl)  + format);
+            welcome = FileHelper.readFile(AppUtils.getAppName(welcomeUrl)  + format);
+            if (recommend == null || praise == null || welcome == null) {
+                recommend = NetUtils.getNetStr(recommandUrl);
+                praise = NetUtils.getNetStr(welcomeUrl);
+                welcome = NetUtils.getNetStr(praiseUrl);
+            }
+
             mHandler.sendEmptyMessage(0);
         }
     }

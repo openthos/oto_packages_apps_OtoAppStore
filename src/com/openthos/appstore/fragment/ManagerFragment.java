@@ -16,7 +16,6 @@ import com.openthos.appstore.R;
 import com.openthos.appstore.adapter.ManagerDownloadAdapter;
 import com.openthos.appstore.adapter.ManagerUpdateAdapter;
 import com.openthos.appstore.app.Constants;
-import com.openthos.appstore.bean.SQLAppInstallInfo;
 import com.openthos.appstore.bean.TaskInfo;
 import com.openthos.appstore.utils.DialogUtils;
 import com.openthos.appstore.utils.AppUtils;
@@ -24,7 +23,7 @@ import com.openthos.appstore.utils.Tools;
 import com.openthos.appstore.utils.download.DownLoadService;
 import com.openthos.appstore.utils.sql.DownloadKeeper;
 import com.openthos.appstore.utils.download.DownLoadManager;
-import com.openthos.appstore.utils.sql.FileHelper;
+import com.openthos.appstore.utils.FileHelper;
 import com.openthos.appstore.view.CustomListView;
 
 import java.util.List;

@@ -18,7 +18,7 @@ public class Tools {
      * @param content
      */
     public static void printLog(String TAG, String content) {
-        Log.i(TAG, content);
+        Log.e(TAG, content);
     }
 
     private static Toast mToast;

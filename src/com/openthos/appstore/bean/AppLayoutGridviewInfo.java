@@ -7,6 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  * Created by luojunhuan on 16-10-26.
@@ -124,6 +125,11 @@ public class AppLayoutGridviewInfo implements Serializable {
                 }
             }
         }
-        return Constants.APP_NOT_INSTALL;
+        Map<String, Integer> downloadStateMap = MainActivity.mDownloadStateMap;
+        if (downloadStateMap.containsKey(id + "")) {
+            return downloadStateMap.get(id + "");
+        } else {
+            return Constants.APP_NOT_INSTALL;
+        }
     }
 }

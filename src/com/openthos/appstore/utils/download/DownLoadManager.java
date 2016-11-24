@@ -3,11 +3,12 @@ package com.openthos.appstore.utils.download;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.openthos.appstore.MainActivity;
 import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.bean.SQLDownLoadInfo;
 import com.openthos.appstore.bean.TaskInfo;
 import com.openthos.appstore.utils.sql.DownloadKeeper;
-import com.openthos.appstore.utils.sql.FileHelper;
+import com.openthos.appstore.utils.FileHelper;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -44,12 +45,14 @@ public class DownLoadManager {
 
         mDownloadsuccessListener = new DownLoader.DownLoadSuccess() {
             @Override
-            public void onTaskSeccess(String TaskID) {
+            public void onTaskSeccess(String taskID) {
                 int taskSize = mTaskList.size();
                 for (int i = 0; i < taskSize; i++) {
                     DownLoader deletedownloader = mTaskList.get(i);
-                    if (deletedownloader.getTaskID().equals(TaskID)) {
+                    if (deletedownloader.getTaskID().equals(taskID)) {
                         //                    mTaskList.remove(deletedownloader);
+                        MainActivity.mDownloadStateMap.put(
+                                taskID, Constants.APP_DOWNLOAD_FINISHED);
                         return;
                     }
                 }

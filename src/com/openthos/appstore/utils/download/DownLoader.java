@@ -4,10 +4,13 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 
+import com.openthos.appstore.MainActivity;
+import com.openthos.appstore.R;
+import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.bean.SQLDownLoadInfo;
-import com.openthos.appstore.utils.Tools;
+import com.openthos.appstore.utils.SDCardUtils;
 import com.openthos.appstore.utils.sql.DownloadKeeper;
-import com.openthos.appstore.utils.sql.FileHelper;
+import com.openthos.appstore.utils.FileHelper;
 
 import java.io.File;
 import java.io.InputStream;
@@ -29,9 +32,8 @@ public class DownLoader {
     private final String TEMP_FILEPATH = FileHelper.getTempDirPath();
 
     private boolean mIsSupportBreakpoint = false;
-
+    private Context mContext;
     private String mUserID;
-
     private DownloadKeeper mDatakeeper;
     private HashMap<String, DownLoadListener> mListenerMap;
     private DownLoadSuccess mDownLoadSuccess;
@@ -40,16 +42,17 @@ public class DownLoader {
     private long mFileSize = 0;
     private long mDownFileSize = 0;
     private int mDownloadtimes = 0;
-    private int mMaxdownloadtimes = 3;
+    private int mMaxdownloadtimes = 1;
     private boolean mOndownload = false;
     private ThreadPoolExecutor mPool;
 
-    private static final int HTTPURL_CONNECT_TIMEOUT = 500;
-    private static final int HTTPURL_READ_TIMEOUT = 1000;
+    private static final int HTTPURL_CONNECT_TIMEOUT = 5 * 1000;
+    private static final int HTTPURL_READ_TIMEOUT = 5 * 1000;
     private static final int BUFFREAD_BYTE_LENGTH = 512 * 1024;
 
     public DownLoader(Context context, SQLDownLoadInfo sqlFileInfo, ThreadPoolExecutor pool,
                       String userID, boolean isSupportBreakpoint, boolean isNewTask) {
+        mContext = context;
         mIsSupportBreakpoint = isSupportBreakpoint;
         mPool = pool;
         mUserID = userID;
@@ -163,9 +166,11 @@ public class DownLoader {
                     urlConn.setDoOutput(true);
                     urlConn.setDoInput(true);
                     urlConn.setConnectTimeout(HTTPURL_CONNECT_TIMEOUT);
-                  //  urlConn.setReadTimeout(HTTPURL_READ_TIMEOUT);
+                    urlConn.setReadTimeout(HTTPURL_READ_TIMEOUT);
                     if (mFileSize < 1) {
-                        openConnention();
+                        if (!openConnention()) {
+                            return;
+                        }
                     } else {
                         if (new File(TEMP_FILEPATH + "/" +
                                 mSQLDownLoadInfo.getFileName()).exists()) {
@@ -177,7 +182,9 @@ public class DownLoader {
                             mFileSize = 0;
                             mDownFileSize = 0;
                             saveDownloadInfo();
-                            openConnention();
+                            if (!openConnention()) {
+                                return;
+                            }
                         }
                     }
                     inputStream = urlConn.getInputStream();
@@ -203,7 +210,7 @@ public class DownLoader {
                             //handler.sendEmptyMessage(TASK_ERROR);
                             Message msg = handler.obtainMessage();
                             msg.what = TASK_ERROR;
-                            msg.obj = "filepath error";
+                            msg.obj = mContext.getString(R.string.remove_file_error);
                             handler.sendMessage(msg);
                         }
 //                        mDatakeeper.deleteDownLoadInfo(mUserID, mSQLDownLoadInfo.getTaskID());
@@ -247,12 +254,12 @@ public class DownLoader {
                 } finally {
 //                    Tools.closeStream(inputStream, localFile);
 //                    try {
-//                      if (urlConn != null) {
-//                        urlConn.disconnect();
-//                         }
-//                     } catch (Exception e) {
-//                       e.printStackTrace();
-//                     }
+//                        if (urlConn != null) {
+//                            urlConn.disconnect();
+//                        }
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
                 }
             }
         }
@@ -266,38 +273,33 @@ public class DownLoader {
             handler.sendEmptyMessage(TASK_STOP);
         }
 
-        private void openConnention() throws Exception {
+        private boolean openConnention() throws Exception {
             long urlfilesize = urlConn.getContentLength();
+            if (urlConn.getContentLength() > SDCardUtils.getFreeBytes(TEMP_FILEPATH)) {
+                Message message = MainActivity.mHandler.obtainMessage();
+                message.what = Constants.TOAST;
+                message.obj = mContext.getString(R.string.no_space_avilable);
+                MainActivity.mHandler.sendMessage(message);
+                return false;
+            }
             if (urlfilesize > 0) {
-                isFolderExist();
-                localFile = new RandomAccessFile(TEMP_FILEPATH + "/" +
-                        mSQLDownLoadInfo.getFileName(), "rwd");
-                localFile.setLength(urlfilesize);
-                mSQLDownLoadInfo.setFileSize(urlfilesize);
-                mFileSize = urlfilesize;
-                if (isdownloading) {
-                    saveDownloadInfo();
+                FileHelper.creatDirFile(TEMP_FILEPATH);
+                String fileName = TEMP_FILEPATH + "/" + mSQLDownLoadInfo.getFileName();
+                if (FileHelper.creatFile(fileName)) {
+                    localFile = new RandomAccessFile(fileName, "rwd");
+                    localFile.setLength(urlfilesize);
+                    mSQLDownLoadInfo.setFileSize(urlfilesize);
+                    mFileSize = urlfilesize;
+                    if (isdownloading) {
+                        saveDownloadInfo();
+                    }
+                    return true;
+                } else {
+                    return false;
                 }
             }
+            return true;
         }
-    }
-
-    private boolean isFolderExist() {
-        boolean result = false;
-        try {
-            String filepath = TEMP_FILEPATH;
-            File file = new File(filepath);
-            if (!file.exists()) {
-                if (file.mkdirs()) {
-                    result = true;
-                }
-            } else {
-                result = true;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return result;
     }
 
     private void saveDownloadInfo() {

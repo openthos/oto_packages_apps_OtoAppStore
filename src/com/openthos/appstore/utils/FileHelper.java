@@ -1,28 +1,50 @@
-package com.openthos.appstore.utils.sql;
+package com.openthos.appstore.utils;
 
+import android.os.Message;
+import android.text.TextUtils;
+
+import com.openthos.appstore.MainActivity;
+import com.openthos.appstore.R;
 import com.openthos.appstore.app.Constants;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.List;
 
 public class FileHelper {
-    public void newFile(File f) {
-        if (!f.exists()) {
-            try {
-                f.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+    private static File getFile(String filePath) {
+        return new File(filePath);
     }
 
-    public static void newDirFile(File f) {
-        if (!f.exists()) {
-            f.mkdirs();
+    public static boolean creatFile(String filePath) {
+        String dirpath = filePath.substring(0, filePath.lastIndexOf("/"));
+        if (dirpath != null) {
+            creatDirFile(dirpath);
+            if (!getFile(filePath).exists()) {
+                try {
+                    getFile(filePath).createNewFile();
+                    return true;
+                } catch (IOException e) {
+                    Tools.printLog("FH", "FH " + filePath + " " + e.toString());
+                    return false;
+                }
+            }
+        } else {
+            return false;
+        }
+
+        return true;
+    }
+
+    public static void creatDirFile(String dirPath) {
+        if (!getFile(dirPath).exists()) {
+            getFile(dirPath).mkdirs();
         }
     }
 
@@ -42,12 +64,12 @@ public class FileHelper {
     }
 
     public static String getFileDefaultPath() {
-        newDirFile(new File(Constants.DOWNFILEPATH));
+        creatDirFile(Constants.DOWNFILEPATH);
         return Constants.DOWNFILEPATH;
     }
 
     public static String getTempDirPath() {
-        newDirFile(new File(Constants.TEMP_FILEPATH));
+        creatDirFile(Constants.TEMP_FILEPATH);
         return Constants.TEMP_FILEPATH;
     }
 
@@ -113,4 +135,58 @@ public class FileHelper {
         }
         return false;
     }
+
+    public static String readFile(String fileName) {
+        File file = new File(Constants.CACHE_DATA + "/" + fileName);
+        if (!file.exists()) {
+            return null;
+        }
+        StringBuilder buffer = new StringBuilder("");
+        BufferedReader reader = null;
+        try {
+            InputStreamReader is = new InputStreamReader(new FileInputStream(file), "utf-8");
+            reader = new BufferedReader(is);
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                if (!buffer.toString().equals("")) {
+                    buffer.append("\r\n");
+                }
+                buffer.append(line);
+            }
+            return buffer.toString();
+        } catch (IOException e) {
+            return null;
+        } finally {
+            Tools.closeStream(reader);
+        }
+    }
+
+    public static boolean writeFile(String fileName, String content, boolean append) {
+        if (TextUtils.isEmpty(content)) {
+            return false;
+        }
+        FileWriter fileWriter = null;
+        try {
+            if (makeDirs(fileName)) {
+                fileWriter = new FileWriter(Constants.CACHE_DATA + "/" + fileName, append);
+                fileWriter.write(content);
+                fileWriter.flush();
+                return true;
+            }
+        } catch (IOException e) {
+            return false;
+        } finally {
+            Tools.closeStream(fileWriter);
+        }
+        return false;
+    }
+
+    private static boolean makeDirs(String fileName) {
+        if (SDCardUtils.isSDCardEnable()) {
+            creatDirFile(Constants.CACHE_DATA);
+            return creatFile(Constants.CACHE_DATA + "/" + fileName);
+        }
+        return false;
+    }
+
 }

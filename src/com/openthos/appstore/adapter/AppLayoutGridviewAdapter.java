@@ -17,6 +17,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by luojunhuan on 16-10-26.
@@ -73,6 +74,10 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
                     setContent(holder.install, R.string.update, R.drawable.shape_button_white_cyan,
                             R.color.button_cyan);
                     break;
+                case Constants.APP_DOWNLOAD_FINISHED:
+                    setContent(holder.install, R.string.finished,
+                               R.drawable.shape_button_white_cyan, R.color.button_cyan);
+                    break;
                 default:
                     break;
             }
@@ -100,6 +105,7 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
     public void onClick(View v) {
         int possition = (int) v.getTag();
         AppLayoutGridviewInfo appInfo = (AppLayoutGridviewInfo) mDatas.get(possition);
+        Map<String, Integer> downloadStateMap = MainActivity.mDownloadStateMap;
         switch (v.getId()) {
             case R.id.app_layout_gridview_install:
                 Button install = (Button) v;
@@ -109,20 +115,29 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
                 String pause = mContext.getResources().getString(R.string.pause);
                 String installs = mContext.getResources().getString(R.string.install);
                 String update = mContext.getResources().getString(R.string.update);
+                String finished = mContext.getResources().getString(R.string.finished);
+                String appId = appInfo.getId() + "";
                 if (btnStr.equals(continues)) {
                     install.setText(pause);
-                    MainActivity.binder.stopTask(appInfo.getId() + "");
+                    downloadStateMap.put(appId, Constants.APP_DOWNLOAD_PAUSE);
+                    MainActivity.binder.stopTask(appId);
                 } else if (btnStr.equals(pause)) {
                     install.setText(continues);
-                    MainActivity.binder.startTask(appInfo.getId() + "");
+                    downloadStateMap.put(appId, Constants.APP_DOWNLOAD_CONTINUE);
+                    MainActivity.binder.startTask(appId);
                 } else if (btnStr.equals(installs)) {
-                    install.setText(pause);
-                    MainActivity.binder.addTask(appInfo.getId() + "", Constants.BASEURL + "/" +
+                    install.setText(continues);
+                    downloadStateMap.put(appId, Constants.APP_DOWNLOAD_CONTINUE);
+                    MainActivity.binder.addTask(appId, Constants.BASEURL + "/" +
                             appInfo.getDownloadUrl(), AppUtils.getAppName(
                             appInfo.getDownloadUrl()));
                 } else if (btnStr.equals(update)) {
-                    install.setText(pause);
-                    MainActivity.binder.startTask(appInfo.getId() + "");
+                    install.setText(continues);
+                    downloadStateMap.put(appId, Constants.APP_DOWNLOAD_CONTINUE);
+                    MainActivity.binder.startTask(appId);
+                } else if (btnStr.equals(finished)){
+                    install.setText(finished);
+                    MainActivity.mHandler.sendEmptyMessage(Constants.MANAGER_FRAGMENT);
                 }
                 break;
 

@@ -38,12 +38,15 @@ import com.openthos.appstore.utils.Tools;
 import com.openthos.appstore.utils.download.DownLoadService;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends FragmentActivity implements RadioGroup.OnCheckedChangeListener {
     public static Handler mHandler;
     public static List<SQLAppInstallInfo> mAppPackageInfo;
     public static DownLoadService.AppStoreBinder binder;
+    public static Map<String, Integer> mDownloadStateMap;
     private RadioGroup mRadioGroup;
     private FragmentManager mManager;
     private long mTime;
@@ -85,6 +88,7 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
     private void initData() {
         mManager = getSupportFragmentManager();
         mPage = new ArrayList<>();
+        mDownloadStateMap = new HashMap<>();
         initHandler();
         try {
             mAppPackageInfo = AppUtils.getAppPackageInfo(this);
@@ -260,10 +264,15 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
                             ((SearchFragment) fragment).setDatas((String) getData(msg));
                         }
                         break;
+                    case Constants.TOAST:
+                        Tools.toast(MainActivity.this, (String) msg.obj);
+                        break;
                 }
 //                transaction.show(fragment);
-                mPage.add(what);
-                transaction.commit();
+                if (what != Constants.TOAST) {
+                    mPage.add(what);
+                    transaction.commit();
+                }
             }
         };
     }

@@ -6,9 +6,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by luojunhuan on 16-10-31.
@@ -56,6 +59,7 @@ public class NetUtils {
     }
 
     public static String getNetStr(String path) {
+        Tools.printLog("NU", "net " + path);
         InputStream is = null;
         HttpURLConnection conn = null;
         try {
@@ -76,6 +80,9 @@ public class NetUtils {
                 while ((len = is.read(bytes)) != -1) {
                     buffer.append(new String(bytes, 0, len));
                 }
+                String fileName = AppUtils.getAppName(path) + new SimpleDateFormat("yyyyMMdd")
+                        .format(new Date(System.currentTimeMillis()));
+                FileHelper.writeFile(fileName, buffer.toString(), false);
                 return buffer.toString();
             } else {
                 return "fail";
@@ -85,7 +92,7 @@ public class NetUtils {
             return "fail";
         } finally {
             Tools.closeStream(is);
-            if (conn != null){
+            if (conn != null) {
                 conn.disconnect();
             }
         }

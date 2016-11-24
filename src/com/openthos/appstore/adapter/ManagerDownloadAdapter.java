@@ -117,11 +117,11 @@ public class ManagerDownloadAdapter extends BasicAdapter {
             if (isChecked) {
                 // continue download
                 mTaskInfo.setOnDownloading(true);
-                MainActivity.binder.startTask(mTaskInfo.getTaskID());
+                MainActivity.mBinder.startTask(mTaskInfo.getTaskID());
             } else {
                 //stop download
                 mTaskInfo.setOnDownloading(false);
-                MainActivity.binder.stopTask(mTaskInfo.getTaskID());
+                MainActivity.mBinder.stopTask(mTaskInfo.getTaskID());
             }
             ManagerDownloadAdapter.this.notifyDataSetChanged();
         }

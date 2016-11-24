@@ -1,5 +1,9 @@
 package com.openthos.appstore.fragment;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.app.AlertDialog;
 import android.os.Bundle;
@@ -49,6 +53,7 @@ public class ManagerFragment extends BaseFragment
 
     private final int mUpdaAdapter = 0;
     private final int mDownAdapter = 1;
+    private AppInstallReceiver mAppInstallReceiver;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -59,6 +64,8 @@ public class ManagerFragment extends BaseFragment
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        registBroadcast();
 
         mDownLoadManager = DownLoadService.getDownLoadManager();
 
@@ -109,6 +116,12 @@ public class ManagerFragment extends BaseFragment
         return String.format(getResources().getString(text), size);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unregistBroadcast();
+    }
+
     private void initView(View view) {
         mUpdateNum = (TextView) view.findViewById(R.id.fragment_manager_updateNum);
         mDownloadNum = (TextView) view.findViewById(R.id.fragment_manager_downloadNum);
@@ -133,8 +146,8 @@ public class ManagerFragment extends BaseFragment
                 break;
             case R.id.fragment_manager_launch1://updateFold
                 try {
-                    foldOrLaunch(mUpdaAdapter,
-                            AppUtils.getAppPackageInfo(getActivity()), mLaunchUpdate);
+                    MainActivity.mAppPackageInfo = AppUtils.getAppPackageInfo(getActivity());
+                    foldOrLaunch(mUpdaAdapter, MainActivity.mAppPackageInfo, mLaunchUpdate);
                 } catch (PackageManager.NameNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -185,10 +198,10 @@ public class ManagerFragment extends BaseFragment
         if (allTask != null && allTask.size() != 0) {
             if ((startAll).equals(btnStr)) {
                 btn.setText(stopAll);
-                MainActivity.binder.startAllTask();
+                MainActivity.mBinder.startAllTask();
             } else {
                 btn.setText(startAll);
-                MainActivity.binder.stopAllTask();
+                MainActivity.mBinder.stopAllTask();
             }
         } else {
             Tools.toast(getActivity(), getResources().getString(R.string.no_task));
@@ -234,4 +247,42 @@ public class ManagerFragment extends BaseFragment
                 break;
         }
     }
+    public class AppInstallReceiver extends BroadcastReceiver {
+        public AppInstallReceiver() {
+
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Tools.printLog("ARV", "log in" + intent.getAction());
+            switch (intent.getAction()) {
+                case Intent.ACTION_PACKAGE_ADDED:
+                case Intent.ACTION_PACKAGE_REMOVED:
+                case Intent.ACTION_PACKAGE_REPLACED:
+                    try {
+                        MainActivity.mAppPackageInfo = AppUtils.getAppPackageInfo(getActivity());
+                        initData();
+                    } catch (PackageManager.NameNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+            }
+        }
+    }
+
+    private void registBroadcast() {
+        mAppInstallReceiver = new AppInstallReceiver();
+
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
+        intentFilter.addAction(Intent.ACTION_PACKAGE_REPLACED);
+        intentFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+        intentFilter.addDataScheme("package");
+        getActivity().registerReceiver(mAppInstallReceiver, intentFilter);
+    }
+
+    private void unregistBroadcast() {
+        getActivity().unregisterReceiver(mAppInstallReceiver);
+    }
+
 }

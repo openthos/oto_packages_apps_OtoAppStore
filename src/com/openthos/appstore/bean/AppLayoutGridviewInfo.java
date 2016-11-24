@@ -22,6 +22,15 @@ public class AppLayoutGridviewInfo implements Serializable {
     private String versionName;
     private int state;
     private String type;
+    private long downFileSize;
+
+    public long getDownFileSize() {
+        return downFileSize;
+    }
+
+    public void setDownFileSize(long downFileSize) {
+        this.downFileSize = downFileSize;
+    }
 
     public AppLayoutGridviewInfo(long id, String iconUrl, String name,
                                  String type, int state) {
@@ -130,6 +139,14 @@ public class AppLayoutGridviewInfo implements Serializable {
             return downloadStateMap.get(id + "");
         } else {
             return Constants.APP_NOT_INSTALL;
+        }
+    }
+
+    public int getProgress() {
+        if (size == 0) {
+            return 0;
+        } else {
+            return ((int) (100 * downFileSize / size));
         }
     }
 }

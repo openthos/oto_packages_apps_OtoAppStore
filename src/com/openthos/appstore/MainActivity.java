@@ -45,19 +45,17 @@ import java.util.Map;
 public class MainActivity extends FragmentActivity implements RadioGroup.OnCheckedChangeListener {
     public static Handler mHandler;
     public static List<SQLAppInstallInfo> mAppPackageInfo;
-    public static DownLoadService.AppStoreBinder binder;
+    public static DownLoadService.AppStoreBinder mBinder;
     public static Map<String, Integer> mDownloadStateMap;
     private RadioGroup mRadioGroup;
     private FragmentManager mManager;
-    private long mTime;
     private Fragment mCurrentFragment;
     private List<Integer> mPage;
-
     private ServiceConnection conn = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             if (iBinder != null) {
-                binder = (DownLoadService.AppStoreBinder) iBinder;
+                mBinder = (DownLoadService.AppStoreBinder) iBinder;
             }
         }
 

@@ -17,7 +17,8 @@ import java.util.List;
  * Created by luojunhuan on 16-10-25.
  */
 public class Constants {
-    public static final String BASEURL = "http://dev.openthos.org/openthos/appstore";
+//    public static final String BASEURL = "http://dev.openthos.org/openthos/appstore";
+    public static final String BASEURL = "http://192.168.0.180/openthos/appstore";
     public static String USER_ID = "admin";
     public static String BASE_FILEPATH = Environment.getExternalStorageDirectory().
             toString() + "/OASDownloads";

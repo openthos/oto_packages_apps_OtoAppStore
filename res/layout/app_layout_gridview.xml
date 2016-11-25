@@ -44,13 +44,15 @@
             android:layout_height="30dp">
             <Button
                 android:id="@+id/app_layout_gridview_install"
-                android:layout_width="50dp"
+                android:layout_width="wrap_content"
                 android:layout_height="30dp"
                 android:text="@string/install"
                 android:background="@null"
                 android:layout_marginBottom="5dp"
                 android:layout_gravity="left"
                 android:gravity="center"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
                 />
             <ProgressBar
                 android:id="@+id/app_layout_gridview_progressbar"

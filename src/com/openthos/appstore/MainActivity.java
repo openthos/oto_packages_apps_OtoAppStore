@@ -2,9 +2,11 @@ package com.openthos.appstore;
 
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.IBinder;
+import android.os.PersistableBundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -43,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends FragmentActivity implements RadioGroup.OnCheckedChangeListener {
+    private static final String HANDLER_WHAT = "what";
     public static Handler mHandler;
     public static List<SQLAppInstallInfo> mAppPackageInfo;
     public static DownLoadService.AppStoreBinder mBinder;
@@ -51,6 +54,8 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
     private FragmentManager mManager;
     private Fragment mCurrentFragment;
     private List<Integer> mPage;
+    private int mWhat;
+
     private ServiceConnection conn = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -70,6 +75,21 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        if (savedInstanceState != null) {
+            try {
+                mHandler.sendEmptyMessage(savedInstanceState.getInt(HANDLER_WHAT));
+            } catch (Exception e) {
+                initData();
+            }
+        } else {
+            init();
+            mHandler.sendEmptyMessage(Constants.HOME_FRAGMENT);
+        }
+
+//        new DownloadKeeper(this).deleteAllDownLoadInfo();
+    }
+
+    private void init(){
         bindService(new Intent(this, DownLoadService.class), conn, Context.BIND_AUTO_CREATE);
 
         initView();
@@ -77,10 +97,6 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
         initData();
 
         initListener();
-
-        mHandler.sendEmptyMessage(Constants.HOME_FRAGMENT);
-
-//        new DownloadKeeper(this).deleteAllDownLoadInfo();
     }
 
     private void initData() {
@@ -102,7 +118,6 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
         forward.setVisibility(View.GONE);
         search.setVisibility(View.GONE);
         final EditText content = (EditText) findViewById(R.id.activity_title_content);
-        final Intent[] intent = {null};
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -199,43 +214,43 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
 //                if (mCurrentFragment != null) {
 //                    transaction.hide(mCurrentFragment);
 //                }
-                int what = msg.what;
-                Fragment fragment = mManager.findFragmentByTag(what + "");
-                switch (what) {
+                mWhat = msg.what;
+                Fragment fragment = mManager.findFragmentByTag(mWhat + "");
+                switch (mWhat) {
                     case Constants.HOME_FRAGMENT:
                         if (fragment == null) {
                             fragment = new HomeFragment();
-                            addFragment(transaction, fragment, what);
+                            addFragment(transaction, fragment, mWhat);
                         }
                         break;
                     case Constants.SOFTWARE_FRAGMENT:
                         if (fragment == null) {
                             fragment = new SoftwareFragment();
-                            addFragment(transaction, fragment, what);
+                            addFragment(transaction, fragment, mWhat);
                         }
                         break;
                     case Constants.GAME_FRAGMENT:
                         if (fragment == null) {
                             fragment = new GameFragment();
-                            addFragment(transaction, fragment, what);
+                            addFragment(transaction, fragment, mWhat);
                         }
                         break;
                     case Constants.MANAGER_FRAGMENT:
                         if (fragment == null) {
                             fragment = new ManagerFragment();
-                            addFragment(transaction, fragment, what);
+                            addFragment(transaction, fragment, mWhat);
                         }
                         break;
                     case Constants.DETAIL_FRAGMENT:
                         if (fragment == null) {
                             fragment = new DetailFragment();
-                            addFragment(transaction, fragment, what);
+                            addFragment(transaction, fragment, mWhat);
                         }
                         break;
                     case Constants.MORE_FRAGMENT:
                         if (fragment == null) {
                             fragment = new MoreFragment();
-                            addFragment(transaction, fragment, what);
+                            addFragment(transaction, fragment, mWhat);
                         }
 
                         if (getData(msg) != null) {
@@ -245,7 +260,7 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
                     case Constants.COMMENT_FRAGMENT:
                         if (fragment == null) {
                             fragment = new CommentFragment();
-                            addFragment(transaction, fragment, what);
+                            addFragment(transaction, fragment, mWhat);
                         }
 
 //                        if (getData(msg) != null) {
@@ -256,7 +271,7 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
                     case Constants.SEARCH_FRAGMENT:
                         if (fragment == null) {
                             fragment = new SearchFragment();
-                            addFragment(transaction, fragment, what);
+                            addFragment(transaction, fragment, mWhat);
                         }
                         if (getData(msg) != null) {
                             ((SearchFragment) fragment).setDatas((String) getData(msg));
@@ -267,8 +282,8 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
                         break;
                 }
 //                transaction.show(fragment);
-                if (what != Constants.TOAST) {
-                    mPage.add(what);
+                if (mWhat != Constants.TOAST) {
+                    mPage.add(mWhat);
                     transaction.commit();
                 }
             }
@@ -311,5 +326,11 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
         super.onDestroy();
         unbindService(conn);
         stopService(new Intent(this, DownLoadService.class));
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+        outState.putInt(HANDLER_WHAT, mWhat);
     }
 }

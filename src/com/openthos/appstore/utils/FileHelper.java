@@ -77,7 +77,7 @@ public class FileHelper {
         if (flieName == null || "".equals(flieName)) {
             return null;
         }
-        return getTempDirPath() + "/" + flieName;
+        return getFileDefaultPath() + "/" + flieName;
     }
 
     public static boolean copyFile(String oldPath, String newPath) {

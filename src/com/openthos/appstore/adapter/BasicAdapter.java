@@ -5,6 +5,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
+import com.openthos.appstore.R;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,5 +46,13 @@ public class BasicAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         return null;
+    }
+
+    public String getType(String str){
+        if ("software".equals(str)){
+            return mContext.getString(R.string.software);
+        }else {
+            return mContext.getString(R.string.game);
+        }
     }
 }

@@ -25,6 +25,7 @@ LOCAL_STATIC_JAVA_LIBRARIES := android-support-v4
 LOCAL_STATIC_JAVA_LIBRARIES += android-support-v7-appcompat
 LOCAL_STATIC_JAVA_LIBRARIES += design
 LOCAL_STATIC_JAVA_LIBRARIES += picasso
+LOCAL_STATIC_JAVA_LIBRARIES += xUtils
 
 LOCAL_SRC_FILES := $(call all-java-files-under, src) \
     $(call all-renderscript-files-under, src) \
@@ -50,7 +51,8 @@ include $(BUILD_PACKAGE)
 include $(CLEAR_VARS)
 
 LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES := design:libs/android-support-design.jar \
-                                        picasso:libs/picasso-2.5.2.jar
+                                        picasso:libs/picasso-2.5.2.jar\
+                                        xUtils:libs/xUtils-2.6.14.jar
 
 include $(BUILD_MULTI_PREBUILT)
 

@@ -52,7 +52,7 @@ public class AppLayoutAdapter extends BasicAdapter implements View.OnClickListen
 
         if (mDatas != null && mDatas.size() != 0) {
             AppLayoutInfo appLayoutInfo = (AppLayoutInfo) mDatas.get(position);
-            holder.name.setText(appLayoutInfo.getType());
+            holder.name.setText(getType(appLayoutInfo.getType()));
             AppLayoutGridviewAdapter appLayoutGridviewAdapter =
                     new AppLayoutGridviewAdapter(mContext, mIsAll);
             holder.gridView.setAdapter(appLayoutGridviewAdapter);

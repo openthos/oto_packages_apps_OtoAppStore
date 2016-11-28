@@ -164,8 +164,6 @@ public class ManagerDownloadAdapter extends BasicAdapter {
                     break;
                 }
             }
-
-            AppUtils.installApk(mContext, sqlDownLoadInfo.getFilePath());
         }
 
         @Override

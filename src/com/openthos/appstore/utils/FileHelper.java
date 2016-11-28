@@ -1,10 +1,7 @@
 package com.openthos.appstore.utils;
 
-import android.os.Message;
 import android.text.TextUtils;
 
-import com.openthos.appstore.MainActivity;
-import com.openthos.appstore.R;
 import com.openthos.appstore.app.Constants;
 
 import java.io.BufferedReader;
@@ -63,21 +60,37 @@ public class FileHelper {
         return allfilesize;
     }
 
-    public static String getFileDefaultPath() {
+    public static String getDefaultPath() {
         creatDirFile(Constants.DOWNFILEPATH);
         return Constants.DOWNFILEPATH;
     }
 
-    public static String getTempDirPath() {
+    public static String getTempPath() {
         creatDirFile(Constants.TEMP_FILEPATH);
         return Constants.TEMP_FILEPATH;
     }
 
-    public static String getTempFilePath(String flieName) {
+    public static String getCachePath() {
+        creatDirFile(Constants.CACHE_DATA);
+        return Constants.CACHE_DATA;
+    }
+
+    public static String getDefaultFile(String flieName) {
         if (flieName == null || "".equals(flieName)) {
             return null;
         }
-        return getFileDefaultPath() + "/" + flieName;
+        return getDefaultPath() + "/" + flieName;
+    }
+
+    public static String getDefaultFileFromUrl(String url) {
+        return getDefaultFile(getNameFromUrl(url));
+    }
+
+    public static String getNameFromUrl(String downloadUrl) {
+        if (downloadUrl == null) {
+            return null;
+        }
+        return downloadUrl.substring(downloadUrl.lastIndexOf("/") + 1, downloadUrl.length());
     }
 
     public static boolean copyFile(String oldPath, String newPath) {
@@ -119,8 +132,10 @@ public class FileHelper {
 
     public static void setUserID(String newUserID) {
         Constants.USER_ID = newUserID;
-        Constants.DOWNFILEPATH = Constants.BASE_FILEPATH + "/" + Constants.USER_ID + "/FILETEMP";
-        Constants.TEMP_FILEPATH = Constants.BASE_FILEPATH + "/" + Constants.USER_ID + "/TEMPDir";
+    }
+
+    public static void setDefaultPath(String path) {
+        Constants.BASE_FILEPATH = path;
     }
 
     public static String getUserID() {
@@ -128,7 +143,7 @@ public class FileHelper {
     }
 
     public static boolean deleteFile(String fileName) {
-        File file = new File(getTempFilePath(fileName));
+        File file = new File(getDefaultFile(fileName));
         if (file.exists()) {
             file.delete();
             return true;
@@ -167,26 +182,14 @@ public class FileHelper {
         }
         FileWriter fileWriter = null;
         try {
-            if (makeDirs(fileName)) {
-                fileWriter = new FileWriter(Constants.CACHE_DATA + "/" + fileName, append);
-                fileWriter.write(content);
-                fileWriter.flush();
-                return true;
-            }
+            fileWriter = new FileWriter(getCachePath() + "/" + fileName, append);
+            fileWriter.write(content);
+            fileWriter.flush();
+            return true;
         } catch (IOException e) {
             return false;
         } finally {
             Tools.closeStream(fileWriter);
         }
-        return false;
     }
-
-    private static boolean makeDirs(String fileName) {
-        if (SDCardUtils.isSDCardEnable()) {
-            creatDirFile(Constants.CACHE_DATA);
-            return creatFile(Constants.CACHE_DATA + "/" + fileName);
-        }
-        return false;
-    }
-
 }

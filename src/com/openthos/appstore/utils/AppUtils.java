@@ -117,11 +117,4 @@ public class AppUtils {
         Intent intent = new Intent(Intent.ACTION_DELETE, uri);
         context.startActivity(intent);
     }
-
-    public static String getAppName(String downloadUrl) {
-        if (downloadUrl == null) {
-            return " ";
-        }
-        return downloadUrl.substring(downloadUrl.lastIndexOf("/") + 1, downloadUrl.length());
-    }
 }

@@ -85,7 +85,8 @@ public class DownLoadManager {
                 DownLoader sqlDownLoader = new DownLoader(context, sqlDownLoadInfo,
                         mPool, userID, mIsSupportBreakpoint, false);
                 sqlDownLoader.setDownLodSuccesslistener(mDownloadsuccessListener);
-                sqlDownLoader.setDownLoadListener("public", mAlltasklistener);
+                sqlDownLoader.setDownLoadListener(sqlDownLoader.getTaskID(), mAlltasklistener);
+//                sqlDownLoader.setDownLoadListener("public", mAlltasklistener);
                 mTaskList.add(sqlDownLoader);
             }
         }
@@ -116,11 +117,11 @@ public class DownLoadManager {
         return mUserID;
     }
 
-    public String getInstallFilepath(String fileName, String filePath) {
+    public String getInstallFile(String fileName, String filePath) {
         if (filePath != null) {
             return filePath;
         } else {
-            return FileHelper.getFileDefaultPath() + "/" + fileName;
+            return FileHelper.getDefaultFile(fileName);
         }
     }
 
@@ -145,7 +146,7 @@ public class DownLoadManager {
         downloadinfo.setFileName(fileName);
         downloadinfo.setUrl(url);
         if (filepath == null) {
-            String filePath = FileHelper.getFileDefaultPath() + "/" + fileName;
+            String filePath = FileHelper.getDefaultFile(fileName);
             File file = new File(filePath);
             if (file.exists()) {
                 file.delete();
@@ -163,7 +164,8 @@ public class DownLoadManager {
             taskDownLoader.setSupportBreakpoint(false);
         }
         taskDownLoader.start();
-        taskDownLoader.setDownLoadListener("public", mAlltasklistener);
+        taskDownLoader.setDownLoadListener(downloadinfo.getTaskID(), mAlltasklistener);
+//        taskDownLoader.setDownLoadListener("public", mAlltasklistener);
         mTaskList.add(taskDownLoader);
         return 1;
     }
@@ -178,7 +180,7 @@ public class DownLoadManager {
         }
         File file = null;
         if (filepath == null) {
-            file = new File(FileHelper.getFileDefaultPath() + "/" + fileName);
+            file = new File(FileHelper.getDefaultFile(fileName));
             if (file.exists()) {
                 return -1;
             }
@@ -282,7 +284,8 @@ public class DownLoadManager {
         int listSize = mTaskList.size();
         for (int i = 0; i < listSize; i++) {
             DownLoader deletedownloader = mTaskList.get(i);
-            deletedownloader.setDownLoadListener("public", listener);
+            deletedownloader.setDownLoadListener(deletedownloader.getTaskID(), listener);
+//            deletedownloader.setDownLoadListener("public", listener);
         }
     }
 
@@ -297,7 +300,8 @@ public class DownLoadManager {
         int listSize = mTaskList.size();
         for (int i = 0; i < listSize; i++) {
             DownLoader deletedownloader = mTaskList.get(i);
-            deletedownloader.removeDownLoadListener("public");
+            deletedownloader.removeDownLoadListener(deletedownloader.getTaskID());
+//            deletedownloader.removeDownLoadListener("public");
         }
     }
 

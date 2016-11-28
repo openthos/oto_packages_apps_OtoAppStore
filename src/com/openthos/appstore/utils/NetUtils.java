@@ -80,7 +80,7 @@ public class NetUtils {
                 while ((len = is.read(bytes)) != -1) {
                     buffer.append(new String(bytes, 0, len));
                 }
-                String fileName = AppUtils.getAppName(path) + new SimpleDateFormat("yyyyMMdd")
+                String fileName = FileHelper.getNameFromUrl(path) + new SimpleDateFormat("yyyyMMdd")
                         .format(new Date(System.currentTimeMillis()));
                 FileHelper.writeFile(fileName, buffer.toString(), false);
                 return buffer.toString();

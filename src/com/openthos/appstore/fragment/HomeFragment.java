@@ -125,9 +125,9 @@ public class HomeFragment extends BaseFragment {
             String welcomeUrl = Constants.BASEURL + "/list/welcome";
             String format = new SimpleDateFormat("yyyyMMdd").
                     format(new Date(System.currentTimeMillis()));
-            recommend = FileHelper.readFile(AppUtils.getAppName(recommandUrl) + format);
-            praise = FileHelper.readFile(AppUtils.getAppName(praiseUrl)  + format);
-            welcome = FileHelper.readFile(AppUtils.getAppName(welcomeUrl)  + format);
+            recommend = FileHelper.readFile(FileHelper.getNameFromUrl(recommandUrl) + format);
+            praise = FileHelper.readFile(FileHelper.getNameFromUrl(praiseUrl)  + format);
+            welcome = FileHelper.readFile(FileHelper.getNameFromUrl(welcomeUrl)  + format);
             if (recommend == null || praise == null || welcome == null) {
                 recommend = NetUtils.getNetStr(recommandUrl);
                 praise = NetUtils.getNetStr(welcomeUrl);

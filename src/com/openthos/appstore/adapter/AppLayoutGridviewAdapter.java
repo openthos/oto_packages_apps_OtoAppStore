@@ -13,9 +13,7 @@ import com.openthos.appstore.MainActivity;
 import com.openthos.appstore.R;
 import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.bean.AppLayoutGridviewInfo;
-import com.openthos.appstore.bean.SQLDownLoadInfo;
-import com.openthos.appstore.utils.AppUtils;
-import com.openthos.appstore.utils.download.DownLoadListener;
+import com.openthos.appstore.utils.FileHelper;
 import com.openthos.appstore.utils.download.DownLoadManager;
 import com.openthos.appstore.utils.download.DownLoadService;
 import com.squareup.picasso.Picasso;
@@ -34,7 +32,6 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
         super(context, isAll);
         mDatas = new ArrayList<>();
         mDownLoadManager = DownLoadService.getDownLoadManager();
-        mDownLoadManager.setAllTaskListener(new DownLoadManagerListener());
     }
 
     @Override
@@ -61,10 +58,10 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
                     appLayoutGridviewInfo.getIconUrl()).into(holder.icon);
             holder.name.setText(appLayoutGridviewInfo.getName());
             holder.type.setText(appLayoutGridviewInfo.getType());
-            if (appLayoutGridviewInfo.getProgress() > 0){
-                holder.progressBar.setVisibility(View.VISIBLE);
-                holder.progressBar.setProgress(appLayoutGridviewInfo.getProgress());
-            }
+//            if (appLayoutGridviewInfo.getProgress() > 0) {
+//                holder.progressBar.setVisibility(View.VISIBLE);
+//                holder.progressBar.setProgress(appLayoutGridviewInfo.getProgress());
+//            }
             switch (appLayoutGridviewInfo.getState()) {
                 case Constants.APP_NOT_INSTALL:
                     setContent(holder.install, R.string.not_install,
@@ -141,8 +138,8 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
                     install.setText(continues);
                     downloadStateMap.put(appId, Constants.APP_DOWNLOAD_CONTINUE);
                     MainActivity.mBinder.addTask(appId, Constants.BASEURL + "/" +
-                            appInfo.getDownloadUrl(), AppUtils.getAppName(
-                            appInfo.getDownloadUrl()));
+                            appInfo.getDownloadUrl(),
+                            FileHelper.getNameFromUrl(appInfo.getDownloadUrl()));
                 } else if (btnStr.equals(update)) {
                     install.setText(continues);
                     downloadStateMap.put(appId, Constants.APP_DOWNLOAD_CONTINUE);
@@ -172,6 +169,7 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
             type = (TextView) view.findViewById(R.id.app_layout_gridview_type);
             install = (Button) view.findViewById(R.id.app_layout_gridview_install);
             progressBar = (ProgressBar) view.findViewById(R.id.app_layout_gridview_progressbar);
+            progressBar.setVisibility(View.GONE);
         }
     }
 
@@ -187,39 +185,5 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
             }
         }
         notifyDataSetChanged();
-    }
-
-    private class DownLoadManagerListener implements DownLoadListener {
-        @Override
-        public void onStart(SQLDownLoadInfo sqlDownLoadInfo) {
-
-        }
-
-        @Override
-        public void onProgress(SQLDownLoadInfo sqlDownLoadInfo, boolean isSupportBreakpoint) {
-            for (AppLayoutGridviewInfo appLayoutGridviewInfo :
-                    (List<AppLayoutGridviewInfo>) mDatas) {
-                if ((appLayoutGridviewInfo.getId()+"").equals(sqlDownLoadInfo.getTaskID())){
-                    appLayoutGridviewInfo.setDownFileSize(sqlDownLoadInfo.getDownloadSize());
-                    appLayoutGridviewInfo.setSize(sqlDownLoadInfo.getFileSize());
-                    notifyDataSetChanged();
-                }
-            }
-        }
-
-        @Override
-        public void onStop(SQLDownLoadInfo sqlDownLoadInfo, boolean isSupportBreakpoint) {
-
-        }
-
-        @Override
-        public void onError(SQLDownLoadInfo sqlDownLoadInfo, String error) {
-
-        }
-
-        @Override
-        public void onSuccess(SQLDownLoadInfo sqlDownLoadInfo) {
-
-        }
     }
 }

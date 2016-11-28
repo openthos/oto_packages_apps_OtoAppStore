@@ -28,6 +28,14 @@ public class BasicAdapter extends BaseAdapter {
         mIsAll = isAll;
     }
 
+    public String getType(String str) {
+        if ("software".equals(str)) {
+            return mContext.getString(R.string.software);
+        } else {
+            return mContext.getString(R.string.game);
+        }
+    }
+
     @Override
     public int getCount() {
         return mDatas == null ? 0 : mDatas.size();
@@ -46,13 +54,5 @@ public class BasicAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         return null;
-    }
-
-    public String getType(String str){
-        if ("software".equals(str)){
-            return mContext.getString(R.string.software);
-        }else {
-            return mContext.getString(R.string.game);
-        }
     }
 }

@@ -169,7 +169,7 @@ public class ManagerFragment extends BaseFragment
             @Override
             public void install(AlertDialog dialog) {
                 String result = AppUtils.installApk(getActivity(),
-                        mDownLoadManager.getInstallFilepath(fileName, null));
+                        mDownLoadManager.getInstallFile(fileName, null));
                 if (result != null) {
                     Tools.toast(getActivity(), result);
                 }

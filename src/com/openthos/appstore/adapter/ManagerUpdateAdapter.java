@@ -20,6 +20,9 @@ import com.openthos.appstore.utils.DialogUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import android.net.Uri;
+import android.provider.Settings;
+import android.content.Intent;
 
 /**
  * Created by luojunhuan on 16-11-1.
@@ -96,14 +99,12 @@ public class ManagerUpdateAdapter extends BasicAdapter
                 Tools.toast(mContext, "gengxin");
                 break;
             default:
-                new DialogUtils().dialogUpdate(mContext, new DialogUtils.UpdateManager() {
-                    @Override
-                    public void uninstall(AlertDialog dialog) {
-                        AppUtils.uninstallApk(mContext,
-                                ((SQLAppInstallInfo) mDatas.get(position)).getPackageName());
-                        dialog.cancel();
-                    }
-                });
+
+                String pkgName = ((SQLAppInstallInfo) mDatas.get(position)).getPackageName();
+                Uri uri = Uri.parse("package:" + pkgName);
+                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, uri);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                mContext.startActivity(intent);
                 break;
         }
     }

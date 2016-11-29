@@ -133,10 +133,10 @@ public class DownLoadManager {
         if (TaskID == null) {
             TaskID = fileName;
         }
-        int state = getAttachmentState(TaskID, fileName, filepath);
-        if (state != 1) {
-            return state;
-        }
+//        int state = getAttachmentState(TaskID, fileName, filepath);
+//        if (state != 1) {
+//            return state;
+//        }
 
         SQLDownLoadInfo downloadinfo = new SQLDownLoadInfo();
         downloadinfo.setUserID(mUserID);
@@ -166,7 +166,7 @@ public class DownLoadManager {
         taskDownLoader.start();
         taskDownLoader.setDownLoadListener(downloadinfo.getTaskID(), mAlltasklistener);
 //        taskDownLoader.setDownLoadListener("public", mAlltasklistener);
-        mTaskList.add(taskDownLoader);
+        mTaskList.add(0, taskDownLoader);
         return 1;
     }
 

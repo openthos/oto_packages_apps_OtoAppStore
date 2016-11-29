@@ -2,7 +2,6 @@ package com.openthos.appstore;
 
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.IBinder;
@@ -185,23 +184,28 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
         }
     }
 
-
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
+        FragmentTransaction transaction = mManager.beginTransaction();
         switch (checkedId) {
             case R.id.rb_home:
-                mHandler.sendEmptyMessage(Constants.HOME_FRAGMENT);
+//                mHandler.sendEmptyMessage(Constants.HOME_FRAGMENT);
+                addFragment(transaction,new HomeFragment(),Constants.HOME_FRAGMENT);
                 break;
             case R.id.rb_software:
-                mHandler.sendEmptyMessage(Constants.SOFTWARE_FRAGMENT);
+//                mHandler.sendEmptyMessage(Constants.SOFTWARE_FRAGMENT);
+                addFragment(transaction,new SoftwareFragment(),Constants.SOFTWARE_FRAGMENT);
                 break;
             case R.id.rb_game:
-                mHandler.sendEmptyMessage(Constants.GAME_FRAGMENT);
+//                mHandler.sendEmptyMessage(Constants.GAME_FRAGMENT);
+                addFragment(transaction,new GameFragment(),Constants.GAME_FRAGMENT);
                 break;
             case R.id.rb_manager:
-                mHandler.sendEmptyMessage(Constants.MANAGER_FRAGMENT);
+//                mHandler.sendEmptyMessage(Constants.MANAGER_FRAGMENT);
+                addFragment(transaction,new ManagerFragment(),Constants.MANAGER_FRAGMENT);
                 break;
         }
+        transaction.commit();
     }
 
     private void initHandler() {

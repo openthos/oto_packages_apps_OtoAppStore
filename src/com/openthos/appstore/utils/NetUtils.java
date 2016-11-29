@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import com.openthos.appstore.app.Constants;
+
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -80,9 +82,6 @@ public class NetUtils {
                 while ((len = is.read(bytes)) != -1) {
                     buffer.append(new String(bytes, 0, len));
                 }
-                String fileName = FileHelper.getNameFromUrl(path) + new SimpleDateFormat("yyyyMMdd")
-                        .format(new Date(System.currentTimeMillis()));
-                FileHelper.writeFile(fileName, buffer.toString(), false);
                 return buffer.toString();
             } else {
                 return "fail";

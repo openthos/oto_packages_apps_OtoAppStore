@@ -24,10 +24,6 @@ public class GetFragment {
                 return new GameFragment();
             case Constants.MANAGER_FRAGMENT:
                 return new ManagerFragment();
-            case Constants.APP_LAYOUT_FRAGMENT:
-                return new AppLayoutFragment();
-            case Constants.APP_TYPE_FRAGMENT:
-                return new AppTypeFragment();
             default:
                 return null;
         }

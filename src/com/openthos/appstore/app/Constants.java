@@ -19,12 +19,15 @@ import java.util.List;
 public class Constants {
 //    public static final String BASEURL = "http://dev.openthos.org/openthos/appstore";
     public static final String BASEURL = "http://192.168.0.180/openthos/appstore";
+
     public static String USER_ID = "admin";
     public static String BASE_FILEPATH = Environment.getExternalStorageDirectory().
             toString() + "/OASDownloads";
     public static String DOWNFILEPATH = BASE_FILEPATH + "/" + USER_ID + "/FILETEMP";
     public static String TEMP_FILEPATH = BASE_FILEPATH + "/" + USER_ID + "/TEMPDir";
     public static String CACHE_DATA = BASE_FILEPATH + "/" + USER_ID + "/CACHEDATA";
+
+    public static final String SP_CACHE_DATA = "cache";
 
     public static final String APP_LAYOUT_INFO = "applayoutinfo";
 
@@ -82,11 +85,11 @@ public class Constants {
 
     public static List<String> getString() {
         List<String> data = new ArrayList<>();
-        data.add("http://pic38.nipic.com/20140218/10830427_105310632133_2.jpg");
-        data.add("http://pic9.nipic.com/20100906/1295091_134639124058_2.jpg");
-        data.add("http://pic27.nipic.com/20130326/1330653_182644630158_2.jpg");
-        data.add("http://pic38.nipic.com/20140218/10830427_105310632133_2.jpg");
-        data.add("http://img5.hao123.com/data/1_d070d2b49698a7c71809451a25124da7_510");
+        data.add("http://pic22.nipic.com/20120731/8193302_121949417315_2.jpg");
+        data.add("http://tupian.enterdesk.com/2012/1212/gha/fjtu%20%2821%29.jpg");
+        data.add("http://img1.sc115.com/uploads/sc/jpg/HD/2/45.jpg");
+        data.add("http://pic76.nipic.com/file/20150824/21321671_171432499000_2.jpg");
+        data.add("http://img.taopic.com/uploads/allimg/100922/173-100922212H60.jpg");
         return data;
     }
 

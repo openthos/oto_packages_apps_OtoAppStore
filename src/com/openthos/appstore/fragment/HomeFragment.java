@@ -14,15 +14,13 @@ import android.widget.Toast;
 
 import com.openthos.appstore.R;
 import com.openthos.appstore.app.Constants;
+import com.openthos.appstore.app.StoreApplication;
 import com.openthos.appstore.fragment.item.HomeAppLayoutFragment;
 import com.openthos.appstore.fragment.item.AppTypeFragment;
-import com.openthos.appstore.utils.AppUtils;
-import com.openthos.appstore.utils.FileHelper;
 import com.openthos.appstore.utils.NetUtils;
+import com.openthos.appstore.utils.SPUtils;
+import com.openthos.appstore.utils.Tools;
 import com.openthos.appstore.view.Kanner;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -117,21 +115,28 @@ public class HomeFragment extends BaseFragment {
     }
 
     class GetData implements Runnable {
-
         @Override
         public void run() {
             String recommandUrl = Constants.BASEURL + "/list/recommend";
             String praiseUrl = Constants.BASEURL + "/list/praise";
             String welcomeUrl = Constants.BASEURL + "/list/welcome";
-            String format = new SimpleDateFormat("yyyyMMdd").
-                    format(new Date(System.currentTimeMillis()));
-            recommend = FileHelper.readFile(FileHelper.getNameFromUrl(recommandUrl) + format);
-            praise = FileHelper.readFile(FileHelper.getNameFromUrl(praiseUrl)  + format);
-            welcome = FileHelper.readFile(FileHelper.getNameFromUrl(welcomeUrl)  + format);
+
+            recommend = SPUtils.getData(getActivity(),
+                    Constants.SP_CACHE_DATA, "recommend" + StoreApplication.DATE_FORMAT);
+            praise = SPUtils.getData(getActivity(),
+                    Constants.SP_CACHE_DATA, "praise" + StoreApplication.DATE_FORMAT);
+            welcome = SPUtils.getData(getActivity(),
+                    Constants.SP_CACHE_DATA, "welcome" + StoreApplication.DATE_FORMAT);
             if (recommend == null || praise == null || welcome == null) {
                 recommend = NetUtils.getNetStr(recommandUrl);
                 praise = NetUtils.getNetStr(welcomeUrl);
                 welcome = NetUtils.getNetStr(praiseUrl);
+                SPUtils.saveData(getActivity(), Constants.SP_CACHE_DATA,
+                                 "recommend" + StoreApplication.DATE_FORMAT,recommend);
+                SPUtils.saveData(getActivity(), Constants.SP_CACHE_DATA,
+                                 "praise" + StoreApplication.DATE_FORMAT, praise);
+                SPUtils.saveData(getActivity(), Constants.SP_CACHE_DATA,
+                                 "welcome" + StoreApplication.DATE_FORMAT, welcome);
             }
 
             mHandler.sendEmptyMessage(0);

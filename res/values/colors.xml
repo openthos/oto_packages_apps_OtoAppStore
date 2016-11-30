@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="item_title">#4a4a4a</color>
+    <color name="item_type">#9b9b9b</color>
     <color name="right_background">#f4f6f8</color>
     <color name="view_line">#c3cad4</color>
     <color name="button_cyan">#6cc95d</color>

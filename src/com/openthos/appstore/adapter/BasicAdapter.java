@@ -29,10 +29,19 @@ public class BasicAdapter extends BaseAdapter {
     }
 
     public String getType(String str) {
-        if ("software".equals(str)) {
-            return mContext.getString(R.string.software);
+        if (str != null) {
+            switch (str) {
+                case "software":
+                    return mContext.getString(R.string.software);
+                case "game":
+                    return mContext.getString(R.string.game);
+                case "more":
+                    return mContext.getString(R.string.more);
+                default:
+                    return str;
+            }
         } else {
-            return mContext.getString(R.string.game);
+            return "";
         }
     }
 

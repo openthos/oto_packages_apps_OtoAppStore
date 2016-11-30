@@ -17,6 +17,7 @@
         android:layout_height="200dp"
         android:layout_weight="1"
         android:scaleType="fitXY"
+        android:layout_marginLeft="8dp"
         />
 
     <ImageView
@@ -25,5 +26,6 @@
         android:layout_height="200dp"
         android:layout_weight="1"
         android:scaleType="fitXY"
+        android:layout_marginLeft="8dp"
         />
 </LinearLayout>

@@ -51,7 +51,7 @@ public class SoftwareFragment extends BaseFragment {
         FragmentTransaction transaction = manager.beginTransaction();
         AppLayoutFragment appLayoutFragment = new AppLayoutFragment();
         appLayoutFragment.setNumColumns(Constants.GRIDVIEW_NUM_COLUMS);
-        appLayoutFragment.setAll(false);
+        appLayoutFragment.setAll(true);
         appLayoutFragment.setDatas(appLayoutInfo);
 
         AppTypeFragment appTypeFragment = new AppTypeFragment();

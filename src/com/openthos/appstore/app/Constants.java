@@ -28,6 +28,7 @@ public class Constants {
     public static String CACHE_DATA = BASE_FILEPATH + "/" + USER_ID + "/CACHEDATA";
 
     public static final String SP_CACHE_DATA = "cache";
+    public static final String SP_ALL_DATA = "all";
 
     public static final String APP_LAYOUT_INFO = "applayoutinfo";
 
@@ -44,9 +45,9 @@ public class Constants {
     public static final int TOAST = 10;
 
     public static final int COMMENT_NUM_FALSE = 4;
-    public static final int APP_NUM_FALSE = 6;
+    public static final int APP_NUM_FALSE = 8;
     public static final int MANAGER_NUM_FALSE = 3;
-    public static final int GRIDVIEW_NUM_COLUMS = 3;
+    public static final int GRIDVIEW_NUM_COLUMS = 4;
     public static final int DRAWABLE_PADDING = 10;
     public static final int DRAWABLE_SIZE = 20;
     public static final int HEIGHT_MASK = 0x3fffffff;

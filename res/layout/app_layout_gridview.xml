@@ -3,15 +3,15 @@
     android:orientation="horizontal"
     android:id="@+id/app_layout_gridview_layout"
     android:layout_width="match_parent"
-    android:layout_height="100dp"
+    android:layout_height="64dp"
     android:background="@color/white"
     android:descendantFocusability="blocksDescendants"
     >
 
     <ImageView
         android:id="@+id/app_layout_gridview_icon"
-        android:layout_width="90dp"
-        android:layout_height="90dp"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
         android:src="@mipmap/ic_launcher"
         android:layout_gravity="center_vertical"
         android:scaleType="centerCrop"
@@ -27,28 +27,35 @@
         <TextView
             android:id="@+id/app_layout_gridview_name"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:text="@string/name"
             android:gravity="center_vertical"
+            android:textSize="@dimen/first_title_size"
+            android:textColor="@color/black"
+            android:singleLine="true"
             />
 
         <TextView
             android:id="@+id/app_layout_gridview_type"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="wrap_content"
             android:text="@string/type"
             android:gravity="center_vertical"
+            android:textSize="@dimen/three_title_size"
+            android:textColor="@color/item_type"
             />
 
         <FrameLayout
-            android:layout_width="80dp"
-            android:layout_height="30dp">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            >
 
             <Button
                 android:id="@+id/app_layout_gridview_install"
-                android:layout_width="wrap_content"
-                android:layout_height="30dp"
+                android:layout_width="50dp"
+                android:layout_height="20dp"
                 android:text="@string/install"
                 android:background="@null"
                 android:layout_marginBottom="5dp"
@@ -56,6 +63,7 @@
                 android:gravity="center"
                 android:paddingLeft="5dp"
                 android:paddingRight="5dp"
+                android:textSize="@dimen/second_title_size"
                 />
 
             <ProgressBar

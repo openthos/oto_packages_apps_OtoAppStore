@@ -54,7 +54,7 @@ public class GameFragment extends BaseFragment {
 
         AppLayoutFragment appLayoutFragment = new AppLayoutFragment();
         appLayoutFragment.setNumColumns(Constants.GRIDVIEW_NUM_COLUMS);
-        appLayoutFragment.setAll(false);
+        appLayoutFragment.setAll(true);
         appLayoutFragment.setDatas(listAppLayoutInfo);
 
         AppTypeFragment appTypeFragment = new AppTypeFragment();

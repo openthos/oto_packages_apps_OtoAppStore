@@ -152,6 +152,7 @@ public class DownLoader {
                             msg.what = TASK_ERROR;
                             msg.obj = s;
                             handler.sendMessage(msg);
+                            stopDownLoad();
                             saveDownloadInfo();
                         }
 
@@ -175,6 +176,7 @@ public class DownLoader {
         public void stopDownLoad() {
             if (httpHandler != null) {
                 httpHandler.cancel();
+                httpHandler = null;
             }
             handler.sendEmptyMessage(TASK_STOP);
         }

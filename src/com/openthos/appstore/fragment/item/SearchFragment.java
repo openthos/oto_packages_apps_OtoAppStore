@@ -1,26 +1,33 @@
 package com.openthos.appstore.fragment.item;
 
-
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.ImageView;
 
 import com.openthos.appstore.R;
+import com.openthos.appstore.adapter.AppLayoutAdapter;
+import com.openthos.appstore.app.Constants;
+import com.openthos.appstore.bean.AppLayoutGridviewInfo;
+import com.openthos.appstore.bean.AppLayoutInfo;
 import com.openthos.appstore.fragment.BaseFragment;
+import com.openthos.appstore.utils.SPUtils;
 import com.openthos.appstore.view.CustomListView;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class SearchFragment extends BaseFragment {
     private String mContent;
-    private EditText mText;
     private CustomListView mListView;
+    private AppLayoutAdapter mListAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -29,24 +36,39 @@ public class SearchFragment extends BaseFragment {
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         initView(view);
 
         initData();
     }
 
-    private void initData() {
-        if (mContent != null) {
-            mText.setText(mContent);
+    public void initData() {
+        List<String> searchData = SPUtils.getSearchData(getActivity(), mContent);
+        List<AppLayoutGridviewInfo> datas = new ArrayList<>();
+        if (searchData != null) {
+            for (int i = 0; i < searchData.size(); i++) {
+                String data = SPUtils.getData(getActivity(),
+                        Constants.SP_ALL_DATA, searchData.get(i));
+                try {
+                    AppLayoutGridviewInfo gridviewInfo =
+                            new AppLayoutGridviewInfo(new JSONObject(data));
+                    datas.add(gridviewInfo);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
         }
+        AppLayoutInfo appLayoutInfo = new AppLayoutInfo(datas);
+        mListAdapter.addItem(appLayoutInfo);
     }
 
     private void initView(View view) {
-        mText = ((EditText) view.findViewById(R.id.fragment_search_text));
         mListView = ((CustomListView) view.findViewById(R.id.fragment_search_listview));
-        ImageView search = (ImageView) view.findViewById(R.id.activity_title_search);
-//        search.setVisibility(View.GONE);
+        mListAdapter = new AppLayoutAdapter(getActivity(), Constants.GRIDVIEW_NUM_COLUMS, true);
+        mListView.setAdapter(mListAdapter);
+
     }
 
     public void setDatas(String content) {

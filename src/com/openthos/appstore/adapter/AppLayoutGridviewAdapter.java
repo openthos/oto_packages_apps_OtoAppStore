@@ -143,7 +143,9 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
                 } else if (btnStr.equals(update)) {
                     install.setText(continues);
                     downloadStateMap.put(appId, Constants.APP_DOWNLOAD_CONTINUE);
-                    MainActivity.mBinder.startTask(appId);
+                    MainActivity.mBinder.addTask(appId, Constants.BASEURL + "/" +
+                            appInfo.getDownloadUrl(),
+                            FileHelper.getNameFromUrl(appInfo.getDownloadUrl()));
                 } else if (btnStr.equals(finished)) {
                     install.setText(finished);
                     MainActivity.mHandler.sendEmptyMessage(Constants.MANAGER_FRAGMENT);

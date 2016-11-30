@@ -3,40 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/white"
-    >
+    android:orientation="vertical">
 
-    <LinearLayout
+    <com.openthos.appstore.view.CustomListView
+        android:id="@+id/fragment_search_listview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_marginLeft="50dp"
-        android:layout_marginRight="50dp"
-        >
-        <RelativeLayout
-            android:layout_width="200dp"
-            android:layout_height="40dp"
-            android:layout_marginTop="5dp"
-            android:background="@drawable/shape_button_white_cyan"
-            android:layout_gravity="center">
-            <EditText
-                android:id="@+id/fragment_search_text"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:singleLine="true"
-                android:background="@null"
-                android:gravity="center_vertical|left"
-                android:textSize="@dimen/three_title_size"
-                />
-        </RelativeLayout>
+        android:layout_marginTop="15dp" />
 
-        <com.openthos.appstore.view.CustomListView
-            android:id="@+id/fragment_search_listview"
-            android:layout_marginTop="15dp"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-    </LinearLayout>
 </LinearLayout>

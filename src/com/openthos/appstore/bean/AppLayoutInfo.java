@@ -16,15 +16,20 @@ public class AppLayoutInfo implements Serializable {
     private String type;
     private List<AppLayoutGridviewInfo> appLayoutGridviewList;
 
-    public AppLayoutInfo(long id, String type, List<AppLayoutGridviewInfo>
+    public AppLayoutInfo(){
+        appLayoutGridviewList = new ArrayList<>();
+    }
+
+    public AppLayoutInfo(List<AppLayoutGridviewInfo>
             appLayoutGridviewList) {
-        this.id = id;
-        this.type = type;
         this.appLayoutGridviewList = appLayoutGridviewList;
     }
 
-    public AppLayoutInfo() {
+    public AppLayoutInfo(AppLayoutGridviewInfo appLayoutGridviewInfo) {
         appLayoutGridviewList = new ArrayList<>();
+        if (appLayoutGridviewInfo != null) {
+            appLayoutGridviewList.add(appLayoutGridviewInfo);
+        }
     }
 
     public AppLayoutInfo(JSONObject obj) throws JSONException {

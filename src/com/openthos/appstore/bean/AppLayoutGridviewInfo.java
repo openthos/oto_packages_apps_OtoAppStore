@@ -49,7 +49,9 @@ public class AppLayoutGridviewInfo implements Serializable {
         this.appPackageName = obj.getString("packagename");
         this.versionName = obj.getString("version");
         this.downloadUrl = obj.getString("download");
-        this.state = setState();
+        if (MainActivity.mAppPackageInfo != null && MainActivity.mDownloadStateMap != null) {
+            this.state = setState();
+        }
     }
 
     public long getId() {

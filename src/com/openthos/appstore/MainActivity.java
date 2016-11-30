@@ -16,7 +16,9 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -88,7 +90,7 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
 //        new DownloadKeeper(this).deleteAllDownLoadInfo();
     }
 
-    private void init(){
+    private void init() {
         bindService(new Intent(this, DownLoadService.class), conn, Context.BIND_AUTO_CREATE);
 
         initView();
@@ -113,9 +115,8 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
     private void initListener() {
         ImageView back = (ImageView) findViewById(R.id.activity_title_back);
         ImageView forward = (ImageView) findViewById(R.id.activity_title_forward);
-        ImageView search = (ImageView) findViewById(R.id.activity_title_search);
+        final ImageView search = (ImageView) findViewById(R.id.activity_title_search);
         forward.setVisibility(View.GONE);
-        search.setVisibility(View.GONE);
         final EditText content = (EditText) findViewById(R.id.activity_title_content);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -140,16 +141,29 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
                 if (content.getVisibility() == View.GONE) {
                     content.setVisibility(View.VISIBLE);
                 } else {
-                    String contents = content.getText().toString();
-                    if (!TextUtils.isEmpty(contents)) {
-                        Message message = mHandler.obtainMessage();
-                        message.what = Constants.SEARCH_FRAGMENT;
-                        message.obj = contents;
-                        mHandler.sendMessage(message);
-                    } else {
-                        content.setVisibility(View.GONE);
-                        Tools.toast(MainActivity.this, getString(R.string.toast_search));
-                    }
+                    content.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        content.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (!TextUtils.isEmpty(editable.toString())) {
+                    Message message = mHandler.obtainMessage();
+                    message.what = Constants.SEARCH_FRAGMENT;
+                    message.obj = editable.toString();
+                    mHandler.sendMessage(message);
                 }
             }
         });
@@ -190,19 +204,19 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
         switch (checkedId) {
             case R.id.rb_home:
 //                mHandler.sendEmptyMessage(Constants.HOME_FRAGMENT);
-                addFragment(transaction,new HomeFragment(),Constants.HOME_FRAGMENT);
+                addFragment(transaction, new HomeFragment(), Constants.HOME_FRAGMENT);
                 break;
             case R.id.rb_software:
 //                mHandler.sendEmptyMessage(Constants.SOFTWARE_FRAGMENT);
-                addFragment(transaction,new SoftwareFragment(),Constants.SOFTWARE_FRAGMENT);
+                addFragment(transaction, new SoftwareFragment(), Constants.SOFTWARE_FRAGMENT);
                 break;
             case R.id.rb_game:
 //                mHandler.sendEmptyMessage(Constants.GAME_FRAGMENT);
-                addFragment(transaction,new GameFragment(),Constants.GAME_FRAGMENT);
+                addFragment(transaction, new GameFragment(), Constants.GAME_FRAGMENT);
                 break;
             case R.id.rb_manager:
 //                mHandler.sendEmptyMessage(Constants.MANAGER_FRAGMENT);
-                addFragment(transaction,new ManagerFragment(),Constants.MANAGER_FRAGMENT);
+                addFragment(transaction, new ManagerFragment(), Constants.MANAGER_FRAGMENT);
                 break;
         }
         transaction.commit();
@@ -267,16 +281,12 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
                             addFragment(transaction, fragment, mWhat);
                         }
 
-//                        if (getData(msg) != null) {
                         ((CommentFragment) fragment).setDatas(Constants.getComment());
                         ((CommentFragment) fragment).setAll(true);
-//                        }
                         break;
                     case Constants.SEARCH_FRAGMENT:
-                        if (fragment == null) {
-                            fragment = new SearchFragment();
-                            addFragment(transaction, fragment, mWhat);
-                        }
+                        fragment = new SearchFragment();
+                        addFragment(transaction, fragment, mWhat);
                         if (getData(msg) != null) {
                             ((SearchFragment) fragment).setDatas((String) getData(msg));
                         }

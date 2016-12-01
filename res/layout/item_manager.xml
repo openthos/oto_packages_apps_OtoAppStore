@@ -1,7 +1,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:background="@color/white"
+    >
 
     <LinearLayout
         android:id="@+id/item_manager_layout"
@@ -12,8 +14,8 @@
 
         <ImageView
             android:id="@+id/item_manager_appIcon"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
             android:padding="5dp"
             android:scaleType="centerCrop"
             android:src="@mipmap/ic_launcher" />
@@ -42,7 +44,7 @@
                 android:layout_marginTop="10dp"
                 android:text="@string/version"
                 android:textColor="@color/text_gray"
-                android:textSize="@dimen/three_title_size" />
+                android:textSize="@dimen/second_title_size" />
 
             <TextView
                 android:id="@+id/item_manager_appcontent"
@@ -50,7 +52,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/content"
                 android:textColor="@color/text_gray"
-                android:textSize="@dimen/three_title_size" />
+                android:textSize="@dimen/second_title_size" />
         </LinearLayout>
 
         <View
@@ -61,10 +63,13 @@
 
     <Button
         android:id="@+id/item_manager_apptask"
-        android:layout_width="60dp"
-        android:layout_height="40dp"
-        android:layout_marginRight="10dp"
+        android:layout_width="80dp"
+        android:layout_height="20dp"
+        android:layout_marginRight="5dp"
         android:layout_marginTop="10dp"
         android:text="@string/update"
-        android:textSize="@dimen/small_text_size" />
+        android:textSize="@dimen/small_text_size"
+        android:background="@drawable/shape_button_white_cyan"
+        android:textColor="@color/button_cyan"
+        />
 </LinearLayout>

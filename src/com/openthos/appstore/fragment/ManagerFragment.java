@@ -20,6 +20,7 @@ import com.openthos.appstore.R;
 import com.openthos.appstore.adapter.ManagerDownloadAdapter;
 import com.openthos.appstore.adapter.ManagerUpdateAdapter;
 import com.openthos.appstore.app.Constants;
+import com.openthos.appstore.bean.SQLAppInstallInfo;
 import com.openthos.appstore.bean.TaskInfo;
 import com.openthos.appstore.utils.DialogUtils;
 import com.openthos.appstore.utils.AppUtils;
@@ -79,7 +80,7 @@ public class ManagerFragment extends BaseFragment
     public void initData() {
         mUpdateAdapter = new ManagerUpdateAdapter(getActivity(), false);
         mUpdateAdapter.setAll(false);
-        mUpdateAdapter.setAppInfo(MainActivity.mAppPackageInfo);
+        mUpdateAdapter.addDatas(MainActivity.mAppPackageInfo);
         mUpdatelistview.setAdapter(mUpdateAdapter);
 
         mDownloadAdapter = new ManagerDownloadAdapter(getActivity(), mDownLoadManager);
@@ -209,7 +210,21 @@ public class ManagerFragment extends BaseFragment
     }
 
     private void updateAll() {
-        Tools.toast(getActivity(), getResources().getString(R.string.manager_fragment_toast));
+        List<SQLAppInstallInfo> data = new ArrayList<>();
+        try {
+            MainActivity.mAppPackageInfo = AppUtils.getAppPackageInfo(getActivity());
+            for (int i = 0; i < MainActivity.mAppPackageInfo.size(); i++) {
+                if (MainActivity.mAppPackageInfo.get(i).getState()
+                                                           != Constants.APP_HAVE_INSTALLED) {
+                    data.add(MainActivity.mAppPackageInfo.get(i));
+                }
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        if (data != null && data.size() == 0) {
+            Tools.toast(getActivity(), getResources().getString(R.string.no_data_need_update));
+        }
     }
 
     /**
@@ -233,7 +248,7 @@ public class ManagerFragment extends BaseFragment
                     mUpdateAdapter.setAll(false);
                     button.setText(launch);
                 }
-                mUpdateAdapter.setAppInfo(datas);
+                mUpdateAdapter.addDatas(datas);
                 break;
             case mDownAdapter:
                 if (str.equals(launch)) {
@@ -247,6 +262,7 @@ public class ManagerFragment extends BaseFragment
                 break;
         }
     }
+
     public class AppInstallReceiver extends BroadcastReceiver {
         public AppInstallReceiver() {
 

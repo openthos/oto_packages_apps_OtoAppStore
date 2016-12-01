@@ -23,6 +23,7 @@ public class AppLayoutGridviewInfo implements Serializable {
     private int state;
     private String type;
     private long downFileSize;
+    private String comment;
 
     public long getDownFileSize() {
         return downFileSize;
@@ -49,6 +50,7 @@ public class AppLayoutGridviewInfo implements Serializable {
         this.appPackageName = obj.getString("packagename");
         this.versionName = obj.getString("version");
         this.downloadUrl = obj.getString("download");
+        this.comment = obj.optString("comment");
         if (MainActivity.mAppPackageInfo != null && MainActivity.mDownloadStateMap != null) {
             this.state = setState();
         }
@@ -124,6 +126,14 @@ public class AppLayoutGridviewInfo implements Serializable {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     private int setState() {

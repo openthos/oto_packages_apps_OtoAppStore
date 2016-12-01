@@ -12,6 +12,10 @@ public class SQLAppInstallInfo {
     private String packageName;
     private String versionName;
     private String name;
+    private int state;
+    private String comment;
+    private String downloadUrl;
+    private String taskId;
 
     public Drawable getIcon() {
         return icon;
@@ -59,6 +63,38 @@ public class SQLAppInstallInfo {
 
     public void setId(long _id) {
         this._id = _id;
+    }
+
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public String getDownloadUrl() {
+        return downloadUrl;
+    }
+
+    public void setDownloadUrl(String downloadUrl) {
+        this.downloadUrl = downloadUrl;
+    }
+
+    public String getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
     }
 
     @Override

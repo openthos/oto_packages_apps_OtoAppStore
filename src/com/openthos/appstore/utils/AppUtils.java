@@ -8,6 +8,8 @@ import android.content.pm.Signature;
 import android.graphics.drawable.Drawable;
 
 import com.openthos.appstore.R;
+import com.openthos.appstore.app.Constants;
+import com.openthos.appstore.bean.AppLayoutGridviewInfo;
 import com.openthos.appstore.bean.SQLAppInstallInfo;
 
 import android.content.Intent;
@@ -94,6 +96,7 @@ public class AppUtils {
                 appInfo.setPackageName(packageName);
                 appInfo.setVersionCode(versionCode + "");
                 appInfo.setVersionName(versionName);
+                appInfo.setState(Constants.APP_HAVE_INSTALLED);
                 datas.add(appInfo);
             }
         }

@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 
 import com.openthos.appstore.R;
 
+import java.lang.reflect.Field;
+
 /**
  * A simple {@link Fragment} subclass.
  */

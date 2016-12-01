@@ -7,6 +7,9 @@ import android.text.TextUtils;
 import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.bean.AppLayoutGridviewInfo;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +34,20 @@ public class SPUtils {
         return null;
     }
 
+    public static AppLayoutGridviewInfo getAppData(Context context, String key) {
+        String data = getData(context, Constants.SP_ALL_DATA, key);
+        if (!TextUtils.isEmpty(data)) {
+            try {
+                return new AppLayoutGridviewInfo(new JSONObject(data));
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
     public static void saveAllData(Context context, AppLayoutGridviewInfo appInfo) {
         SharedPreferences.Editor edit =
                 context.getSharedPreferences(Constants.SP_ALL_DATA, Context.MODE_PRIVATE).edit();
@@ -53,7 +70,8 @@ public class SPUtils {
         Map<String, ?> all = sp.getAll();
         Set<? extends Map.Entry<String, ?>> entries = all.entrySet();
         for (Map.Entry<String, ?> entry : entries) {
-            if (entry.getKey().toLowerCase().contains(content.toLowerCase().trim())) {
+            if (entry.getKey() != null && content != null &&
+                    entry.getKey().toLowerCase().contains(content.toLowerCase().trim())) {
                 list.add(entry.getKey());
             }
         }

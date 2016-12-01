@@ -4,8 +4,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/white"
-    android:paddingLeft="50dp"
-    android:paddingRight="50dp"
+    android:paddingLeft="100dp"
+    android:paddingRight="100dp"
     tools:context="com.openthos.appstore.fragment.ManagerFragment">
 
     <LinearLayout
@@ -24,7 +24,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/updates"
-                android:textSize="@dimen/second_title_size"
+                android:textSize="@dimen/first_title_size"
                 android:layout_centerVertical="true"
                 />
 
@@ -34,14 +34,19 @@
                 android:layout_height="wrap_content"
                 android:text="@string/updateAll"
                 android:layout_alignParentRight="true"
-                android:textSize="@dimen/second_title_size"
+                android:textSize="@dimen/first_title_size"
                 android:layout_centerVertical="true"
+                android:background="@null"
+                android:textColor="@color/activity_title"
                 />
         </RelativeLayout>
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/gray"/>
+            android:background="@color/gray"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            />
 
         <com.openthos.appstore.view.CustomListView
             android:id="@+id/fragment_manager_customListView1"
@@ -76,7 +81,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/downloads"
-                android:textSize="@dimen/second_title_size"
+                android:textSize="@dimen/first_title_size"
                 android:layout_centerVertical="true"
                 />
 
@@ -86,14 +91,18 @@
                 android:layout_height="wrap_content"
                 android:text="@string/startAll"
                 android:layout_alignParentRight="true"
-                android:textSize="@dimen/second_title_size"
+                android:textSize="@dimen/first_title_size"
                 android:layout_centerVertical="true"
+                android:background="@null"
+                android:textColor="@color/activity_title"
                 />
         </RelativeLayout>
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/gray"/>
+            android:background="@color/gray"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"/>
 
         <com.openthos.appstore.view.CustomListView
             android:id="@+id/fragment_manager_customListView2"

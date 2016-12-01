@@ -115,16 +115,12 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
     private void initListener() {
         ImageView back = (ImageView) findViewById(R.id.activity_title_back);
         ImageView forward = (ImageView) findViewById(R.id.activity_title_forward);
-        final ImageView search = (ImageView) findViewById(R.id.activity_title_search);
         forward.setVisibility(View.GONE);
         final EditText content = (EditText) findViewById(R.id.activity_title_content);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mPage.size() > 1) {
-                    mPage.remove(mPage.size() - 1);
-                    mHandler.sendEmptyMessage(mPage.get(mPage.size() - 1));
-                }
+                checked();
             }
         });
 
@@ -135,25 +131,14 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
             }
         });
 
-        search.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (content.getVisibility() == View.GONE) {
-                    content.setVisibility(View.VISIBLE);
-                } else {
-                    content.setVisibility(View.GONE);
-                }
-            }
-        });
-
         content.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
             }
 
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
 
             }
 
@@ -167,6 +152,19 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
                 }
             }
         });
+    }
+
+    private void checked() {
+        if (mPage.size() > 1) {
+            mPage.remove(mPage.size() - 1);
+            Integer what = mPage.get(mPage.size() - 1);
+            Tools.printLog("MAc", "get" + what);
+            if (what == Constants.SEARCH_FRAGMENT) {
+                checked();
+            } else {
+                mHandler.sendEmptyMessage(what);
+            }
+        }
     }
 
     private void initView() {
@@ -203,19 +201,15 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
         FragmentTransaction transaction = mManager.beginTransaction();
         switch (checkedId) {
             case R.id.rb_home:
-//                mHandler.sendEmptyMessage(Constants.HOME_FRAGMENT);
                 addFragment(transaction, new HomeFragment(), Constants.HOME_FRAGMENT);
                 break;
             case R.id.rb_software:
-//                mHandler.sendEmptyMessage(Constants.SOFTWARE_FRAGMENT);
                 addFragment(transaction, new SoftwareFragment(), Constants.SOFTWARE_FRAGMENT);
                 break;
             case R.id.rb_game:
-//                mHandler.sendEmptyMessage(Constants.GAME_FRAGMENT);
                 addFragment(transaction, new GameFragment(), Constants.GAME_FRAGMENT);
                 break;
             case R.id.rb_manager:
-//                mHandler.sendEmptyMessage(Constants.MANAGER_FRAGMENT);
                 addFragment(transaction, new ManagerFragment(), Constants.MANAGER_FRAGMENT);
                 break;
         }
@@ -236,50 +230,36 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
                 Fragment fragment = mManager.findFragmentByTag(mWhat + "");
                 switch (mWhat) {
                     case Constants.HOME_FRAGMENT:
-                        if (fragment == null) {
-                            fragment = new HomeFragment();
-                            addFragment(transaction, fragment, mWhat);
-                        }
+                        fragment = new HomeFragment();
+                        addFragment(transaction, fragment, mWhat);
                         break;
                     case Constants.SOFTWARE_FRAGMENT:
-                        if (fragment == null) {
-                            fragment = new SoftwareFragment();
-                            addFragment(transaction, fragment, mWhat);
-                        }
+                        fragment = new SoftwareFragment();
+                        addFragment(transaction, fragment, mWhat);
                         break;
                     case Constants.GAME_FRAGMENT:
-                        if (fragment == null) {
-                            fragment = new GameFragment();
-                            addFragment(transaction, fragment, mWhat);
-                        }
+                        fragment = new GameFragment();
+                        addFragment(transaction, fragment, mWhat);
                         break;
                     case Constants.MANAGER_FRAGMENT:
-                        if (fragment == null) {
-                            fragment = new ManagerFragment();
-                            addFragment(transaction, fragment, mWhat);
-                        }
+                        fragment = new ManagerFragment();
+                        addFragment(transaction, fragment, mWhat);
                         break;
                     case Constants.DETAIL_FRAGMENT:
-                        if (fragment == null) {
-                            fragment = new DetailFragment();
-                            addFragment(transaction, fragment, mWhat);
-                        }
+                        fragment = new DetailFragment();
+                        addFragment(transaction, fragment, mWhat);
                         break;
                     case Constants.MORE_FRAGMENT:
-                        if (fragment == null) {
-                            fragment = new MoreFragment();
-                            addFragment(transaction, fragment, mWhat);
-                        }
+                        fragment = new MoreFragment();
+                        addFragment(transaction, fragment, mWhat);
 
                         if (getData(msg) != null) {
                             ((MoreFragment) fragment).setData((AppLayoutInfo) getData(msg));
                         }
                         break;
                     case Constants.COMMENT_FRAGMENT:
-                        if (fragment == null) {
-                            fragment = new CommentFragment();
-                            addFragment(transaction, fragment, mWhat);
-                        }
+                        fragment = new CommentFragment();
+                        addFragment(transaction, fragment, mWhat);
 
                         ((CommentFragment) fragment).setDatas(Constants.getComment());
                         ((CommentFragment) fragment).setAll(true);
@@ -295,9 +275,7 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
                         Tools.toast(MainActivity.this, (String) msg.obj);
                         break;
                 }
-//                transaction.show(fragment);
                 if (mWhat != Constants.TOAST) {
-                    mPage.add(mWhat);
                     transaction.commit();
                 }
             }
@@ -305,6 +283,8 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
     }
 
     private void addFragment(FragmentTransaction transaction, Fragment fragment, int what) {
+        Tools.printLog("MAc", "add" + what);
+        mPage.add(what);
         transaction.replace(R.id.main_fragment_container, fragment, what + "");
     }
 

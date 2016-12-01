@@ -10,16 +10,19 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.openthos.appstore.MainActivity;
 import com.openthos.appstore.R;
 import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.bean.SQLAppInstallInfo;
 import com.openthos.appstore.bean.ManagerInfo;
+import com.openthos.appstore.utils.FileHelper;
 import com.openthos.appstore.utils.Tools;
 import com.openthos.appstore.utils.AppUtils;
 import com.openthos.appstore.utils.DialogUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import android.net.Uri;
 import android.provider.Settings;
 import android.content.Intent;
@@ -32,23 +35,6 @@ public class ManagerUpdateAdapter extends BasicAdapter
 
     public ManagerUpdateAdapter(Context context, boolean isAll) {
         super(context, isAll);
-    }
-
-    public void setAppInfo(List<SQLAppInstallInfo> datas) {
-        if (mDatas == null) {
-            mDatas = new ArrayList<SQLAppInstallInfo>();
-        }
-        mDatas.clear();
-        if (mIsAll) {
-            mDatas.addAll(datas);
-        } else {
-            int len = datas == null ? 0 : (datas.size() > Constants.MANAGER_NUM_FALSE ?
-                    Constants.MANAGER_NUM_FALSE : datas.size());
-            for (int i = 0; i < len; i++) {
-                mDatas.add(datas.get(i));
-            }
-        }
-        notifyDataSetChanged();
     }
 
     public void setAll(boolean all) {
@@ -78,11 +64,22 @@ public class ManagerUpdateAdapter extends BasicAdapter
         }
 
         if (mDatas != null && mDatas.size() != 0) {
-            SQLAppInstallInfo SQLAppInstallInfo = (SQLAppInstallInfo) mDatas.get(position);
-            holder.appIcon.setImageDrawable(SQLAppInstallInfo.getIcon());
-            holder.appName.setText(SQLAppInstallInfo.getName());
-            holder.appVersion.setText(SQLAppInstallInfo.getVersionName());
-            holder.appContent.setText(SQLAppInstallInfo.getPackageName());
+            SQLAppInstallInfo sqlAppInstallInfo = (SQLAppInstallInfo) mDatas.get(position);
+            holder.appIcon.setImageDrawable(sqlAppInstallInfo.getIcon());
+            holder.appName.setText(sqlAppInstallInfo.getName());
+            holder.appVersion.setText(sqlAppInstallInfo.getVersionName());
+            holder.appContent.setText(getType(sqlAppInstallInfo.getComment()));
+            switch (sqlAppInstallInfo.getState()) {
+                case Constants.APP_NEED_UPDATE:
+                    holder.appTask.setText(mContext.getString(R.string.update));
+                    break;
+                case Constants.APP_DOWNLOAD_FINISHED:
+                    holder.appTask.setText(mContext.getString(R.string.finished));
+                    break;
+                default:
+                    holder.appTask.setText(mContext.getString(R.string.not_need_update));
+                    break;
+            }
             holder.appTask.setOnClickListener(this);
             holder.appTask.setTag(position);
             holder.layout.setOnClickListener(this);
@@ -94,13 +91,28 @@ public class ManagerUpdateAdapter extends BasicAdapter
     @Override
     public void onClick(View v) {
         final int position = (int) v.getTag();
+        SQLAppInstallInfo sqlAppInstallInfo = (SQLAppInstallInfo) mDatas.get(position);
         switch (v.getId()) {
             case R.id.item_manager_apptask:
-                Tools.toast(mContext, "gengxin");
+                Button btn = (Button) v;
+                String noUpdate = mContext.getString(R.string.not_need_update);
+                String update = mContext.getString(R.string.update);
+                String finished = mContext.getString(R.string.finished);
+                String downloading = mContext.getString(R.string.continues);
+                if (update.equals(btn.getText())) {
+                    btn.setText(downloading);
+                    MainActivity.mBinder.addTask(sqlAppInstallInfo.getId() + "",
+                            sqlAppInstallInfo.getDownloadUrl(),
+                            FileHelper.getNameFromUrl(sqlAppInstallInfo.getDownloadUrl()));
+                } else if (finished.equals(btn.getText())) {
+                    AppUtils.installApk(mContext,
+                            FileHelper.getDefaultFileFromUrl(sqlAppInstallInfo.getDownloadUrl()));
+                } else {
+                    Tools.toast(mContext, noUpdate);
+                }
                 break;
             default:
-
-                String pkgName = ((SQLAppInstallInfo) mDatas.get(position)).getPackageName();
+                String pkgName = (sqlAppInstallInfo).getPackageName();
                 Uri uri = Uri.parse("package:" + pkgName);
                 Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, uri);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -127,15 +139,17 @@ public class ManagerUpdateAdapter extends BasicAdapter
         }
     }
 
-    public void addDatas(List<ManagerInfo> datas) {
-        mDatas.clear();
-        if (mIsAll) {
-            mDatas.addAll(datas);
-        } else {
-            int len = datas == null ? 0 : (datas.size() > Constants.MANAGER_NUM_FALSE ?
-                    Constants.MANAGER_NUM_FALSE : datas.size());
-            for (int i = 0; i < len; i++) {
-                mDatas.add(datas.get(i));
+    public void addDatas(List<SQLAppInstallInfo> datas) {
+        if (datas != null) {
+            mDatas.clear();
+            if (mIsAll) {
+                mDatas.addAll(datas);
+            } else {
+                int len = datas == null ? 0 : (datas.size() > Constants.MANAGER_NUM_FALSE ?
+                        Constants.MANAGER_NUM_FALSE : datas.size());
+                for (int i = 0; i < len; i++) {
+                    mDatas.add(datas.get(i));
+                }
             }
         }
         notifyDataSetChanged();

@@ -87,11 +87,13 @@
             android:layout_gravity="center_vertical"
             >
             <RelativeLayout
-                android:layout_width="150dp"
-                android:layout_height="wrap_content"
+                android:layout_width="200dp"
+                android:layout_height="30dp"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:orientation="horizontal"
+                android:background="@drawable/shape_button_title_gray"
+                android:layout_marginRight="15dp"
                 >
 
                 <EditText
@@ -101,9 +103,10 @@
                     android:paddingRight="20dp"
                     android:layout_marginRight="50dp"
                     android:layout_marginLeft="5dp"
-                    android:visibility="gone"
-                    android:background="@color/white"
                     android:layout_centerVertical="true"
+                    android:singleLine="true"
+                    android:textColor="@color/white"
+                    android:background="@null"
                     android:layout_weight="1"/>
                 <ImageView
                     android:id="@+id/activity_title_search"
@@ -112,7 +115,7 @@
                     android:src="@mipmap/ic_menu_search"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
-                    android:layout_marginRight="10dp"
+                    android:layout_marginRight="5dp"
                     />
             </RelativeLayout>
 

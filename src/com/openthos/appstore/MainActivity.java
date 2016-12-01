@@ -54,7 +54,7 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
     private RadioGroup mRadioGroup;
     private FragmentManager mManager;
     private Fragment mCurrentFragment;
-    private List<Integer> mPage;
+    private ArrayList<Integer> mPage;
     private int mWhat;
 
     private ServiceConnection conn = new ServiceConnection() {
@@ -76,16 +76,9 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (savedInstanceState != null) {
-            try {
-                mHandler.sendEmptyMessage(savedInstanceState.getInt(HANDLER_WHAT));
-            } catch (Exception e) {
-                initData();
-            }
-        } else {
-            init();
-            mHandler.sendEmptyMessage(Constants.HOME_FRAGMENT);
-        }
+        init();
+
+        mHandler.sendEmptyMessage(Constants.HOME_FRAGMENT);
 
 //        new DownloadKeeper(this).deleteAllDownLoadInfo();
     }
@@ -320,11 +313,6 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
         super.onDestroy();
         unbindService(conn);
         stopService(new Intent(this, DownLoadService.class));
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
-        super.onSaveInstanceState(outState, outPersistentState);
-        outState.putInt(HANDLER_WHAT, mWhat);
+        finish();
     }
 }

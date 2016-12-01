@@ -21,11 +21,11 @@ public class Constants {
     public static final String BASEURL = "http://192.168.0.180/openthos/appstore";
 
     public static String USER_ID = "admin";
-    public static String BASE_FILEPATH = Environment.getExternalStorageDirectory().
-            toString() + "/OASDownloads";
-    public static String DOWNFILEPATH = BASE_FILEPATH + "/" + USER_ID + "/FILETEMP";
-    public static String TEMP_FILEPATH = BASE_FILEPATH + "/" + USER_ID + "/TEMPDir";
-    public static String CACHE_DATA = BASE_FILEPATH + "/" + USER_ID + "/CACHEDATA";
+    public static String BASE_FILEPATH = Environment.getExternalStoragePublicDirectory(
+                                         Environment.DIRECTORY_DOWNLOADS).toString();
+    public static String DOWNFILEPATH = BASE_FILEPATH + "/APPDIR";
+    public static String TEMP_FILEPATH = BASE_FILEPATH + "/TEMPDir";
+    public static String CACHE_DATA = BASE_FILEPATH + "/CACHEDATA";
 
     public static final String SP_CACHE_DATA = "cache";
     public static final String SP_ALL_DATA = "all";

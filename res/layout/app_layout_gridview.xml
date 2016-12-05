@@ -54,7 +54,7 @@
 
             <Button
                 android:id="@+id/app_layout_gridview_install"
-                android:layout_width="50dp"
+                android:layout_width="80dp"
                 android:layout_height="20dp"
                 android:text="@string/install"
                 android:background="@null"

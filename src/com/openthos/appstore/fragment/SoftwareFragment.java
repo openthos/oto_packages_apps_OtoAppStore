@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,13 +14,15 @@ import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.fragment.item.AppLayoutFragment;
 import com.openthos.appstore.fragment.item.AppTypeFragment;
 import com.openthos.appstore.bean.SoftwareInfo;
-import com.openthos.appstore.bean.SoftwareLayoutInfo;
 import com.openthos.appstore.utils.NetUtils;
 import com.openthos.appstore.bean.AppLayoutInfo;
+
 import android.os.Handler;
 import android.os.Message;
+
 import org.json.JSONObject;
 import org.json.JSONException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,8 +45,6 @@ public class SoftwareFragment extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
 
         initData();
-
-        initFragment(mListAppLayoutInfo);
     }
 
     private void initFragment(List<AppLayoutInfo> appLayoutInfo) {
@@ -70,11 +71,14 @@ public class SoftwareFragment extends BaseFragment {
         @Override
         public void run() {
             try {
-                mListAppLayoutInfo = getListData(NetUtils.getNetStr(Constants.BASEURL + "/list/2"));
+                String netStr = NetUtils.getNetStr(getActivity(), "/list/2");
+                if (!TextUtils.isEmpty(netStr)) {
+                    mListAppLayoutInfo = getListData(netStr);
+                    mHandler.sendEmptyMessage(STATE_CODE_DATA);
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            mHandler.sendEmptyMessage(STATE_CODE_DATA);
         }
     }
 

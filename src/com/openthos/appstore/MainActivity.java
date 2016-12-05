@@ -26,6 +26,8 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.openthos.appstore.app.Constants;
+import com.openthos.appstore.bean.AllDataInfo;
+import com.openthos.appstore.bean.AppLayoutGridviewInfo;
 import com.openthos.appstore.bean.AppLayoutInfo;
 import com.openthos.appstore.bean.SQLAppInstallInfo;
 import com.openthos.appstore.fragment.GameFragment;
@@ -37,8 +39,13 @@ import com.openthos.appstore.fragment.item.DetailFragment;
 import com.openthos.appstore.fragment.item.MoreFragment;
 import com.openthos.appstore.fragment.item.SearchFragment;
 import com.openthos.appstore.utils.AppUtils;
+import com.openthos.appstore.utils.NetUtils;
+import com.openthos.appstore.utils.SPUtils;
 import com.openthos.appstore.utils.Tools;
 import com.openthos.appstore.utils.download.DownLoadService;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -79,6 +86,8 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
         init();
 
         mHandler.sendEmptyMessage(Constants.HOME_FRAGMENT);
+
+        saveAllData();
 
 //        new DownloadKeeper(this).deleteAllDownLoadInfo();
     }
@@ -314,5 +323,35 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
         unbindService(conn);
         stopService(new Intent(this, DownLoadService.class));
         finish();
+    }
+
+    private void saveAllData() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String allData = NetUtils.getNetStr(MainActivity.this, "/all");
+                if (!TextUtils.isEmpty(allData)) {
+                    try {
+                        AllDataInfo allDataInfo = new AllDataInfo(new JSONObject(allData));
+                        if (allDataInfo != null && allDataInfo.getAppList() != null) {
+                            List<AppLayoutGridviewInfo> appList = allDataInfo.getAppList();
+                            for (int i = 0; i < appList.size(); i++) {
+                                AppLayoutGridviewInfo appInfo = appList.get(i);
+                                SPUtils.saveAllData(MainActivity.this, appInfo);
+                            }
+                        }
+                        Tools.printLog("SA", allDataInfo.getAppList().size() + "");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    Constants.BASEURL = "http://dev.openthos.org/openthos/appstore";
+                    allData = NetUtils.getNetStr(MainActivity.this, "/all");
+                    if (!TextUtils.isEmpty(allData)) {
+                        saveAllData();
+                    }
+                }
+            }
+        }).start();
     }
 }

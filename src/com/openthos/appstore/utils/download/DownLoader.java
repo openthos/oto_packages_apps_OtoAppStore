@@ -152,7 +152,6 @@ public class DownLoader {
                             msg.what = TASK_ERROR;
                             msg.obj = s;
                             handler.sendMessage(msg);
-                            stopDownLoad();
                             saveDownloadInfo();
                         }
 
@@ -168,6 +167,12 @@ public class DownLoader {
                                 progress = nowProgress;
                                 handler.sendEmptyMessage(TASK_PROGESS);
                             }
+                        }
+
+                        @Override
+                        public void onStart() {
+                            super.onStart();
+                            saveDownloadInfo();
                         }
                     }
             );

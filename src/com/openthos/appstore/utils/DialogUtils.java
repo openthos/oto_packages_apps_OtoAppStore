@@ -49,8 +49,9 @@ public class DialogUtils {
                 downloadManager.removeTask(dialog);
             }
         });
-        dialog.setView(inflate);
+//        dialog.setView(inflate);
         dialog.show();
+        dialog.setContentView(inflate);
     }
 
     public interface UpdateManager {

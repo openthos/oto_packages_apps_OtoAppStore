@@ -7,6 +7,7 @@ import com.openthos.appstore.MainActivity;
 import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.bean.SQLDownLoadInfo;
 import com.openthos.appstore.bean.TaskInfo;
+import com.openthos.appstore.utils.Tools;
 import com.openthos.appstore.utils.sql.DownloadKeeper;
 import com.openthos.appstore.utils.FileHelper;
 
@@ -78,6 +79,7 @@ public class DownLoadManager {
         } else {
             sqlDownloadInfoList = datakeeper.getUserDownLoadInfo(userID);
         }
+        Tools.printLog("DM", sqlDownloadInfoList.size() + "");
         if (sqlDownloadInfoList.size() > 0) {
             int listSize = sqlDownloadInfoList.size();
             for (int i = 0; i < listSize; i++) {
@@ -163,6 +165,7 @@ public class DownLoadManager {
         } else {
             taskDownLoader.setSupportBreakpoint(false);
         }
+
         taskDownLoader.start();
         taskDownLoader.setDownLoadListener(downloadinfo.getTaskID(), mAlltasklistener);
 //        taskDownLoader.setDownLoadListener("public", mAlltasklistener);

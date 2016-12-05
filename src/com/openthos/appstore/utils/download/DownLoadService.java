@@ -21,6 +21,7 @@ public class DownLoadService extends Service {
     public void onCreate() {
         super.onCreate();
         downLoadManager = new DownLoadManager(DownLoadService.this);
+        downLoadManager.setSupportBreakpoint(false);
     }
 
     @Override

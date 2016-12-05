@@ -117,9 +117,9 @@ public class HomeFragment extends BaseFragment {
     class GetData implements Runnable {
         @Override
         public void run() {
-            String recommandUrl = Constants.BASEURL + "/list/recommend";
-            String praiseUrl = Constants.BASEURL + "/list/praise";
-            String welcomeUrl = Constants.BASEURL + "/list/welcome";
+            String recommandUrl = "/list/recommend";
+            String praiseUrl = "/list/praise";
+            String welcomeUrl = "/list/welcome";
 
             recommend = SPUtils.getData(getActivity(),
                     Constants.SP_CACHE_DATA, "recommend" + StoreApplication.DATE_FORMAT);
@@ -128,18 +128,22 @@ public class HomeFragment extends BaseFragment {
             welcome = SPUtils.getData(getActivity(),
                     Constants.SP_CACHE_DATA, "welcome" + StoreApplication.DATE_FORMAT);
             if (recommend == null || praise == null || welcome == null) {
-                recommend = NetUtils.getNetStr(recommandUrl);
-                praise = NetUtils.getNetStr(welcomeUrl);
-                welcome = NetUtils.getNetStr(praiseUrl);
-                SPUtils.saveData(getActivity(), Constants.SP_CACHE_DATA,
-                                 "recommend" + StoreApplication.DATE_FORMAT,recommend);
-                SPUtils.saveData(getActivity(), Constants.SP_CACHE_DATA,
-                                 "praise" + StoreApplication.DATE_FORMAT, praise);
-                SPUtils.saveData(getActivity(), Constants.SP_CACHE_DATA,
-                                 "welcome" + StoreApplication.DATE_FORMAT, welcome);
+                recommend = NetUtils.getNetStr(getActivity(), recommandUrl);
+                praise = NetUtils.getNetStr(getActivity(), welcomeUrl);
+                welcome = NetUtils.getNetStr(getActivity(), praiseUrl);
+                if (recommend != null && praise != null && welcome != null) {
+                    mHandler.sendEmptyMessage(0);
+                    SPUtils.saveData(getActivity(), Constants.SP_CACHE_DATA,
+                            "recommend" + StoreApplication.DATE_FORMAT, recommend);
+                    SPUtils.saveData(getActivity(), Constants.SP_CACHE_DATA,
+                            "praise" + StoreApplication.DATE_FORMAT, praise);
+                    SPUtils.saveData(getActivity(), Constants.SP_CACHE_DATA,
+                            "welcome" + StoreApplication.DATE_FORMAT, welcome);
+                }
+            } else {
+                mHandler.sendEmptyMessage(0);
             }
 
-            mHandler.sendEmptyMessage(0);
         }
     }
 

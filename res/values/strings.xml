@@ -62,4 +62,5 @@
     <string name="start_download">start download</string>
     <string name="not_need_update">not need update</string>
     <string name="no_data_need_update">no data need update</string>
+    <string name="check_net_state">please check net state</string>
 </resources>

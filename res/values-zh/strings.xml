@@ -62,4 +62,5 @@
     <string name="start_download">开始下载</string>
     <string name="not_need_update">无需更新</string>
     <string name="no_data_need_update">没有数据需要更新</string>
+    <string name="check_net_state">请检查网络连接</string>
 </resources>

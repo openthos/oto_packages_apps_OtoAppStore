@@ -6,14 +6,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Message;
 
+import com.openthos.appstore.MainActivity;
+import com.openthos.appstore.R;
 import com.openthos.appstore.app.Constants;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * Created by luojunhuan on 16-10-31.
@@ -25,12 +26,9 @@ public class NetUtils {
     }
 
     public static boolean isConnected(Context context) {
-
         ConnectivityManager connectivity = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
-
         if (null != connectivity) {
-
             NetworkInfo info = connectivity.getActiveNetworkInfo();
             if (null != info && info.isConnected()) {
                 if (info.getState() == NetworkInfo.State.CONNECTED) {
@@ -60,40 +58,48 @@ public class NetUtils {
         activity.startActivityForResult(intent, 0);
     }
 
-    public static String getNetStr(String path) {
-        Tools.printLog("NU", "net " + path);
-        InputStream is = null;
-        HttpURLConnection conn = null;
-        try {
-            URL url = new URL(path);
-            conn = (HttpURLConnection) url.openConnection();
-            conn.setConnectTimeout(5 * 1000);
-            conn.setRequestMethod("GET");
-            conn.setDoInput(true);
-            conn.setDoOutput(true);
-            conn.connect();
-            int code = conn.getResponseCode();
+    public static String getNetStr(Context context, String path) {
+        if (isConnected(context)) {
+            Tools.printLog("NU", "net " + path);
+            InputStream is = null;
+            HttpURLConnection conn = null;
+            try {
+                URL url = new URL(Constants.BASEURL + path);
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setConnectTimeout(5 * 1000);
+                conn.setRequestMethod("GET");
+                conn.setDoInput(true);
+                conn.setDoOutput(true);
+                conn.connect();
+                int code = conn.getResponseCode();
 
-            if (code == HttpURLConnection.HTTP_OK) {
-                is = conn.getInputStream();
-                int len = -1;
-                StringBuffer buffer = new StringBuffer();
-                byte[] bytes = new byte[1024];
-                while ((len = is.read(bytes)) != -1) {
-                    buffer.append(new String(bytes, 0, len));
+                if (code == HttpURLConnection.HTTP_OK) {
+                    is = conn.getInputStream();
+                    int len = -1;
+                    StringBuffer buffer = new StringBuffer();
+                    byte[] bytes = new byte[1024];
+                    while ((len = is.read(bytes)) != -1) {
+                        buffer.append(new String(bytes, 0, len));
+                    }
+                    return buffer.toString();
+                } else {
+                    return null;
                 }
-                return buffer.toString();
-            } else {
-                return "fail";
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            } finally {
+                Tools.closeStream(is);
+                if (conn != null) {
+                    conn.disconnect();
+                }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "fail";
-        } finally {
-            Tools.closeStream(is);
-            if (conn != null) {
-                conn.disconnect();
-            }
+        } else {
+            Message message = MainActivity.mHandler.obtainMessage();
+            message.what = Constants.TOAST;
+            message.obj = context.getString(R.string.check_net_state);
+            MainActivity.mHandler.sendMessage(message);
+            return null;
         }
     }
 }

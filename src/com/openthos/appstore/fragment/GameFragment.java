@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,8 +45,6 @@ public class GameFragment extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
 
         initData();
-
-        initFragment(mListAppLayoutInfo);
     }
 
     private void initFragment(List<AppLayoutInfo> listAppLayoutInfo) {
@@ -74,11 +73,14 @@ public class GameFragment extends BaseFragment {
         @Override
         public void run() {
             try {
-                mListAppLayoutInfo = getListData(NetUtils.getNetStr(Constants.BASEURL + "/list/1"));
+                String netStr = NetUtils.getNetStr(getActivity(), "/list/1");
+                if (!TextUtils.isEmpty(netStr)) {
+                    mListAppLayoutInfo = getListData(netStr);
+                    mHandler.sendEmptyMessage(STATE_CODE_SEND_DATA);
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            mHandler.sendEmptyMessage(STATE_CODE_SEND_DATA);
         }
     }
 

@@ -66,13 +66,13 @@
                 android:textSize="@dimen/second_title_size"
                 />
 
-            <ProgressBar
+            <com.openthos.appstore.view.CustomProgressBar
                 android:id="@+id/app_layout_gridview_progressbar"
                 android:max="100"
                 android:progress="0"
                 style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="80dp"
+                android:layout_height="20dp"
                 android:layout_gravity="center_vertical"
                 android:visibility="gone"
                 />

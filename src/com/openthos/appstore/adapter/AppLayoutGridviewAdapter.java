@@ -6,16 +6,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.openthos.appstore.MainActivity;
 import com.openthos.appstore.R;
 import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.bean.AppLayoutGridviewInfo;
+import com.openthos.appstore.bean.SQLDownLoadInfo;
 import com.openthos.appstore.utils.FileHelper;
+import com.openthos.appstore.utils.Tools;
+import com.openthos.appstore.utils.download.DownLoadListener;
 import com.openthos.appstore.utils.download.DownLoadManager;
 import com.openthos.appstore.utils.download.DownLoadService;
+import com.openthos.appstore.view.CustomProgressBar;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -27,11 +30,13 @@ import java.util.Map;
  */
 public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnClickListener {
     private DownLoadManager mDownLoadManager;
+    private UpdateProgress mUpdateProgress;
 
     public AppLayoutGridviewAdapter(Context context, boolean isAll) {
         super(context, isAll);
         mDatas = new ArrayList<>();
         mDownLoadManager = DownLoadService.getDownLoadManager();
+        mDownLoadManager.setAllTaskListener(new AppDownLoadListener());
     }
 
     @Override
@@ -58,10 +63,11 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
                     appLayoutGridviewInfo.getIconUrl()).into(holder.icon);
             holder.name.setText(appLayoutGridviewInfo.getName());
             holder.type.setText(appLayoutGridviewInfo.getType());
-//            if (appLayoutGridviewInfo.getProgress() > 0) {
-//                holder.progressBar.setVisibility(View.VISIBLE);
-//                holder.progressBar.setProgress(appLayoutGridviewInfo.getProgress());
-//            }
+            if (appLayoutGridviewInfo.getDownFileSize() > 0) {
+                holder.progressBar.setVisibility(View.VISIBLE);
+                holder.install.setVisibility(View.GONE);
+                holder.progressBar.setProgress(appLayoutGridviewInfo.getProgress());
+            }
             switch (appLayoutGridviewInfo.getState()) {
                 case Constants.APP_NOT_INSTALL:
                     setContent(holder.install, R.string.not_install,
@@ -127,10 +133,9 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
                 String finished = mContext.getResources().getString(R.string.finished);
                 String appId = appInfo.getId() + "";
                 if (btnStr.equals(continues)) {
-                    MainActivity.mHandler.sendEmptyMessage(Constants.MANAGER_FRAGMENT);
-//                    install.setText(pause);
-//                    downloadStateMap.put(appId, Constants.APP_DOWNLOAD_PAUSE);
-//                    MainActivity.mBinder.stopTask(appId);
+                    install.setText(pause);
+                    downloadStateMap.put(appId, Constants.APP_DOWNLOAD_PAUSE);
+                    MainActivity.mBinder.stopTask(appId);
                 } else if (btnStr.equals(pause)) {
                     install.setText(continues);
                     downloadStateMap.put(appId, Constants.APP_DOWNLOAD_CONTINUE);
@@ -164,14 +169,15 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
         private TextView name;
         private TextView type;
         private Button install;
-        private ProgressBar progressBar;
+        private CustomProgressBar progressBar;
 
         public ViewHolder(View view) {
             icon = (ImageView) view.findViewById(R.id.app_layout_gridview_icon);
             name = (TextView) view.findViewById(R.id.app_layout_gridview_name);
             type = (TextView) view.findViewById(R.id.app_layout_gridview_type);
             install = (Button) view.findViewById(R.id.app_layout_gridview_install);
-            progressBar = (ProgressBar) view.findViewById(R.id.app_layout_gridview_progressbar);
+            progressBar = (CustomProgressBar) view.findViewById(
+                                                      R.id.app_layout_gridview_progressbar);
             progressBar.setVisibility(View.GONE);
         }
     }
@@ -188,5 +194,55 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
             }
         }
         notifyDataSetChanged();
+    }
+
+    private class AppDownLoadListener implements DownLoadListener {
+        @Override
+        public void onStart(SQLDownLoadInfo sqlDownLoadInfo) {
+
+        }
+
+        @Override
+        public void onProgress(SQLDownLoadInfo sqlDownLoadInfo, boolean isSupportBreakpoint) {
+            Tools.printLog("ljh", sqlDownLoadInfo.getFileName());
+            for (AppLayoutGridviewInfo appInfo : (List<AppLayoutGridviewInfo>) mDatas) {
+                if ((appInfo.getId() + "").equals(sqlDownLoadInfo.getTaskID())) {
+                    appInfo.setDownFileSize(sqlDownLoadInfo.getDownloadSize());
+                    appInfo.setFileSize(sqlDownLoadInfo.getFileSize());
+                    mUpdateProgress.onProgress(sqlDownLoadInfo);
+                    break;
+                }
+            }
+        }
+
+        @Override
+        public void onStop(SQLDownLoadInfo sqlDownLoadInfo, boolean isSupportBreakpoint) {
+
+        }
+
+        @Override
+        public void onError(SQLDownLoadInfo sqlDownLoadInfo, String error) {
+
+        }
+
+        @Override
+        public void onSuccess(SQLDownLoadInfo sqlDownLoadInfo) {
+            for (AppLayoutGridviewInfo appInfo : (List<AppLayoutGridviewInfo>) mDatas) {
+                if ((appInfo.getId() + "").equals(sqlDownLoadInfo.getTaskID())) {
+                    appInfo.setDownFileSize(sqlDownLoadInfo.getDownloadSize());
+                    appInfo.setFileSize(sqlDownLoadInfo.getFileSize());
+                    mUpdateProgress.onProgress(sqlDownLoadInfo);
+                    break;
+                }
+            }
+        }
+    }
+
+    public void setUpdateProcessListener(UpdateProgress updateProgress){
+        mUpdateProgress = updateProgress;
+    }
+
+    public interface UpdateProgress {
+        void onProgress(SQLDownLoadInfo sqlDownLoadInfo);
     }
 }

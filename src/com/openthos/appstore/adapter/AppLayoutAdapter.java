@@ -12,6 +12,7 @@ import com.openthos.appstore.MainActivity;
 import com.openthos.appstore.R;
 import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.bean.AppLayoutInfo;
+import com.openthos.appstore.bean.SQLDownLoadInfo;
 import com.openthos.appstore.view.CustomGridView;
 
 import java.util.ArrayList;
@@ -20,7 +21,8 @@ import java.util.List;
 /**
  * Created by luojunhuan on 16-10-26.
  */
-public class AppLayoutAdapter extends BasicAdapter implements View.OnClickListener {
+public class AppLayoutAdapter extends BasicAdapter
+        implements View.OnClickListener, AppLayoutGridviewAdapter.UpdateProgress {
     private int mNumColumns;
 
     public AppLayoutAdapter(Context context, int numColumns, boolean isAll) {
@@ -57,6 +59,7 @@ public class AppLayoutAdapter extends BasicAdapter implements View.OnClickListen
                     new AppLayoutGridviewAdapter(mContext, mIsAll);
             holder.gridView.setAdapter(appLayoutGridviewAdapter);
             appLayoutGridviewAdapter.addDatas(appLayoutInfo.getAppLayoutGridviewList());
+            appLayoutGridviewAdapter.setUpdateProcessListener(this);
 
             if (mIsAll) {
                 holder.more.setVisibility(View.GONE);
@@ -81,6 +84,11 @@ public class AppLayoutAdapter extends BasicAdapter implements View.OnClickListen
         message.what = Constants.MORE_FRAGMENT;
         message.setData(bundle);
         MainActivity.mHandler.sendMessage(message);
+    }
+
+    @Override
+    public void onProgress(SQLDownLoadInfo sqlDownLoadInfo) {
+        notifyDataSetChanged();
     }
 
     class ViewHolder {

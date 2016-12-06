@@ -12,62 +12,53 @@ import android.widget.ProgressBar;
  * Created by ljh on 16-12-2.
  */
 public class CustomProgressBar extends ProgressBar{
-    String text;
-    Paint mPaint;
+    private String mText;
+    private Paint mPaint;
 
     public CustomProgressBar(Context context) {
         super(context);
-        // TODO Auto-generated constructor stub
-        System.out.println("1");
         initText();
     }
 
     public CustomProgressBar(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        // TODO Auto-generated constructor stub
-        System.out.println("2");
         initText();
     }
 
 
     public CustomProgressBar(Context context, AttributeSet attrs) {
         super(context, attrs);
-        // TODO Auto-generated constructor stub
-        System.out.println("3");
         initText();
     }
 
     @Override
     public synchronized void setProgress(int progress) {
-        // TODO Auto-generated method stub
         setText(progress);
         super.setProgress(progress);
     }
 
     @Override
     protected synchronized void onDraw(Canvas canvas) {
-        // TODO Auto-generated method stub
         super.onDraw(canvas);
-        //this.setText();
         Rect rect = new Rect();
-        this.mPaint.getTextBounds(this.text, 0, this.text.length(), rect);
+        mPaint.getTextBounds(mText, 0, mText.length(), rect);
         int x = (getWidth() / 2) - rect.centerX();
         int y = (getHeight() / 2) - rect.centerY();
-        canvas.drawText(this.text, x, y, this.mPaint);
+        canvas.drawText(mText, x, y, mPaint);
     }
 
     private void initText() {
-        this.mPaint = new Paint();
-        this.mPaint.setColor(Color.WHITE);
+        mPaint = new Paint();
+        mPaint.setColor(Color.WHITE);
 
     }
 
     private void setText() {
-        setText(this.getProgress());
+        setText(getProgress());
     }
 
     private void setText(int progress) {
-        int i = (progress * 100) / this.getMax();
-        this.text = String.valueOf(i) + "%";
+        int i = (progress * 100) / getMax();
+        mText = String.valueOf(i) + "%";
     }
 }

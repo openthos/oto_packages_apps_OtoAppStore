@@ -18,7 +18,7 @@ public class AppLayoutGridviewInfo implements Serializable {
     private String name;
     private String appPackageName;
     private String downloadUrl;
-    private long size;
+    private long fileSize;
     private String versionName;
     private int state;
     private String type;
@@ -44,7 +44,7 @@ public class AppLayoutGridviewInfo implements Serializable {
 
     public AppLayoutGridviewInfo(JSONObject obj) throws JSONException {
         this.id = obj.getLong("id");
-        this.size = obj.getLong("size");
+        this.fileSize = obj.getLong("size");
         this.iconUrl = obj.getString("icon");
         this.name = obj.getString("name");
         this.appPackageName = obj.getString("packagename");
@@ -96,12 +96,12 @@ public class AppLayoutGridviewInfo implements Serializable {
         this.downloadUrl = downloadUrl;
     }
 
-    public long getSize() {
-        return size;
+    public long getFileSize() {
+        return fileSize;
     }
 
-    public void setSize(long size) {
-        this.size = size;
+    public void setFileSize(long fileSize) {
+        this.fileSize = fileSize;
     }
 
     public String getVersionName() {
@@ -155,10 +155,10 @@ public class AppLayoutGridviewInfo implements Serializable {
     }
 
     public int getProgress() {
-        if (size == 0) {
+        if (fileSize == 0) {
             return 0;
         } else {
-            return ((int) (100 * downFileSize / size));
+            return ((int) (100 * downFileSize / fileSize));
         }
     }
 }

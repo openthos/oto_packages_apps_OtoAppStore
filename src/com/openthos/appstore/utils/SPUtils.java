@@ -57,7 +57,7 @@ public class SPUtils {
                 "\"version\":\"" + appInfo.getVersionName() + "\"," +
                 "\"icon\":\"" + appInfo.getIconUrl() + "\"," +
                 "\"download\":\"" + appInfo.getDownloadUrl() + "\"," +
-                "\"size\":" + appInfo.getSize() +
+                "\"size\":" + appInfo.getFileSize() +
                 "}";
         edit.putString(appInfo.getName(), json);
         edit.commit();

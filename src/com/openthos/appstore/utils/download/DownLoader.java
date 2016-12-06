@@ -4,18 +4,17 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 
-import com.lidroid.xutils.HttpUtils;
-import com.lidroid.xutils.exception.HttpException;
-import com.lidroid.xutils.http.HttpHandler;
-import com.lidroid.xutils.http.ResponseInfo;
-import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.openthos.appstore.bean.SQLDownLoadInfo;
 import com.openthos.appstore.utils.AppUtils;
+import com.openthos.appstore.utils.FileHelper;
 import com.openthos.appstore.utils.Tools;
 import com.openthos.appstore.utils.sql.DownloadKeeper;
-import com.openthos.appstore.utils.FileHelper;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.RandomAccessFile;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -28,17 +27,31 @@ public class DownLoader {
     private int TASK_ERROR = 3;
     private int TASK_SUCCESS = 4;
 
+    private int HTTP_CONNECT_TIME_OUT = 5000;
+    private int HTTP_READ_TIME_OUT = 5000;
+    private int BUFFER_READ_BYTE = 512 * 1024;
+
+    private final String TEMP_FILEPATH = FileHelper.getTempPath();
+
     private boolean mIsSupportBreakpoint = false;
-    private Context mContext;
+
     private String mUserID;
+
     private DownloadKeeper mDatakeeper;
     private HashMap<String, DownLoadListener> mListenerMap;
     private DownLoadSuccess mDownLoadSuccess;
     private SQLDownLoadInfo mSQLDownLoadInfo;
     private DownLoadThread mDownLoadThread;
+    private long mFileSize = 0;
     private long mDownFileSize = 0;
+    private int mDownloadtimes = 0;
+    private int mMaxdownloadtimes = 3;
+
     private boolean mOndownload = false;
+
     private ThreadPoolExecutor mPool;
+    private Context mContext;
+
 
     public DownLoader(Context context, SQLDownLoadInfo sqlFileInfo, ThreadPoolExecutor pool,
                       String userID, boolean isSupportBreakpoint, boolean isNewTask) {
@@ -46,10 +59,12 @@ public class DownLoader {
         mIsSupportBreakpoint = isSupportBreakpoint;
         mPool = pool;
         mUserID = userID;
+        mFileSize = sqlFileInfo.getFileSize();
         mDownFileSize = sqlFileInfo.getDownloadSize();
         mDatakeeper = new DownloadKeeper(context);
         mListenerMap = new HashMap<String, DownLoadListener>();
         mSQLDownLoadInfo = sqlFileInfo;
+
         if (isNewTask) {
             saveDownloadInfo();
         }
@@ -60,13 +75,11 @@ public class DownLoader {
     }
 
     public void start() {
-        FileHelper.deleteFile(mSQLDownLoadInfo.getFileName());
         if (mDownLoadThread == null) {
+            mDownloadtimes = 0;
             mOndownload = true;
             handler.sendEmptyMessage(TASK_START);
             mDownLoadThread = new DownLoadThread();
-            mPool.execute(mDownLoadThread);
-        } else {
             mPool.execute(mDownLoadThread);
         }
     }
@@ -99,13 +112,12 @@ public class DownLoader {
     }
 
     public void destroy() {
-        saveDownloadInfo();//last add
         if (mDownLoadThread != null) {
             mDownLoadThread.stopDownLoad();
             mDownLoadThread = null;
         }
-//        mDatakeeper.deleteDownLoadInfo(mUserID, mSQLDownLoadInfo.getTaskID());
-        File downloadFile = new File(FileHelper.getDefaultFileFromUrl(mSQLDownLoadInfo.getUrl()));
+        mDatakeeper.deleteDownLoadInfo(mUserID, mSQLDownLoadInfo.getTaskID());
+        File downloadFile = new File(TEMP_FILEPATH + "/" + mSQLDownLoadInfo.getFileName());
         if (downloadFile.exists()) {
             downloadFile.delete();
         }
@@ -125,66 +137,184 @@ public class DownLoader {
     }
 
     class DownLoadThread extends Thread {
+        private boolean isdownloading;
+        private URL url;
+        private RandomAccessFile localFile;
+        private HttpURLConnection urlConn;
+        private InputStream inputStream;
         private int progress = -1;
-        private HttpHandler<File> httpHandler;
 
         public DownLoadThread() {
-
+            isdownloading = true;
         }
 
         @Override
         public void run() {
-            httpHandler = new HttpUtils().download(mSQLDownLoadInfo.getUrl(),
-                    FileHelper.getDefaultFileFromUrl(mSQLDownLoadInfo.getUrl()),
-                    true,
-                    true,
-                    new RequestCallBack<File>() {
-                        @Override
-                        public void onSuccess(ResponseInfo<File> responseInfo) {
-                            handler.sendEmptyMessage(TASK_SUCCESS);
-                            AppUtils.installApk(mContext, mSQLDownLoadInfo.getFilePath());
-                            saveDownloadInfo();
-                        }
+            while (mDownloadtimes < mMaxdownloadtimes) {
 
-                        @Override
-                        public void onFailure(HttpException e, String s) {
-                            Message msg = handler.obtainMessage();
-                            msg.what = TASK_ERROR;
-                            msg.obj = s;
-                            handler.sendMessage(msg);
+                try {
+                    if (mDownFileSize == mFileSize
+                            && mFileSize > 0) {
+                        mOndownload = false;
+                        Message msg = new Message();
+                        msg.what = TASK_PROGESS;
+                        msg.arg1 = 100;
+                        handler.sendMessage(msg);
+                        mDownloadtimes = mMaxdownloadtimes;
+                        mDownLoadThread = null;
+                        return;
+                    }
+                    url = new URL(mSQLDownLoadInfo.getUrl());
+                    urlConn = (HttpURLConnection) url.openConnection();
+                    urlConn.setConnectTimeout(HTTP_CONNECT_TIME_OUT);
+                    urlConn.setReadTimeout(HTTP_READ_TIME_OUT);
+                    if (mFileSize < 1) {
+                        openConnention();
+                    } else {
+                        if (new File(TEMP_FILEPATH + "/" +
+                                mSQLDownLoadInfo.getFileName()).exists()) {
+                            localFile = new RandomAccessFile(
+                                    TEMP_FILEPATH + "/" + mSQLDownLoadInfo.getFileName(), "rwd");
+                            localFile.seek(mDownFileSize);
+                            urlConn.setRequestProperty("Range", "bytes=" + mDownFileSize + "-");
+                        } else {
+                            mFileSize = 0;
+                            mDownFileSize = 0;
                             saveDownloadInfo();
-                        }
-
-                        @Override
-                        public void onLoading(long total, long current, boolean isUploading) {
-                            super.onLoading(total, current, isUploading);
-                            Tools.printLog("DL", "total " + total + "current " + current);
-                            mDownFileSize = current;
-                            mSQLDownLoadInfo.setFileSize(total);
-                            mSQLDownLoadInfo.setDownloadSize(current);
-                            int nowProgress = (int) ((100 * current) / total);
-                            if (nowProgress > progress) {
-                                progress = nowProgress;
-                                handler.sendEmptyMessage(TASK_PROGESS);
-                            }
-                        }
-
-                        @Override
-                        public void onStart() {
-                            super.onStart();
-                            saveDownloadInfo();
+                            openConnention();
                         }
                     }
-            );
+                    inputStream = urlConn.getInputStream();
+                    byte[] buffer = new byte[BUFFER_READ_BYTE];
+                    int length = -1;
+                    long timeMillis = System.currentTimeMillis();
+                    long downloadSize = mDownFileSize;
+                    while ((length = inputStream.read(buffer)) != -1 && isdownloading) {
+                        localFile.write(buffer, 0, length);
+                        mDownFileSize += length;
+                        long currentTimeMillis = System.currentTimeMillis();
+                        int nowProgress = (int) ((100 * mDownFileSize) / mFileSize);
+                        if (nowProgress > progress && currentTimeMillis - timeMillis > 1000) {
+                            progress = nowProgress;
+                            long speech = (mDownFileSize - downloadSize) /
+                                    (currentTimeMillis - timeMillis);
+                            downloadSize = mDownFileSize;
+                            Tools.printLog("ljh", speech + "");
+                            mSQLDownLoadInfo.setSpeech(speech);
+                            timeMillis = currentTimeMillis;
+                            saveDownloadInfo();
+                            sendMessage(TASK_PROGESS, null);
+                        }
+                    }
+
+                    if (mDownFileSize == mFileSize) {
+                        boolean renameResult = RenameFile();
+                        if (renameResult) {
+                            mSQLDownLoadInfo.setDownloadSize(mFileSize);
+                            saveDownloadInfo();
+                            handler.sendEmptyMessage(TASK_SUCCESS);
+                        } else {
+                            new File(TEMP_FILEPATH + "/" + mSQLDownLoadInfo.getFileName()).delete();
+                            handler.sendEmptyMessage(TASK_ERROR);
+                        }
+
+//                        mDatakeeper.deleteDownLoadInfo(mUserID, mSQLDownLoadInfo.getTaskID());
+                        mDownLoadThread = null;
+                        mOndownload = false;
+                    }
+                    mDownloadtimes = mMaxdownloadtimes;
+                } catch (Exception e) {
+                    if (isdownloading) {
+                        if (mIsSupportBreakpoint) {
+                            mDownloadtimes++;
+                            if (mDownloadtimes >= mMaxdownloadtimes) {
+                                if (mFileSize > 0) {
+                                    saveDownloadInfo();
+                                }
+                                mPool.remove(mDownLoadThread);
+                                mDownLoadThread = null;
+                                mOndownload = false;
+                                sendMessage(TASK_ERROR, e.toString());
+                            }
+                        } else {
+                            mDownFileSize = 0;
+                            mDownloadtimes = mMaxdownloadtimes;
+                            mOndownload = false;
+                            mDownLoadThread = null;
+                            sendMessage(TASK_ERROR, e.toString());
+                        }
+
+                    } else {
+                        mDownloadtimes = mMaxdownloadtimes;
+                    }
+                    e.printStackTrace();
+                } finally {
+                    try {
+                        if (urlConn != null) {
+                            urlConn.disconnect();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        if (inputStream != null) {
+                            inputStream.close();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        if (localFile != null) {
+                            localFile.close();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
         }
 
         public void stopDownLoad() {
-            if (httpHandler != null) {
-                httpHandler.cancel();
-                httpHandler = null;
+            isdownloading = false;
+            mDownloadtimes = mMaxdownloadtimes;
+            if (mFileSize > 0) {
+                saveDownloadInfo();
             }
             handler.sendEmptyMessage(TASK_STOP);
         }
+
+        private void openConnention() throws Exception {
+            long urlfilesize = urlConn.getContentLength();
+            if (urlfilesize > 0) {
+                isFolderExist();
+                localFile = new RandomAccessFile(TEMP_FILEPATH + "/" +
+                        mSQLDownLoadInfo.getFileName(), "rwd");
+                localFile.setLength(urlfilesize);
+                mSQLDownLoadInfo.setFileSize(urlfilesize);
+                mFileSize = urlfilesize;
+                if (isdownloading) {
+                    saveDownloadInfo();
+                }
+            }
+        }
+    }
+
+    private boolean isFolderExist() {
+        boolean result = false;
+        try {
+            String filepath = TEMP_FILEPATH;
+            File file = new File(filepath);
+            if (!file.exists()) {
+                if (file.mkdirs()) {
+                    result = true;
+                }
+            } else {
+                result = true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
     private void saveDownloadInfo() {
@@ -259,21 +389,53 @@ public class DownLoader {
         public void onTaskSeccess(String TaskID);
     }
 
+    private void sendMessage(int what, String info) {
+        if (info != null) {
+            Message message = handler.obtainMessage();
+            message.what = what;
+            message.obj = info;
+            handler.sendMessage(message);
+        } else {
+            handler.sendEmptyMessage(what);
+        }
+    }
+
     Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             // TODO Auto-generated method stub
             if (msg.what == TASK_START) {
+                mSQLDownLoadInfo.setSpeech(0);
                 startNotice();
             } else if (msg.what == TASK_STOP) {
+                mSQLDownLoadInfo.setSpeech(0);
                 stopNotice();
             } else if (msg.what == TASK_PROGESS) {
                 onProgressNotice();
             } else if (msg.what == TASK_ERROR) {
+                mSQLDownLoadInfo.setSpeech(0);
                 errorNotice((String) msg.obj);
             } else if (msg.what == TASK_SUCCESS) {
+                mSQLDownLoadInfo.setSpeech(0);
                 successNotice();
+                AppUtils.installApk(mContext, mSQLDownLoadInfo.getFilePath());
             }
         }
     };
+
+    public boolean RenameFile() {
+        File newfile = new File(mSQLDownLoadInfo.getFilePath());
+        if (newfile.exists()) {
+            newfile.delete();
+        }
+        File olefile = new File(TEMP_FILEPATH + "/" + mSQLDownLoadInfo.getFileName());
+
+        String filepath = mSQLDownLoadInfo.getFilePath();
+        filepath = filepath.substring(0, filepath.lastIndexOf("/"));
+        File file = new File(filepath);
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+        return olefile.renameTo(newfile);
+    }
 }

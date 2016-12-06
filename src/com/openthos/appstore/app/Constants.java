@@ -23,9 +23,9 @@ public class Constants {
     public static String USER_ID = "admin";
     public static String BASE_FILEPATH = Environment.getExternalStoragePublicDirectory(
                                          Environment.DIRECTORY_DOWNLOADS).toString();
-    public static String DOWNFILEPATH = BASE_FILEPATH + "/APPDIR";
-    public static String TEMP_FILEPATH = BASE_FILEPATH + "/TEMPDir";
-    public static String CACHE_DATA = BASE_FILEPATH + "/CACHEDATA";
+    public static String DOWNFILEPATH = BASE_FILEPATH + "/appdir";
+    public static String TEMP_FILEPATH = BASE_FILEPATH + "/tempdir";
+    public static String CACHE_DATA = BASE_FILEPATH + "/cache";
 
     public static final String SP_CACHE_DATA = "cache";
     public static final String SP_ALL_DATA = "all";

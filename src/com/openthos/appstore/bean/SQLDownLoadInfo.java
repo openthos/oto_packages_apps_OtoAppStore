@@ -9,6 +9,7 @@ public class SQLDownLoadInfo {
     private long fileSize;
     private long downloadSize;
     private boolean isSuccess;
+    private long speech;
 
     public String getUserID() {
         return userID;
@@ -72,5 +73,13 @@ public class SQLDownLoadInfo {
 
     public void setIsSuccess(boolean isSuccess) {
         this.isSuccess = isSuccess;
+    }
+
+    public long getSpeech() {
+        return speech;
+    }
+
+    public void setSpeech(long speech) {
+        this.speech = speech;
     }
 }

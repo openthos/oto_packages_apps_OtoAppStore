@@ -55,6 +55,7 @@ public class ManagerDownloadAdapter extends BasicAdapter {
         holder.fileName.setText(taskInfo.getFileName());
         holder.fileProgress.setProgress(taskInfo.getProgress());
         holder.textProgress.setText(taskInfo.getProgress() + "%");
+        holder.speech.setText(taskInfo.getSpeech() + "k/s");
         holder.downloadIcon.setOnCheckedChangeListener(new CheckedChangeListener(position));
         if (taskInfo.isOnDownloading()) {
             holder.downloadIcon.setChecked(true);
@@ -72,15 +73,17 @@ public class ManagerDownloadAdapter extends BasicAdapter {
     class ViewHolder {
         private TextView fileName;
         private TextView textProgress;
+        private TextView speech;
         private ProgressBar fileProgress;
         private CheckBox downloadIcon;
 
         public ViewHolder(View view) {
             fileName = (TextView) view.findViewById(R.id.file_name);
             textProgress = (TextView) view.findViewById(R.id.file_size);
+            speech = (TextView) view.findViewById(R.id.file_speech);
             fileProgress = (ProgressBar) view.findViewById(R.id.progressbar);
             downloadIcon = (CheckBox) view.findViewById(R.id.checkbox);
-            downloadIcon.setVisibility(View.GONE);
+//            downloadIcon.setVisibility(View.GONE);
         }
     }
 
@@ -142,6 +145,7 @@ public class ManagerDownloadAdapter extends BasicAdapter {
                 if (taskInfo.getTaskID().equals(sqlDownLoadInfo.getTaskID())) {
                     taskInfo.setDownFileSize(sqlDownLoadInfo.getDownloadSize());
                     taskInfo.setFileSize(sqlDownLoadInfo.getFileSize());
+                    taskInfo.setSpeech(sqlDownLoadInfo.getSpeech());
                     ManagerDownloadAdapter.this.notifyDataSetChanged();
                     break;
                 }
@@ -150,7 +154,15 @@ public class ManagerDownloadAdapter extends BasicAdapter {
 
         @Override
         public void onStop(SQLDownLoadInfo sqlDownLoadInfo, boolean isSupportBreakpoint) {
-
+            for (TaskInfo taskInfo : (ArrayList<TaskInfo>) mDatas) {
+                if (taskInfo.getTaskID().equals(sqlDownLoadInfo.getTaskID())) {
+//                    mDatas.remove(taskInfo);
+                    taskInfo.setSpeech(0);
+                    taskInfo.setOnDownloading(false);
+                    ManagerDownloadAdapter.this.notifyDataSetChanged();
+                    break;
+                }
+            }
         }
 
         @Override
@@ -160,6 +172,10 @@ public class ManagerDownloadAdapter extends BasicAdapter {
             for (TaskInfo taskInfo : (ArrayList<TaskInfo>) mDatas) {
                 if (taskInfo.getTaskID().equals(sqlDownLoadInfo.getTaskID())) {
 //                    mDatas.remove(taskInfo);
+                    taskInfo.setSpeech(0);
+                    taskInfo.setOnDownloading(false);
+                    taskInfo.setDownFileSize(sqlDownLoadInfo.getDownloadSize());
+                    taskInfo.setFileSize(sqlDownLoadInfo.getFileSize());
                     ManagerDownloadAdapter.this.notifyDataSetChanged();
                     break;
                 }
@@ -174,13 +190,14 @@ public class ManagerDownloadAdapter extends BasicAdapter {
                 if (taskInfo.getTaskID().equals(sqlDownLoadInfo.getTaskID())) {
                     taskInfo.setOnDownloading(false);
                     FileHelper.deleteFile(sqlDownLoadInfo.getFileName());
-                    taskInfo.setDownFileSize(0);
-                    taskInfo.setFileSize(0);
+                    taskInfo.setDownFileSize(sqlDownLoadInfo.getDownloadSize());
+                    taskInfo.setFileSize(sqlDownLoadInfo.getFileSize());
                     ManagerDownloadAdapter.this.notifyDataSetChanged();
                     break;
                 }
             }
             Tools.toast(mContext, error);
+            Tools.printLog("ljh", error);
         }
     }
 }

@@ -7,7 +7,6 @@ import com.openthos.appstore.MainActivity;
 import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.bean.SQLDownLoadInfo;
 import com.openthos.appstore.bean.TaskInfo;
-import com.openthos.appstore.utils.Tools;
 import com.openthos.appstore.utils.sql.DownloadKeeper;
 import com.openthos.appstore.utils.FileHelper;
 
@@ -21,8 +20,11 @@ public class DownLoadManager {
     private Context mContext;
 
     private ArrayList<DownLoader> mTaskList = new ArrayList<DownLoader>();
+
     private final int MAX_DOWNLOADING_TASK = 5;
+
     private DownLoader.DownLoadSuccess mDownloadsuccessListener = null;
+
 
     private boolean mIsSupportBreakpoint = false;
 
@@ -59,18 +61,13 @@ public class DownLoadManager {
                 }
             }
         };
-        mSharedPreferences = mContext.getSharedPreferences("UserInfo",
-                Context.MODE_PRIVATE);
+        mSharedPreferences = mContext.getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
         mUserID = mSharedPreferences.getString("UserID", Constants.USER_ID);
         recoverData(mContext, mUserID);
     }
 
     private void recoverData(Context context, String userID) {
         stopAllTask();
-        mTaskList = getTaskList(context, userID);
-    }
-
-    public ArrayList<DownLoader> getTaskList(Context context, String userID) {
         mTaskList = new ArrayList<DownLoader>();
         DownloadKeeper datakeeper = new DownloadKeeper(context);
         ArrayList<SQLDownLoadInfo> sqlDownloadInfoList = null;
@@ -79,35 +76,32 @@ public class DownLoadManager {
         } else {
             sqlDownloadInfoList = datakeeper.getUserDownLoadInfo(userID);
         }
-        Tools.printLog("DM", sqlDownloadInfoList.size() + "");
         if (sqlDownloadInfoList.size() > 0) {
             int listSize = sqlDownloadInfoList.size();
             for (int i = 0; i < listSize; i++) {
                 SQLDownLoadInfo sqlDownLoadInfo = sqlDownloadInfoList.get(i);
-                DownLoader sqlDownLoader = new DownLoader(context, sqlDownLoadInfo,
-                        mPool, userID, mIsSupportBreakpoint, false);
+                DownLoader sqlDownLoader = new DownLoader(
+                        context, sqlDownLoadInfo, mPool, userID, mIsSupportBreakpoint, false);
                 sqlDownLoader.setDownLodSuccesslistener(mDownloadsuccessListener);
-                sqlDownLoader.setDownLoadListener(sqlDownLoader.getTaskID(), mAlltasklistener);
-//                sqlDownLoader.setDownLoadListener("public", mAlltasklistener);
+                sqlDownLoader.setDownLoadListener("public", mAlltasklistener);
                 mTaskList.add(sqlDownLoader);
             }
         }
-        return mTaskList;
     }
 
     public void setSupportBreakpoint(boolean isSupportBreakpoint) {
-        if ((!this.mIsSupportBreakpoint) && isSupportBreakpoint) {
+        if ((!mIsSupportBreakpoint) && isSupportBreakpoint) {
             int taskSize = mTaskList.size();
             for (int i = 0; i < taskSize; i++) {
                 DownLoader downloader = mTaskList.get(i);
                 downloader.setSupportBreakpoint(true);
             }
         }
-        this.mIsSupportBreakpoint = isSupportBreakpoint;
+        mIsSupportBreakpoint = isSupportBreakpoint;
     }
 
     public void changeUser(String userID) {
-        this.mUserID = userID;
+        mUserID = userID;
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putString("UserID", userID);
         editor.commit();
@@ -119,23 +113,15 @@ public class DownLoadManager {
         return mUserID;
     }
 
-    public String getInstallFile(String fileName, String filePath) {
-        if (filePath != null) {
-            return filePath;
-        } else {
-            return FileHelper.getDefaultFile(fileName);
-        }
+    public int addTask(String taskID, String url, String fileName) {
+        return addTask(taskID, url, fileName, null);
     }
 
-    public int addTask(String TaskID, String url, String fileName) {
-        return addTask(TaskID, url, fileName, null);
-    }
-
-    public int addTask(String TaskID, String url, String fileName, String filepath) {
-        if (TaskID == null) {
-            TaskID = fileName;
+    public int addTask(String taskID, String url, String fileName, String filepath) {
+        if (taskID == null) {
+            taskID = fileName;
         }
-//        int state = getAttachmentState(TaskID, fileName, filepath);
+//        int state = getAttachmentState(taskID, fileName, filepath);
 //        if (state != 1) {
 //            return state;
 //        }
@@ -144,40 +130,32 @@ public class DownLoadManager {
         downloadinfo.setUserID(mUserID);
         downloadinfo.setDownloadSize(0);
         downloadinfo.setFileSize(0);
-        downloadinfo.setTaskID(TaskID);
+        downloadinfo.setTaskID(taskID);
         downloadinfo.setFileName(fileName);
         downloadinfo.setUrl(url);
         if (filepath == null) {
-            String filePath = FileHelper.getDefaultFile(fileName);
-            File file = new File(filePath);
-            if (file.exists()) {
-                file.delete();
-            }
-            downloadinfo.setFilePath(filePath);
+            downloadinfo.setFilePath(FileHelper.getDefaultFile(fileName));
         } else {
             downloadinfo.setFilePath(filepath);
         }
-        DownLoader taskDownLoader = new DownLoader(mContext,
-                downloadinfo, mPool, mUserID, mIsSupportBreakpoint, true);
+        DownLoader taskDownLoader = new DownLoader(
+                mContext, downloadinfo, mPool, mUserID, mIsSupportBreakpoint, true);
         taskDownLoader.setDownLodSuccesslistener(mDownloadsuccessListener);
         if (mIsSupportBreakpoint) {
             taskDownLoader.setSupportBreakpoint(true);
         } else {
             taskDownLoader.setSupportBreakpoint(false);
         }
-
         taskDownLoader.start();
-        taskDownLoader.setDownLoadListener(downloadinfo.getTaskID(), mAlltasklistener);
-//        taskDownLoader.setDownLoadListener("public", mAlltasklistener);
+        taskDownLoader.setDownLoadListener("public", mAlltasklistener);
         mTaskList.add(0, taskDownLoader);
         return 1;
     }
 
-    private int getAttachmentState(String TaskID, String fileName, String filepath) {
-        int taskSize = mTaskList.size();
-        for (int i = 0; i < taskSize; i++) {
+    private int getAttachmentState(String taskID, String fileName, String filepath) {
+        for (int i = 0; i < mTaskList.size(); i++) {
             DownLoader downloader = mTaskList.get(i);
-            if (downloader.getTaskID().equals(TaskID)) {
+            if (downloader.getTaskID().equals(taskID)) {
                 return 0;
             }
         }
@@ -197,8 +175,7 @@ public class DownLoadManager {
     }
 
     public void deleteTask(String taskID) {
-        int taskSize = mTaskList.size();
-        for (int i = 0; i < taskSize; i++) {
+        for (int i = 0; i < mTaskList.size(); i++) {
             DownLoader deletedownloader = mTaskList.get(i);
             if (deletedownloader.getTaskID().equals(taskID)) {
                 deletedownloader.destroy();
@@ -210,8 +187,7 @@ public class DownLoadManager {
 
     public ArrayList<String> getAllTaskID() {
         ArrayList<String> taskIDlist = new ArrayList<String>();
-        int listSize = mTaskList.size();
-        for (int i = 0; i < listSize; i++) {
+        for (int i = 0; i < mTaskList.size(); i++) {
             DownLoader deletedownloader = mTaskList.get(i);
             taskIDlist.add(deletedownloader.getTaskID());
         }
@@ -235,8 +211,7 @@ public class DownLoadManager {
     }
 
     public void startTask(String taskID) {
-        int listSize = mTaskList.size();
-        for (int i = 0; i < listSize; i++) {
+        for (int i = 0; i < mTaskList.size(); i++) {
             DownLoader deletedownloader = mTaskList.get(i);
             if (deletedownloader.getTaskID().equals(taskID)) {
                 deletedownloader.start();
@@ -256,24 +231,21 @@ public class DownLoadManager {
     }
 
     public void startAllTask() {
-        int listSize = mTaskList.size();
-        for (int i = 0; i < listSize; i++) {
+        for (int i = 0; i < mTaskList.size(); i++) {
             DownLoader deletedownloader = mTaskList.get(i);
             deletedownloader.start();
         }
     }
 
     public void stopAllTask() {
-        int listSize = mTaskList.size();
-        for (int i = 0; i < listSize; i++) {
+        for (int i = 0; i < mTaskList.size(); i++) {
             DownLoader deletedownloader = mTaskList.get(i);
             deletedownloader.stop();
         }
     }
 
     public void setSingleTaskListener(String taskID, DownLoadListener listener) {
-        int listSize = mTaskList.size();
-        for (int i = 0; i < listSize; i++) {
+        for (int i = 0; i < mTaskList.size(); i++) {
             DownLoader deletedownloader = mTaskList.get(i);
             if (deletedownloader.getTaskID().equals(taskID)) {
                 deletedownloader.setDownLoadListener("private", listener);
@@ -284,11 +256,9 @@ public class DownLoadManager {
 
     public void setAllTaskListener(DownLoadListener listener) {
         mAlltasklistener = listener;
-        int listSize = mTaskList.size();
-        for (int i = 0; i < listSize; i++) {
+        for (int i = 0; i < mTaskList.size(); i++) {
             DownLoader deletedownloader = mTaskList.get(i);
-            deletedownloader.setDownLoadListener(deletedownloader.getTaskID(), listener);
-//            deletedownloader.setDownLoadListener("public", listener);
+            deletedownloader.setDownLoadListener("public", listener);
         }
     }
 
@@ -300,11 +270,9 @@ public class DownLoadManager {
     }
 
     public void removeAllDownLoadListener() {
-        int listSize = mTaskList.size();
-        for (int i = 0; i < listSize; i++) {
+        for (int i = 0; i < mTaskList.size(); i++) {
             DownLoader deletedownloader = mTaskList.get(i);
-            deletedownloader.removeDownLoadListener(deletedownloader.getTaskID());
-//            deletedownloader.removeDownLoadListener("public");
+            deletedownloader.removeDownLoadListener("public");
         }
     }
 

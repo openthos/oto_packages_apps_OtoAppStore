@@ -69,7 +69,7 @@ public class DetailFragment extends BaseFragment {
         mKanner.setOnItemClickListener(new Kanner.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                Toast.makeText(getActivity(), position + "", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getActivity(), position + "", Toast.LENGTH_SHORT).show();
             }
         });
     }

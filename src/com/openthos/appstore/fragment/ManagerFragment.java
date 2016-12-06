@@ -170,7 +170,7 @@ public class ManagerFragment extends BaseFragment
             @Override
             public void install(AlertDialog dialog) {
                 String result = AppUtils.installApk(getActivity(),
-                        mDownLoadManager.getInstallFile(fileName, null));
+                        FileHelper.getDefaultFile(taskInfo.getFileName()));
                 if (result != null) {
                     Tools.toast(getActivity(), result);
                 }
@@ -184,6 +184,11 @@ public class ManagerFragment extends BaseFragment
                 ArrayList<TaskInfo> allTask = mDownLoadManager.getAllTask();
                 FileHelper.deleteFile(fileName);
                 mDownloadAdapter.addData(allTask);
+                if (allTask.size() > Constants.MANAGER_NUM_FALSE) {
+                    mLaunchDownload.setVisibility(View.VISIBLE);
+                } else {
+                    mLaunchDownload.setVisibility(View.GONE);
+                }
                 mDownloadNum.setText(getNumText(R.string.downloads, allTask.size()));
                 dialog.cancel();
             }

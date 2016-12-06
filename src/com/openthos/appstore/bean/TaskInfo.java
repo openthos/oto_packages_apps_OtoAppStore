@@ -6,6 +6,7 @@ public class TaskInfo {
     private String fileName;
     private long fileSize = 0;
     private long downFileSize = 0;
+    private long speech;
 
     public boolean isOnDownloading() {
         return isOnDownloading;
@@ -66,4 +67,11 @@ public class TaskInfo {
         this.downFileSize = downFileSize;
     }
 
+    public long getSpeech() {
+        return speech;
+    }
+
+    public void setSpeech(long speech) {
+        this.speech = speech;
+    }
 }

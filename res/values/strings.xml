@@ -36,9 +36,9 @@
     <string name="install">install</string>
 
     <string name="news">news</string>
-    <string name="promulgator">promulgator：Neyese</string>
-    <string name="type">type:news</string>
-    <string name="size">size：12MB</string>
+    <string name="promulgator">promulgator ： </string>
+    <string name="type">type : </string>
+    <string name="size">size ： </string>
     <string name="name">name</string>
     <string name="more">more</string>
     <string name="touch_star">touch score</string>
@@ -63,4 +63,6 @@
     <string name="not_need_update">not need update</string>
     <string name="no_data_need_update">no data need update</string>
     <string name="check_net_state">please check net state</string>
+    <string name="frequent_used">frequent used</string>
+    <string name="search">search</string>
 </resources>

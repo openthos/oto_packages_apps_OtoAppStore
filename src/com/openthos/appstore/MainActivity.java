@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.IBinder;
-import android.os.PersistableBundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -26,7 +25,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.openthos.appstore.app.Constants;
-import com.openthos.appstore.bean.AllDataInfo;
+import com.openthos.appstore.bean.DataInfo;
 import com.openthos.appstore.bean.AppLayoutGridviewInfo;
 import com.openthos.appstore.bean.AppLayoutInfo;
 import com.openthos.appstore.bean.SQLAppInstallInfo;
@@ -250,6 +249,9 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
                     case Constants.DETAIL_FRAGMENT:
                         fragment = new DetailFragment();
                         addFragment(transaction, fragment, mWhat);
+                        if (getData(msg) != null) {
+                            ((DetailFragment) fragment).setDatas((String) getData(msg));
+                        }
                         break;
                     case Constants.MORE_FRAGMENT:
                         fragment = new MoreFragment();
@@ -332,15 +334,15 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
                 String allData = NetUtils.getNetStr(MainActivity.this, "/all");
                 if (!TextUtils.isEmpty(allData)) {
                     try {
-                        AllDataInfo allDataInfo = new AllDataInfo(new JSONObject(allData));
-                        if (allDataInfo != null && allDataInfo.getAppList() != null) {
-                            List<AppLayoutGridviewInfo> appList = allDataInfo.getAppList();
+                        DataInfo dataInfo = new DataInfo(new JSONObject(allData));
+                        if (dataInfo != null && dataInfo.getAppList() != null) {
+                            List<AppLayoutGridviewInfo> appList = dataInfo.getAppList();
                             for (int i = 0; i < appList.size(); i++) {
                                 AppLayoutGridviewInfo appInfo = appList.get(i);
                                 SPUtils.saveAllData(MainActivity.this, appInfo);
                             }
                         }
-                        Tools.printLog("SA", allDataInfo.getAppList().size() + "");
+                        Tools.printLog("SA", dataInfo.getAppList().size() + "");
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

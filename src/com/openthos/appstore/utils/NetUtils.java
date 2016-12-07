@@ -61,6 +61,7 @@ public class NetUtils {
     public static String getNetStr(Context context, String path) {
         if (isConnected(context)) {
             Tools.printLog("NU", "net " + path);
+            Tools.printLog("NU", "net " + Constants.BASEURL);
             InputStream is = null;
             HttpURLConnection conn = null;
             try {
@@ -81,7 +82,7 @@ public class NetUtils {
                     while ((len = is.read(bytes)) != -1) {
                         buffer.append(new String(bytes, 0, len));
                     }
-                    return buffer.toString();
+                    return new String(buffer.toString().getBytes("UTF-8"));
                 } else {
                     return null;
                 }

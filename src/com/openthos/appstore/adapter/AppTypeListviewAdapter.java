@@ -15,7 +15,6 @@ import java.util.List;
  * Created by luojunhuan on 16-10-27.
  */
 public class AppTypeListviewAdapter extends BasicAdapter {
-
     public AppTypeListviewAdapter(Context context) {
         super(context);
     }
@@ -39,8 +38,8 @@ public class AppTypeListviewAdapter extends BasicAdapter {
         }
 
         if (mDatas != null && mDatas.size() != 0) {
-            AppTypeListviewInfo appTypeListviewInfo = (AppTypeListviewInfo) mDatas.get(position);
-            holder.content.setText(appTypeListviewInfo.getContent());
+            final AppTypeListviewInfo appInfo = (AppTypeListviewInfo) mDatas.get(position);
+            holder.content.setText(appInfo.getType());
         }
 
         return convertView;

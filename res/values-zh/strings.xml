@@ -36,19 +36,17 @@
     <string name="install">安装</string>
 
     <string name="news">news</string>
-    <string name="promulgator">promulgator：Neyese</string>
-    <string name="type">type:news</string>
-    <string name="size">size：12MB</string>
+    <string name="promulgator">发布者 : </string>
+    <string name="type">类别 : </string>
+    <string name="size">大小 ： </string>
     <string name="name">name</string>
-    <string name="more">更多</string>
+    <string name="more">所有</string>
     <string name="touch_star">点击评分</string>
     <string name="write_your_commeent">写下您的评论</string>
-    <string name="comments">hfsklafjkljl;asjlsa\'k;lka;lgk</string>
     <string name="content">content</string>
     <string name="version">v3.0gengxin</string>
 
-    <string name="news_content">gdgdsgsdgdfgdfsgsdfgfdshfghfghfkdjfalkfjsdlafjklasjaafsd</string>
-    <string name="other_information">other information</string>
+    <string name="other_information">其他信息</string>
     <string name="touch_look">点击查看</string>
     <string name="uninstall">卸载</string>
     <string name="remove_task">移除任务</string>
@@ -63,4 +61,6 @@
     <string name="not_need_update">无需更新</string>
     <string name="no_data_need_update">没有数据需要更新</string>
     <string name="check_net_state">请检查网络连接</string>
+    <string name="frequent_used">常用软件</string>
+    <string name="search">搜索</string>
 </resources>

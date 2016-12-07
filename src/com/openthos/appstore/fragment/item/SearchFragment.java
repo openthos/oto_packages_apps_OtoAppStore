@@ -61,6 +61,7 @@ public class SearchFragment extends BaseFragment {
             }
         }
         AppLayoutInfo appLayoutInfo = new AppLayoutInfo(datas);
+        appLayoutInfo.setType(getActivity().getString(R.string.search));
         mListAdapter.addItem(appLayoutInfo);
     }
 

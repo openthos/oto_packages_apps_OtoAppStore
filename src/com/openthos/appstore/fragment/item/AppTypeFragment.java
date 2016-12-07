@@ -20,7 +20,9 @@ public class AppTypeFragment extends BaseFragment {
     private List<AppTypeInfo> mDatas = new ArrayList<>();
 
     public void setDatas(List<AppTypeInfo> datas) {
-        mDatas = datas;
+        if (datas != null){
+            mDatas = datas;
+        }
     }
 
     @Override

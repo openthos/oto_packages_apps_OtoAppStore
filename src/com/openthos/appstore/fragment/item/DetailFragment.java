@@ -1,8 +1,11 @@
 package com.openthos.appstore.fragment.item;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,12 +13,18 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.openthos.appstore.R;
 import com.openthos.appstore.app.Constants;
+import com.openthos.appstore.bean.DetailContentInfo;
+import com.openthos.appstore.bean.DetailInfo;
 import com.openthos.appstore.fragment.BaseFragment;
+import com.openthos.appstore.utils.NetUtils;
 import com.openthos.appstore.view.Kanner;
+import com.squareup.picasso.Picasso;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class DetailFragment extends BaseFragment {
     private ImageView mIcon;
@@ -30,6 +39,9 @@ public class DetailFragment extends BaseFragment {
     private TextView mSize;
     private int mFromFragment;
 
+    private String mData;
+    private String mNetStr;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -42,7 +54,7 @@ public class DetailFragment extends BaseFragment {
 
         initView(view);
 
-        loadData();
+        initData();
 
         initFragment();
     }
@@ -56,7 +68,7 @@ public class DetailFragment extends BaseFragment {
         commentFragment.setAll(false);
 
         AppTypeFragment appTypeFragment = new AppTypeFragment();
-        appTypeFragment.setDatas(Constants.getDataItemRightInfo());
+//        appTypeFragment.setDatas(Constants.getDataItemRightInfo());
 
         transaction.replace(R.id.fragment_detail_comment, commentFragment);
         transaction.replace(R.id.fragment_detail_morelove, appTypeFragment);
@@ -64,7 +76,7 @@ public class DetailFragment extends BaseFragment {
         transaction.commit();
     }
 
-    private void loadData() {
+    private void initData() {
         mKanner.setImagesUrl(Constants.getString());
         mKanner.setOnItemClickListener(new Kanner.OnItemClickListener() {
             @Override
@@ -72,6 +84,8 @@ public class DetailFragment extends BaseFragment {
 //                Toast.makeText(getActivity(), position + "", Toast.LENGTH_SHORT).show();
             }
         });
+
+        new Thread(new GetData()).start();
     }
 
     private void initView(View view) {
@@ -85,5 +99,56 @@ public class DetailFragment extends BaseFragment {
         mPromulgator = (TextView) view.findViewById(R.id.fragment_detail_promulgator);
         mType = (TextView) view.findViewById(R.id.fragment_detail_type);
         mSize = (TextView) view.findViewById(R.id.fragment_detail_size);
+    }
+
+    public void setDatas(String data) {
+        if (!TextUtils.isEmpty(data)) {
+            mData = data;
+        }
+    }
+
+    private class GetData implements Runnable {
+        @Override
+        public void run() {
+            mNetStr = NetUtils.getNetStr(getActivity(), "/detail/" + mData);
+            if (!TextUtils.isEmpty(mNetStr)) {
+                mHandler.sendEmptyMessage(0);
+            }
+        }
+    }
+
+    private Handler mHandler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message message) {
+            switch (message.what) {
+                case 0:
+                    loadData();
+                    break;
+                default:
+                    break;
+            }
+            return false;
+        }
+    });
+
+    private void loadData() {
+        try {
+            DetailInfo detailInfo = new DetailInfo(new JSONObject(mNetStr));
+            DetailContentInfo contentInfo = detailInfo.getDetailContentInfo();
+            if (contentInfo != null) {
+                Picasso.with(getActivity()).
+                        load(Constants.BASEURL + "/" + contentInfo.getIconUrl()).into(mIcon);
+                mAppName.setText(contentInfo.getName());
+                mAppCompany.setText(contentInfo.getCompany());
+                mCommentStar.setRating(contentInfo.getStar());
+                mContent.setText(contentInfo.getContent());
+                mPromulgator.setText(getActivity().getString(
+                        R.string.promulgator) + contentInfo.getPromulgator());
+                mType.setText(getActivity().getString(R.string.type) + contentInfo.getType());
+                mSize.setText(getActivity().getString(R.string.size) + contentInfo.getFileSize());
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 }

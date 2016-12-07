@@ -6,19 +6,25 @@
     android:background="@color/white"
     tools:context="com.openthos.appstore.fragment.GameFragment">
 
-    <FrameLayout
+    <ListView
         android:id="@+id/fragment_game_left"
         android:layout_width="0dp"
         android:layout_height="match_parent"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="15dp"
         android:layout_weight="3"
+        android:divider="@null"
         />
 
-    <FrameLayout
+    <ListView
         android:id="@+id/fragment_game_right"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
+        android:layout_weight="1"
+        android:background="@color/right_background"
+        android:divider="@null"
         />
 
 </LinearLayout>

@@ -121,10 +121,11 @@ public class DownLoadManager {
         if (taskID == null) {
             taskID = fileName;
         }
-//        int state = getAttachmentState(taskID, fileName, filepath);
-//        if (state != 1) {
+        int state = getAttachmentState(taskID, fileName, filepath);
+        if (state != 1) {
 //            return state;
-//        }
+            FileHelper.deleteFile(fileName);
+        }
 
         SQLDownLoadInfo downloadinfo = new SQLDownLoadInfo();
         downloadinfo.setUserID(mUserID);

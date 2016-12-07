@@ -11,21 +11,17 @@ import java.util.List;
  * Created by luojunhuan on 16-10-27.
  */
 public class AppTypeInfo {
-    private long id;
+    private int result;
+    private String message;
     private String name;
     private List<AppTypeListviewInfo> list;
 
-    public AppTypeInfo(long id, String name, List<AppTypeListviewInfo> list) {
-        this.id = id;
-        this.name = name;
-        this.list = list;
-    }
-
     public AppTypeInfo(JSONObject obj) throws JSONException {
-        this.id = obj.getLong("id");
+        this.result = obj.getInt("result");
+        this.message = obj.getString("message");
         this.name = obj.getString("name");
         this.list = new ArrayList<>();
-        JSONArray info1 = obj.getJSONArray("info");
+        JSONArray info1 = obj.getJSONArray("date");
         AppTypeListviewInfo info = null;
         for (int i = 0; i < info1.length(); i++) {
             info = new AppTypeListviewInfo(info1.getJSONObject(i));
@@ -33,12 +29,20 @@ public class AppTypeInfo {
         }
     }
 
-    public long getId() {
-        return id;
+    public int getResult() {
+        return result;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setResult(int result) {
+        this.result = result;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public String getName() {

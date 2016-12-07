@@ -8,16 +8,16 @@ import org.json.JSONObject;
  */
 public class AppTypeListviewInfo {
     private long id;
-    private String content;
+    private String type;
 
-    public AppTypeListviewInfo(long id, String content) {
+    public AppTypeListviewInfo(long id, String type) {
         this.id = id;
-        this.content = content;
+        this.type = type;
     }
 
     public AppTypeListviewInfo(JSONObject obj) throws JSONException {
         this.id = obj.getLong("id");
-        this.content = obj.getString("content");
+        this.type = obj.getString("type");
     }
 
     public long getId() {
@@ -28,11 +28,11 @@ public class AppTypeListviewInfo {
         this.id = id;
     }
 
-    public String getContent() {
-        return content;
+    public String getType() {
+        return type;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setType(String type) {
+        this.type = type;
     }
 }

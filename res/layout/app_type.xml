@@ -1,33 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_margin="10dp"
     android:layout_height="match_parent"
-    android:background="#f4f6f8"
+    android:paddingLeft="10dp"
     >
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/item_linearlayout"
+        android:gravity="center_vertical"
         >
+
         <TextView
             android:id="@+id/app_type_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/name"
             android:gravity="center_vertical"
-            android:textSize="@dimen/second_title_size"
-            android:textColor="@color/text_gray"
+            android:textSize="@dimen/first_title_size"
+            android:textColor="@color/item_title"
             android:layout_centerVertical="true"
             />
+
         <TextView
             android:id="@+id/app_type_more"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/more"
             android:gravity="center_vertical"
-            android:textSize="@dimen/second_title_size"
-            android:textColor="@color/text_gray"
+            android:textSize="@dimen/first_title_size"
+            android:textColor="@color/activity_title"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:drawableRight="@mipmap/more"
@@ -47,7 +51,4 @@
         android:divider="@null"
         />
 
-    <View
-        android:layout_width="wrap_content"
-        android:layout_height="15dp"/>
 </LinearLayout>

@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.openthos.appstore.R;
 import com.openthos.appstore.bean.AppTypeInfo;
+import com.openthos.appstore.utils.Tools;
 import com.openthos.appstore.view.CustomListView;
 
 import java.util.List;
@@ -17,16 +18,11 @@ import java.util.List;
 /**
  * Created by luojunhuan on 16-10-27.
  */
-public class AppTypeAdapter extends BasicAdapter
-        implements View.OnClickListener, AdapterView.OnItemClickListener {
+public class AppTypeAdapter extends BasicAdapter implements View.OnClickListener {
+    private OnItemClickListener mOnItemClickListener;
 
     public AppTypeAdapter(Context context) {
         super(context);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return mDatas == null ? -1 : ((AppTypeInfo) mDatas.get(position)).getId();
     }
 
     @Override
@@ -42,14 +38,22 @@ public class AppTypeAdapter extends BasicAdapter
         }
 
         if (mDatas != null && mDatas.size() != 0) {
-            AppTypeInfo appTypeInfo = (AppTypeInfo) mDatas.get(position);
+            final AppTypeInfo appTypeInfo = (AppTypeInfo) mDatas.get(position);
             holder.name.setText(appTypeInfo.getName());
             holder.more.setOnClickListener(this);
             holder.more.setTag(position);
             AppTypeListviewAdapter adapter = new AppTypeListviewAdapter(mContext);
             holder.listview.setAdapter(adapter);
             adapter.addDatas(appTypeInfo.getList());
-            holder.listview.setOnItemClickListener(this);
+            holder.listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick (
+                        AdapterView<?> adapterView, View view, int position, long id) {
+                    Tools.printLog("ljh", id + " " + appTypeInfo.getList().get(position).getType());
+                    mOnItemClickListener.OnItemClick(id,
+                                             appTypeInfo.getList().get(position).getType());
+                }
+            });
         }
 
         return convertView;
@@ -62,12 +66,6 @@ public class AppTypeAdapter extends BasicAdapter
                 Toast.LENGTH_SHORT).show();
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Toast.makeText(mContext, position + "", Toast.LENGTH_SHORT).show();
-        //TODO
-    }
-
     class ViewHolder {
         private TextView name;
         private TextView more;
@@ -77,12 +75,31 @@ public class AppTypeAdapter extends BasicAdapter
             name = ((TextView) view.findViewById(R.id.app_type_name));
             more = (TextView) view.findViewById(R.id.app_type_more);
             listview = ((CustomListView) view.findViewById(R.id.app_type_listview));
+            more.setVisibility(View.GONE);
         }
     }
 
     public void addDatas(List<AppTypeInfo> datas) {
-        mDatas.clear();
-        mDatas.addAll(datas);
-        notifyDataSetChanged();
+        if (datas != null && datas.size() != 0) {
+            mDatas.clear();
+            mDatas.addAll(datas);
+            notifyDataSetChanged();
+        }
+    }
+
+    public void addDatas(AppTypeInfo datas) {
+        if (datas != null) {
+            mDatas.clear();
+            mDatas.add(datas);
+            notifyDataSetChanged();
+        }
+    }
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        mOnItemClickListener = onItemClickListener;
+    }
+
+    public interface OnItemClickListener {
+        void OnItemClick(long id, String type);
     }
 }

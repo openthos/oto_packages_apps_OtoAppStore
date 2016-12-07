@@ -10,12 +10,12 @@ import java.util.List;
 /**
  * Created by ljh on 16-11-30.
  */
-public class AllDataInfo {
+public class DataInfo {
     private int result;
     private String message;
     private List<AppLayoutGridviewInfo> appList;
 
-    public AllDataInfo(JSONObject obj) throws JSONException {
+    public DataInfo(JSONObject obj) throws JSONException {
         result = obj.getInt("result");
         message = obj.getString("message");
         appList = new ArrayList<>();

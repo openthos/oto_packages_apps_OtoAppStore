@@ -7,7 +7,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/item_linearlayout"
         >
         <TextView
             android:id="@+id/app_layout_name"
@@ -24,6 +24,7 @@
             android:layout_height="wrap_content"
             android:text="@string/more"
             android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
             android:drawableRight="@mipmap/more"
             android:textColor="@color/item_title"
             android:gravity="center_vertical"

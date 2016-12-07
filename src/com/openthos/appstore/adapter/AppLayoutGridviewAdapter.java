@@ -1,6 +1,7 @@
 package com.openthos.appstore.adapter;
 
 import android.content.Context;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -121,6 +122,7 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
         int possition = (int) v.getTag();
         AppLayoutGridviewInfo appInfo = (AppLayoutGridviewInfo) mDatas.get(possition);
         Map<String, Integer> downloadStateMap = MainActivity.mDownloadStateMap;
+        String appId = appInfo.getId() + "";
         switch (v.getId()) {
             case R.id.app_layout_gridview_install:
                 Button install = (Button) v;
@@ -131,7 +133,7 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
                 String installs = mContext.getResources().getString(R.string.install);
                 String update = mContext.getResources().getString(R.string.update);
                 String finished = mContext.getResources().getString(R.string.finished);
-                String appId = appInfo.getId() + "";
+
                 if (btnStr.equals(continues)) {
                     install.setText(pause);
                     downloadStateMap.put(appId, Constants.APP_DOWNLOAD_PAUSE);
@@ -159,7 +161,10 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
                 break;
 
             default:
-                MainActivity.mHandler.sendEmptyMessage(Constants.DETAIL_FRAGMENT);
+                Message message = MainActivity.mHandler.obtainMessage();
+                message.what = Constants.DETAIL_FRAGMENT;
+                message.obj = appId;
+                MainActivity.mHandler.sendMessage(message);
                 break;
         }
     }
@@ -238,7 +243,7 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
         }
     }
 
-    public void setUpdateProcessListener(UpdateProgress updateProgress){
+    public void setUpdateProcessListener(UpdateProgress updateProgress) {
         mUpdateProgress = updateProgress;
     }
 

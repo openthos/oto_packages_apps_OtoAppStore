@@ -13,14 +13,21 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.openthos.appstore.R;
+import com.openthos.appstore.adapter.AppLayoutAdapter;
 import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.app.StoreApplication;
+import com.openthos.appstore.bean.AppLayoutInfo;
+import com.openthos.appstore.bean.DataInfo;
 import com.openthos.appstore.fragment.item.HomeAppLayoutFragment;
 import com.openthos.appstore.fragment.item.AppTypeFragment;
 import com.openthos.appstore.utils.NetUtils;
 import com.openthos.appstore.utils.SPUtils;
 import com.openthos.appstore.utils.Tools;
+import com.openthos.appstore.view.CustomListView;
 import com.openthos.appstore.view.Kanner;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -31,9 +38,11 @@ public class HomeFragment extends BaseFragment {
     private ImageView mForward;
     private Kanner mKanner;
 
-    private String recommend;
-    private String praise;
-    private String welcome;
+    private String mRecommend;
+    private String mPraise;
+    private String mWelcome;
+    private String mFrequent;
+    private CustomListView mListView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -54,7 +63,7 @@ public class HomeFragment extends BaseFragment {
         new Thread(new GetData()).start();
     }
 
-    private void initFragment(String recommend, String praise, String welcome) {
+    private void initFragment(String recommend, String praise, String welcome, String frequent) {
         FragmentManager manager = getChildFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
 
@@ -64,15 +73,22 @@ public class HomeFragment extends BaseFragment {
         homeAppLayoutFragment.setDatas(recommend, praise, welcome);
         transaction.replace(R.id.fragment_home_left, homeAppLayoutFragment);
 
-        AppTypeFragment itemRightFragment = new AppTypeFragment();
-        itemRightFragment.setDatas(Constants.getDataItemRightInfo());
-
-        transaction.replace(R.id.fragment_home_right, itemRightFragment);
-
         transaction.commit();
+
+        AppLayoutAdapter appLayoutAdapter = new AppLayoutAdapter(getActivity(), 1, true);
+        mListView.setAdapter(appLayoutAdapter);
+        try {
+            DataInfo dataInfo = new DataInfo(new JSONObject(frequent));
+            AppLayoutInfo appLayoutInfo = new AppLayoutInfo(dataInfo.getAppList());
+            appLayoutInfo.setType(getActivity().getString(R.string.frequent_used));
+            appLayoutAdapter.addItem(appLayoutInfo);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private void initView(View view) {
+        mListView = ((CustomListView) view.findViewById(R.id.fragment_home_listview));
         mKanner = ((Kanner) view.findViewById(R.id.fragment_home_kanner));
         mForward = (ImageView) view.findViewById(R.id.fragment_home_forward);
         mBack = (ImageView) view.findViewById(R.id.fragment_home_back);
@@ -120,30 +136,36 @@ public class HomeFragment extends BaseFragment {
             String recommandUrl = "/list/recommend";
             String praiseUrl = "/list/praise";
             String welcomeUrl = "/list/welcome";
+            String frequentUrl = "/home/frequent";
 
-            recommend = SPUtils.getData(getActivity(),
+            mRecommend = SPUtils.getData(getActivity(),
                     Constants.SP_CACHE_DATA, "recommend" + StoreApplication.DATE_FORMAT);
-            praise = SPUtils.getData(getActivity(),
+            mPraise = SPUtils.getData(getActivity(),
                     Constants.SP_CACHE_DATA, "praise" + StoreApplication.DATE_FORMAT);
-            welcome = SPUtils.getData(getActivity(),
+            mWelcome = SPUtils.getData(getActivity(),
                     Constants.SP_CACHE_DATA, "welcome" + StoreApplication.DATE_FORMAT);
-            if (recommend == null || praise == null || welcome == null) {
-                recommend = NetUtils.getNetStr(getActivity(), recommandUrl);
-                praise = NetUtils.getNetStr(getActivity(), welcomeUrl);
-                welcome = NetUtils.getNetStr(getActivity(), praiseUrl);
-                if (recommend != null && praise != null && welcome != null) {
+            mFrequent = SPUtils.getData(getActivity(),
+                    Constants.SP_CACHE_DATA, "frequent" + StoreApplication.DATE_FORMAT);
+            if (mRecommend == null || mPraise == null || mWelcome == null || mFrequent == null) {
+                mRecommend = NetUtils.getNetStr(getActivity(), recommandUrl);
+                mPraise = NetUtils.getNetStr(getActivity(), welcomeUrl);
+                mWelcome = NetUtils.getNetStr(getActivity(), praiseUrl);
+                mFrequent = NetUtils.getNetStr(getActivity(), frequentUrl);
+                if (mRecommend != null &&
+                        mPraise != null && mWelcome != null && mFrequent != null) {
                     mHandler.sendEmptyMessage(0);
                     SPUtils.saveData(getActivity(), Constants.SP_CACHE_DATA,
-                            "recommend" + StoreApplication.DATE_FORMAT, recommend);
+                            "recommend" + StoreApplication.DATE_FORMAT, mRecommend);
                     SPUtils.saveData(getActivity(), Constants.SP_CACHE_DATA,
-                            "praise" + StoreApplication.DATE_FORMAT, praise);
+                            "praise" + StoreApplication.DATE_FORMAT, mPraise);
                     SPUtils.saveData(getActivity(), Constants.SP_CACHE_DATA,
-                            "welcome" + StoreApplication.DATE_FORMAT, welcome);
+                            "welcome" + StoreApplication.DATE_FORMAT, mWelcome);
+                    SPUtils.saveData(getActivity(), Constants.SP_CACHE_DATA,
+                            "frequent" + StoreApplication.DATE_FORMAT, mFrequent);
                 }
             } else {
                 mHandler.sendEmptyMessage(0);
             }
-
         }
     }
 
@@ -152,7 +174,7 @@ public class HomeFragment extends BaseFragment {
         public boolean handleMessage(Message msg) {
             switch (msg.what) {
                 case 0:
-                    initFragment(recommend, praise, welcome);
+                    initFragment(mRecommend, mPraise, mWelcome, mFrequent);
                     break;
             }
             return false;

@@ -17,7 +17,7 @@ import java.util.List;
  * Created by luojunhuan on 16-10-25.
  */
 public class Constants {
-//    public static final String BASEURL = "http://dev.openthos.org/openthos/appstore";
+//    public static String BASEURL = "http://dev.openthos.org/openthos/appstore";
     public static String BASEURL = "http://192.168.0.180/openthos/appstore";
 
     public static String USER_ID = "admin";
@@ -29,6 +29,7 @@ public class Constants {
 
     public static final String SP_CACHE_DATA = "cache";
     public static final String SP_ALL_DATA = "all";
+    public static final String SP_DATE_FORMATE = "dateformat";
 
     public static final String APP_LAYOUT_INFO = "applayoutinfo";
 
@@ -63,26 +64,6 @@ public class Constants {
     public static final int DELAY_TIME_3 = 3000;
     public static final int DELAY_TIME_5 = 5000;
 
-    public static List<AppTypeInfo> getDataItemRightInfo() {
-        List<AppTypeInfo> data = new ArrayList<>();
-        List<AppTypeListviewInfo> datas = new ArrayList<>();
-
-        AppTypeListviewInfo appTypeListviewInfo = new AppTypeListviewInfo(3, "net");
-        AppTypeListviewInfo appTypeListviewInfo1 = new AppTypeListviewInfo(3, "study");
-        AppTypeListviewInfo appTypeListviewInfo2 = new AppTypeListviewInfo(3, "business");
-
-        datas.add(appTypeListviewInfo);
-        datas.add(appTypeListviewInfo2);
-        datas.add(appTypeListviewInfo1);
-        datas.add(appTypeListviewInfo);
-        datas.add(appTypeListviewInfo2);
-        datas.add(appTypeListviewInfo1);
-
-        AppTypeInfo appTypeInfo = new AppTypeInfo(3, "more", datas);
-        data.add(appTypeInfo);
-        data.add(appTypeInfo);
-        return data;
-    }
 
     public static List<String> getString() {
         List<String> data = new ArrayList<>();

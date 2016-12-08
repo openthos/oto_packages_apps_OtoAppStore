@@ -158,7 +158,7 @@ public class DetailContentInfo {
     public String getFileSize() {
         if (fileSize < 1024) {
             return fileSize + "b";
-        } else if (fileSize < 1024 * 1024)) {
+        } else if (fileSize < 1024 * 1024) {
             return (fileSize * 100 / 1024) / 100.0 + "Kb";
         } else {
             return (fileSize * 100 / (1024 * 1024)) / 100.0 + "Mb";

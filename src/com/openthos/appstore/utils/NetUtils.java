@@ -26,13 +26,13 @@ public class NetUtils {
     }
 
     public static boolean isConnected(Context context) {
-        ConnectivityManager connectivity = (ConnectivityManager) context
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (null != connectivity) {
-            NetworkInfo info = connectivity.getActiveNetworkInfo();
-            if (null != info && info.isConnected()) {
-                if (info.getState() == NetworkInfo.State.CONNECTED) {
-                    return true;
+        if (context != null) {
+            ConnectivityManager mConnectivityManager = (ConnectivityManager) context
+                    .getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (mConnectivityManager != null) {
+                NetworkInfo mNetworkInfo = mConnectivityManager.getActiveNetworkInfo();
+                if (mNetworkInfo != null) {
+                    return mNetworkInfo.isAvailable();
                 }
             }
         }
@@ -59,47 +59,52 @@ public class NetUtils {
     }
 
     public static String getNetStr(Context context, String path) {
-        if (isConnected(context)) {
-            Tools.printLog("NU", "net " + path);
-            Tools.printLog("NU", "net " + Constants.BASEURL);
-            InputStream is = null;
-            HttpURLConnection conn = null;
-            try {
-                URL url = new URL(Constants.BASEURL + path);
-                conn = (HttpURLConnection) url.openConnection();
-                conn.setConnectTimeout(5 * 1000);
-                conn.setRequestMethod("GET");
-                conn.setDoInput(true);
-                conn.setDoOutput(true);
-                conn.connect();
-                int code = conn.getResponseCode();
+        try {
+            if (isConnected(context)) {
+                Tools.printLog("NU", "net " + path);
+                Tools.printLog("NU", "net " + Constants.BASEURL);
+                InputStream is = null;
+                HttpURLConnection conn = null;
+                try {
+                    URL url = new URL(Constants.BASEURL + path);
+                    conn = (HttpURLConnection) url.openConnection();
+                    conn.setConnectTimeout(5 * 1000);
+                    conn.setRequestMethod("GET");
+                    conn.setDoInput(true);
+                    conn.setDoOutput(true);
+                    conn.connect();
+                    int code = conn.getResponseCode();
 
-                if (code == HttpURLConnection.HTTP_OK) {
-                    is = conn.getInputStream();
-                    int len = -1;
-                    StringBuffer buffer = new StringBuffer();
-                    byte[] bytes = new byte[1024];
-                    while ((len = is.read(bytes)) != -1) {
-                        buffer.append(new String(bytes, 0, len));
+                    if (code == HttpURLConnection.HTTP_OK) {
+                        is = conn.getInputStream();
+                        int len = -1;
+                        StringBuffer buffer = new StringBuffer();
+                        byte[] bytes = new byte[1024];
+                        while ((len = is.read(bytes)) != -1) {
+                            buffer.append(new String(bytes, 0, len));
+                        }
+                        return new String(buffer.toString().getBytes("UTF-8"));
+                    } else {
+                        return null;
                     }
-                    return new String(buffer.toString().getBytes("UTF-8"));
-                } else {
+                } catch (Exception e) {
+                    e.printStackTrace();
                     return null;
+                } finally {
+                    Tools.closeStream(is);
+                    if (conn != null) {
+                        conn.disconnect();
+                    }
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
+            } else {
+                Message message = MainActivity.mHandler.obtainMessage();
+                message.what = Constants.TOAST;
+                message.obj = context.getString(R.string.check_net_state);
+                MainActivity.mHandler.sendMessage(message);
                 return null;
-            } finally {
-                Tools.closeStream(is);
-                if (conn != null) {
-                    conn.disconnect();
-                }
             }
-        } else {
-            Message message = MainActivity.mHandler.obtainMessage();
-            message.what = Constants.TOAST;
-            message.obj = context.getString(R.string.check_net_state);
-            MainActivity.mHandler.sendMessage(message);
+        } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
     }

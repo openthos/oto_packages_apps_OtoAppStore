@@ -44,10 +44,10 @@ public class CommentAdapter extends BasicAdapter {
 
         if (mDatas != null && mDatas.size() != 0) {
             CommentInfo commentInfo = (CommentInfo) mDatas.get(position);
-            holder.content.setText(commentInfo.getContent());
+            holder.content.setText(R.string.comment_content);
             holder.time.setText(commentInfo.getTime());
             holder.author.setText(mContext.getString(R.string.author) +
-                    commentInfo.getCommentPerson());
+                    mContext.getString(R.string.who));
             holder.star.setProgress(commentInfo.getStar());
         }
 

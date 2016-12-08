@@ -63,4 +63,6 @@
     <string name="check_net_state">请检查网络连接</string>
     <string name="frequent_used">常用软件</string>
     <string name="search">搜索</string>
+    <string name="comment_content">用着很不错，赞</string>
+    <string name="who">李晓华</string>
 </resources>

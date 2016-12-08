@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
+    android:orientation="vertical"
     android:paddingLeft="10dp"
     >
 
@@ -12,14 +12,15 @@
         android:layout_height="50dp"
         android:orientation="horizontal"
         >
+
         <TextView
             android:id="@+id/item_comment_content"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:text="@string/comments"
-            android:textSize="@dimen/three_title_size"
             android:textColor="@color/text_black"
+            android:textSize="@dimen/first_title_size"
             />
 
         <RatingBar
@@ -27,10 +28,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:isIndicator="true"
-            android:scaleY="0.5"
-            android:scaleX="0.5"
             android:numStars="5"
             android:rating="1.5"
+            android:scaleX="0.5"
+            android:scaleY="0.5"
             android:stepSize="0.5"
             />
     </LinearLayout>
@@ -40,12 +41,13 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         >
+
         <TextView
             android:id="@+id/item_comment_author"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/content_size"
             android:textColor="@color/text_gray"
+            android:textSize="@dimen/three_title_size"
             />
 
         <TextView
@@ -53,8 +55,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
-            android:textSize="@dimen/content_size"
             android:textColor="@color/text_gray"
+            android:textSize="@dimen/three_title_size"
             />
 
     </LinearLayout>

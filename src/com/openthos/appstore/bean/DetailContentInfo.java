@@ -20,7 +20,7 @@ public class DetailContentInfo {
     private String name;
     private String company;
     private String type;
-    private int star;
+    private float star;
     private String content;
     private String promulgator;
     private long fileSize;
@@ -131,11 +131,11 @@ public class DetailContentInfo {
         this.type = type;
     }
 
-    public int getStar() {
+    public float getStar() {
         return star;
     }
 
-    public void setStar(int star) {
+    public void setStar(float star) {
         this.star = star;
     }
 

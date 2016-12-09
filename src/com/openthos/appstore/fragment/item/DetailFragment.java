@@ -14,11 +14,13 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.openthos.appstore.MainActivity;
 import com.openthos.appstore.R;
 import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.bean.DetailContentInfo;
 import com.openthos.appstore.bean.DetailInfo;
 import com.openthos.appstore.fragment.BaseFragment;
+import com.openthos.appstore.utils.FileHelper;
 import com.openthos.appstore.utils.NetUtils;
 import com.openthos.appstore.view.Kanner;
 import com.squareup.picasso.Picasso;
@@ -26,7 +28,7 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class DetailFragment extends BaseFragment {
+public class DetailFragment extends BaseFragment implements View.OnClickListener {
     private ImageView mIcon;
     private Button mDownload;
     private TextView mAppName;
@@ -41,6 +43,7 @@ public class DetailFragment extends BaseFragment {
 
     private String mData;
     private String mNetStr;
+    private DetailContentInfo mContentInfo;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -99,11 +102,22 @@ public class DetailFragment extends BaseFragment {
         mPromulgator = (TextView) view.findViewById(R.id.fragment_detail_promulgator);
         mType = (TextView) view.findViewById(R.id.fragment_detail_type);
         mSize = (TextView) view.findViewById(R.id.fragment_detail_size);
+
+        mDownload.setOnClickListener(this);
     }
 
     public void setDatas(String data) {
         if (!TextUtils.isEmpty(data)) {
             mData = data;
+        }
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (mContentInfo != null) {
+            MainActivity.mBinder.addTask(mContentInfo.getId() + "",
+                    Constants.BASEURL + "/" + mContentInfo.getDownloadUrl(),
+                    FileHelper.getNameFromUrl(mContentInfo.getDownloadUrl()));
         }
     }
 
@@ -134,18 +148,18 @@ public class DetailFragment extends BaseFragment {
     private void loadData() {
         try {
             DetailInfo detailInfo = new DetailInfo(new JSONObject(mNetStr));
-            DetailContentInfo contentInfo = detailInfo.getDetailContentInfo();
-            if (contentInfo != null) {
+            mContentInfo = detailInfo.getDetailContentInfo();
+            if (mContentInfo != null) {
                 Picasso.with(getActivity()).
-                        load(Constants.BASEURL + "/" + contentInfo.getIconUrl()).into(mIcon);
-                mAppName.setText(contentInfo.getName());
-                mAppCompany.setText(contentInfo.getCompany());
-                mCommentStar.setRating(contentInfo.getStar());
-                mContent.setText(contentInfo.getContent());
+                        load(Constants.BASEURL + "/" + mContentInfo.getIconUrl()).into(mIcon);
+                mAppName.setText(mContentInfo.getName());
+                mAppCompany.setText(mContentInfo.getCompany());
+                mCommentStar.setRating(mContentInfo.getStar());
+                mContent.setText(mContentInfo.getContent());
                 mPromulgator.setText(getActivity().getString(
-                        R.string.promulgator) + contentInfo.getPromulgator());
-                mType.setText(getActivity().getString(R.string.type) + contentInfo.getType());
-                mSize.setText(getActivity().getString(R.string.size) + contentInfo.getFileSize());
+                        R.string.promulgator) + mContentInfo.getPromulgator());
+                mType.setText(getActivity().getString(R.string.type) + mContentInfo.getType());
+                mSize.setText(getActivity().getString(R.string.size) + mContentInfo.getFileSize());
             }
         } catch (JSONException e) {
             e.printStackTrace();

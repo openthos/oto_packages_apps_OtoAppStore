@@ -79,7 +79,16 @@ public class FileHelper {
         if (flieName == null || "".equals(flieName)) {
             return null;
         }
+        creatFile(getDefaultPath() + "/" + flieName);
         return getDefaultPath() + "/" + flieName;
+    }
+
+    public static String getTempFile(String flieName) {
+        if (flieName == null || "".equals(flieName)) {
+            return null;
+        }
+        creatFile(getTempPath() + "/" + flieName);
+        return getTempPath() + "/" + flieName;
     }
 
     public static String getDefaultFileFromUrl(String url) {

@@ -196,8 +196,8 @@ public class ManagerDownloadAdapter extends BasicAdapter {
                     break;
                 }
             }
-            Tools.toast(mContext, error);
-            Tools.printLog("ljh", error);
+            Tools.toast(mContext, error + "");
+            Tools.printLog("ljh", error + "");
         }
     }
 }

@@ -10,8 +10,12 @@ import com.openthos.appstore.utils.FileHelper;
 import com.openthos.appstore.utils.Tools;
 import com.openthos.appstore.utils.sql.DownloadKeeper;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+//import java.io.RandomAccessFile;
 import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -139,10 +143,12 @@ public class DownLoader {
     class DownLoadThread extends Thread {
         private boolean isdownloading;
         private URL url;
-        private RandomAccessFile localFile;
+        //        private RandomAccessFile localFile;
         private HttpURLConnection urlConn;
         private InputStream inputStream;
         private int progress = -1;
+        BufferedOutputStream bos = null;
+        BufferedInputStream bis = null;
 
         public DownLoadThread() {
             isdownloading = true;
@@ -173,9 +179,11 @@ public class DownLoader {
                     } else {
                         if (new File(TEMP_FILEPATH + "/" +
                                 mSQLDownLoadInfo.getFileName()).exists()) {
-                            localFile = new RandomAccessFile(
-                                    TEMP_FILEPATH + "/" + mSQLDownLoadInfo.getFileName(), "rwd");
-                            localFile.seek(mDownFileSize);
+//                            localFile = new RandomAccessFile(
+//                                    TEMP_FILEPATH + "/" + mSQLDownLoadInfo.getFileName(), "rwd");
+//                            localFile.seek(mDownFileSize);
+                            mDownFileSize = new File(
+                                    FileHelper.getTempFile(mSQLDownLoadInfo.getFileName())).length();
                             urlConn.setRequestProperty("Range", "bytes=" + mDownFileSize + "-");
                         } else {
                             mFileSize = 0;
@@ -185,12 +193,22 @@ public class DownLoader {
                         }
                     }
                     inputStream = urlConn.getInputStream();
+                    bis = new BufferedInputStream(inputStream);
+
+                    bos = new BufferedOutputStream(new FileOutputStream(
+                            FileHelper.getTempFile(mSQLDownLoadInfo.getFileName()), true));
                     byte[] buffer = new byte[BUFFER_READ_BYTE];
                     int length = -1;
                     long timeMillis = System.currentTimeMillis();
                     long downloadSize = mDownFileSize;
-                    while ((length = inputStream.read(buffer)) != -1 && isdownloading) {
-                        localFile.write(buffer, 0, length);
+                    mFileSize = urlConn.getContentLength() + downloadSize;
+                    mSQLDownLoadInfo.setFileSize(mFileSize);
+                    saveDownloadInfo();
+
+                    while ((length = bis.read(buffer)) != -1 && isdownloading) {
+//                        localFile.write(buffer, 0, length);
+                        bos.write(buffer, 0, length);
+                        bos.flush();
                         mDownFileSize += length;
                         long currentTimeMillis = System.currentTimeMillis();
                         int nowProgress = (int) ((100 * mDownFileSize) / mFileSize);
@@ -206,8 +224,8 @@ public class DownLoader {
                             sendMessage(TASK_PROGESS, null);
                         }
                     }
-
                     if (mDownFileSize == mFileSize) {
+                        handler.sendEmptyMessage(TASK_SUCCESS);
                         boolean renameResult = RenameFile();
                         if (renameResult) {
                             mSQLDownLoadInfo.setDownloadSize(mFileSize);
@@ -263,13 +281,14 @@ public class DownLoader {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    try {
-                        if (localFile != null) {
-                            localFile.close();
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    Tools.closeStream(bis, bos);
+//                    try {
+//                        if (localFile != null) {
+//                            localFile.close();
+//                        }
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
                 }
             }
         }
@@ -287,9 +306,9 @@ public class DownLoader {
             long urlfilesize = urlConn.getContentLength();
             if (urlfilesize > 0) {
                 isFolderExist();
-                localFile = new RandomAccessFile(TEMP_FILEPATH + "/" +
-                        mSQLDownLoadInfo.getFileName(), "rwd");
-                localFile.setLength(urlfilesize);
+//                localFile = new RandomAccessFile(TEMP_FILEPATH + "/" +
+//                        mSQLDownLoadInfo.getFileName(), "rwd");
+//                localFile.setLength(urlfilesize);
                 mSQLDownLoadInfo.setFileSize(urlfilesize);
                 mFileSize = urlfilesize;
                 if (isdownloading) {

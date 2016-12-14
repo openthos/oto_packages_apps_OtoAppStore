@@ -103,7 +103,8 @@ public class ManagerUpdateAdapter extends BasicAdapter
                     btn.setText(downloading);
                     MainActivity.mBinder.addTask(sqlAppInstallInfo.getId() + "",
                             sqlAppInstallInfo.getDownloadUrl(),
-                            FileHelper.getNameFromUrl(sqlAppInstallInfo.getDownloadUrl()));
+                            FileHelper.getNameFromUrl(sqlAppInstallInfo.getDownloadUrl()),
+                            sqlAppInstallInfo.getPackageName());
                 } else if (finished.equals(btn.getText())) {
                     AppUtils.installApk(mContext,
                             FileHelper.getDefaultFileFromUrl(sqlAppInstallInfo.getDownloadUrl()));

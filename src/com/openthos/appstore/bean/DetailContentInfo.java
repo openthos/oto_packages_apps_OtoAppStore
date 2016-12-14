@@ -1,5 +1,7 @@
 package com.openthos.appstore.bean;
 
+import com.openthos.appstore.app.Constants;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,6 +28,7 @@ public class DetailContentInfo {
     private long fileSize;
     private List<CommentInfo> commentInfoList;
     private List<PicturesInfo> picInfoList;
+    private int state;
 
     public DetailContentInfo(JSONObject obj) throws JSONException {
         this.id = obj.getLong("id");
@@ -153,6 +156,16 @@ public class DetailContentInfo {
 
     public void setPromulgator(String promulgator) {
         this.promulgator = promulgator;
+    }
+
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        if (state != Constants.APP_NOT_EXIST) {
+            this.state = state;
+        }
     }
 
     public String getFileSize() {

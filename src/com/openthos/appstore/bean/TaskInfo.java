@@ -2,6 +2,7 @@ package com.openthos.appstore.bean;
 
 public class TaskInfo {
     private boolean isOnDownloading;
+    private String packageName;
     private String taskID;
     private String fileName;
     private long fileSize = 0;
@@ -73,5 +74,13 @@ public class TaskInfo {
 
     public void setSpeech(long speech) {
         this.speech = speech;
+    }
+
+    public String getPackageName() {
+        return packageName;
+    }
+
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
     }
 }

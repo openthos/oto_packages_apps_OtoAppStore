@@ -9,7 +9,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     private static final String mDatabasename = "openthos";
     private static CursorFactory mFactory = null;
-    private static final int mVersion = 2;
+    private static final int mVersion = 3;
     public static final String DOWNLOAD_INFO = "downloadinfo";
     public static final String APP_INSTALL = "appinstall";
 
@@ -33,7 +33,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 + "fileName VARCHAR, "
                 + "fileSize VARCHAR, "
                 + "downLoadSize VARCHAR, "
-                + "isSuccess VARCHAR "
+                + "isSuccess VARCHAR , "
+                + "packageName VARCHAR "
                 + ")";
         db.execSQL(downloadsql);
 

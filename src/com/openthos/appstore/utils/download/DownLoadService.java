@@ -53,8 +53,8 @@ public class DownLoadService extends Service {
             downLoadManager.startTask(taskId);
         }
 
-        public void addTask(String task, String url, String fileName) {
-            downLoadManager.addTask(task, url, fileName);
+        public void addTask(String task, String url, String fileName, String packageName) {
+            downLoadManager.addTask(task, url, fileName, packageName);
         }
 
         public void startAllTask() {

@@ -10,6 +10,7 @@ public class SQLDownLoadInfo {
     private long downloadSize;
     private boolean isSuccess;
     private long speech;
+    private String packageName;
 
     public String getUserID() {
         return userID;
@@ -81,5 +82,13 @@ public class SQLDownLoadInfo {
 
     public void setSpeech(long speech) {
         this.speech = speech;
+    }
+
+    public String getPackageName() {
+        return packageName;
+    }
+
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
     }
 }

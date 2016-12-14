@@ -27,11 +27,27 @@ public class SPUtils {
     }
 
     public static String getData(Context context, String fileName, String key) {
-        String s = context.getSharedPreferences(fileName, Context.MODE_PRIVATE).getString(key, "");
-        if (s != null && !TextUtils.isEmpty(s)) {
-            return s;
-        }
-        return null;
+        return context.getSharedPreferences(
+                fileName, Context.MODE_PRIVATE).getString(key, null);
+    }
+
+    public static void saveDownloadState(Context context, String key, int data) {
+        SharedPreferences.Editor edit = context.getSharedPreferences(
+                Constants.SP_DOWNLOAD_STATE, Context.MODE_PRIVATE).edit();
+        edit.putInt(key, data);
+        edit.commit();
+    }
+
+    public static int getDownloadState(Context context, String key) {
+        return context.getSharedPreferences(Constants.SP_DOWNLOAD_STATE,
+                Context.MODE_PRIVATE).getInt(key, Constants.APP_NOT_EXIST);
+    }
+
+    public static void removeKey(Context context, String fileName, String key) {
+        SharedPreferences.Editor edit = context.getSharedPreferences(
+                Constants.SP_DOWNLOAD_STATE, Context.MODE_PRIVATE).edit();
+        edit.remove(key);
+        edit.commit();
     }
 
     public static AppLayoutGridviewInfo getAppData(Context context, String key) {

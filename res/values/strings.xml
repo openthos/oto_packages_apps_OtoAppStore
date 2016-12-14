@@ -8,7 +8,6 @@
     <string name="download">download</string>
     <string name="setting">setting</string>
     <string name="update">update</string>
-    <string name="not_install">not install</string>
     <string name="have_installed">installed</string>
     <string name="continues">downloading</string>
     <string name="pause">pause</string>
@@ -67,4 +66,5 @@
     <string name="search">search</string>
     <string name="comment_content">very good</string>
     <string name="who">Li Xiaohua</string>
+    <string name="this_task_have_been_download">this task have been download</string>
 </resources>

@@ -20,10 +20,12 @@ import com.openthos.appstore.R;
 import com.openthos.appstore.adapter.ManagerDownloadAdapter;
 import com.openthos.appstore.adapter.ManagerUpdateAdapter;
 import com.openthos.appstore.app.Constants;
+import com.openthos.appstore.bean.AppLayoutGridviewInfo;
 import com.openthos.appstore.bean.SQLAppInstallInfo;
 import com.openthos.appstore.bean.TaskInfo;
 import com.openthos.appstore.utils.DialogUtils;
 import com.openthos.appstore.utils.AppUtils;
+import com.openthos.appstore.utils.SPUtils;
 import com.openthos.appstore.utils.Tools;
 import com.openthos.appstore.utils.download.DownLoadService;
 import com.openthos.appstore.utils.sql.DownloadKeeper;
@@ -182,6 +184,8 @@ public class ManagerFragment extends BaseFragment
                 new DownloadKeeper(getActivity()).deleteDownLoadInfo(Constants.USER_ID, taskID);
                 mDownLoadManager.deleteTask(taskID);
                 ArrayList<TaskInfo> allTask = mDownLoadManager.getAllTask();
+                SPUtils.saveDownloadState(
+                        getActivity(), taskInfo.getPackageName(), Constants.APP_NOT_EXIST);
                 FileHelper.deleteFile(fileName);
                 mDownloadAdapter.addData(allTask);
                 if (allTask.size() > Constants.MANAGER_NUM_FALSE) {
@@ -278,15 +282,24 @@ public class ManagerFragment extends BaseFragment
             Tools.printLog("ARV", "log in" + intent.getAction());
             switch (intent.getAction()) {
                 case Intent.ACTION_PACKAGE_ADDED:
-                case Intent.ACTION_PACKAGE_REMOVED:
                 case Intent.ACTION_PACKAGE_REPLACED:
-                    try {
-                        MainActivity.mAppPackageInfo = AppUtils.getAppPackageInfo(getActivity());
-                        initData();
-                    } catch (PackageManager.NameNotFoundException e) {
-                        e.printStackTrace();
+                    if (intent.getDataString().substring(8) != null) {
+                        SPUtils.saveDownloadState(context,
+                                intent.getDataString().substring(8), Constants.APP_HAVE_INSTALLED);
                     }
                     break;
+                case Intent.ACTION_PACKAGE_REMOVED:
+                    if (intent.getDataString().substring(8) != null) {
+                        SPUtils.saveDownloadState(context,
+                                intent.getDataString().substring(8), Constants.APP_NOT_INSTALL);
+                    }
+                    break;
+            }
+            try {
+                MainActivity.mAppPackageInfo = AppUtils.getAppPackageInfo(getActivity());
+                initData();
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -305,5 +318,4 @@ public class ManagerFragment extends BaseFragment
     private void unregistBroadcast() {
         getActivity().unregisterReceiver(mAppInstallReceiver);
     }
-
 }

@@ -8,9 +8,8 @@
     <string name="download">下载</string>
     <string name="setting">设置</string>
     <string name="update">更新</string>
-    <string name="not_install">安装</string>
     <string name="have_installed">已安装</string>
-    <string name="continues">下载中</string>
+    <string name="continues">继续</string>
     <string name="pause">暂停</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="author">评论人：</string>
@@ -65,4 +64,5 @@
     <string name="search">搜索</string>
     <string name="comment_content">用着很不错，赞</string>
     <string name="who">李晓华</string>
+    <string name="this_task_have_been_download">当前任务已经下载完成</string>
 </resources>

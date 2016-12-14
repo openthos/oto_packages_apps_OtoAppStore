@@ -29,7 +29,7 @@ public class Constants {
 
     public static final String SP_CACHE_DATA = "cache";
     public static final String SP_ALL_DATA = "all";
-    public static final String SP_DATE_FORMATE = "dateformat";
+    public static final String SP_DOWNLOAD_STATE = "state";
 
     public static final String APP_LAYOUT_INFO = "applayoutinfo";
 
@@ -44,6 +44,7 @@ public class Constants {
     public static final int COMMENT_FRAGMENT = 8;
     public static final int SEARCH_FRAGMENT = 9;
     public static final int TOAST = 10;
+    public static final int REFRESH = 11;
 
     public static final int COMMENT_NUM_FALSE = 4;
     public static final int APP_NUM_FALSE = 8;
@@ -53,6 +54,7 @@ public class Constants {
     public static final int DRAWABLE_SIZE = 20;
     public static final int HEIGHT_MASK = 0x3fffffff;
 
+    public static final int APP_NOT_EXIST = -1;
     public static final int APP_NOT_INSTALL = 0;
     public static final int APP_HAVE_INSTALLED = 1;
     public static final int APP_DOWNLOAD_CONTINUE = 2;

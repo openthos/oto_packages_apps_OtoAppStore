@@ -25,6 +25,7 @@ public class DownloadKeeper {
         cv.put("filePath", downloadInfo.getFilePath());
         cv.put("fileSize", downloadInfo.getFileSize());
         cv.put("url", downloadInfo.getUrl());
+        cv.put("packageName", downloadInfo.getPackageName());
         cv.put("isSuccess", downloadInfo.isSuccess() + "");
         Cursor cursor = null;
         try {
@@ -73,6 +74,7 @@ public class DownloadKeeper {
             downloadinfo.setFileSize(cursor.getLong(cursor.getColumnIndex("fileSize")));
             downloadinfo.setUrl(cursor.getString(cursor.getColumnIndex("url")));
             downloadinfo.setTaskID(cursor.getString(cursor.getColumnIndex("taskID")));
+            downloadinfo.setPackageName(cursor.getString(cursor.getColumnIndex("packageName")));
             downloadinfo.setUserID(cursor.getString(cursor.getColumnIndex("userID")));
             downloadinfo.setIsSuccess("true".
                     equals(cursor.getString(cursor.getColumnIndex("isSuccess"))));
@@ -95,6 +97,7 @@ public class DownloadKeeper {
             downloadinfo.setFileSize(cursor.getLong(cursor.getColumnIndex("fileSize")));
             downloadinfo.setUrl(cursor.getString(cursor.getColumnIndex("url")));
             downloadinfo.setTaskID(cursor.getString(cursor.getColumnIndex("taskID")));
+            downloadinfo.setPackageName(cursor.getString(cursor.getColumnIndex("packageName")));
             downloadinfo.setUserID(cursor.getString(cursor.getColumnIndex("userID")));
             downloadinfo.setIsSuccess("true".
                     equals(cursor.getString(cursor.getColumnIndex("isSuccess"))));
@@ -122,6 +125,7 @@ public class DownloadKeeper {
                 downloadinfo.setFileSize(cursor.getLong(cursor.getColumnIndex("fileSize")));
                 downloadinfo.setUrl(cursor.getString(cursor.getColumnIndex("url")));
                 downloadinfo.setTaskID(cursor.getString(cursor.getColumnIndex("taskID")));
+                downloadinfo.setPackageName(cursor.getString(cursor.getColumnIndex("packageName")));
                 downloadinfo.setIsSuccess("true".
                         equals(cursor.getString(cursor.getColumnIndex("isSuccess"))));
                 downloadinfoList.add(downloadinfo);

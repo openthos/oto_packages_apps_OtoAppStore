@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.openthos.appstore.MainActivity;
@@ -14,7 +15,9 @@ import com.openthos.appstore.R;
 import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.bean.AppLayoutGridviewInfo;
 import com.openthos.appstore.bean.SQLDownLoadInfo;
+import com.openthos.appstore.utils.AppUtils;
 import com.openthos.appstore.utils.FileHelper;
+import com.openthos.appstore.utils.SPUtils;
 import com.openthos.appstore.utils.Tools;
 import com.openthos.appstore.utils.download.DownLoadListener;
 import com.openthos.appstore.utils.download.DownLoadManager;
@@ -22,6 +25,7 @@ import com.openthos.appstore.utils.download.DownLoadService;
 import com.openthos.appstore.view.CustomProgressBar;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -58,20 +62,15 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
         }
 
         if (mDatas != null && mDatas.size() != 0) {
-            AppLayoutGridviewInfo appLayoutGridviewInfo =
-                    (AppLayoutGridviewInfo) mDatas.get(position);
+            AppLayoutGridviewInfo appInfo = (AppLayoutGridviewInfo) mDatas.get(position);
             Picasso.with(mContext).load(Constants.BASEURL + "/" +
-                    appLayoutGridviewInfo.getIconUrl()).into(holder.icon);
-            holder.name.setText(appLayoutGridviewInfo.getName());
-            holder.type.setText(appLayoutGridviewInfo.getType());
-            if (appLayoutGridviewInfo.getDownFileSize() > 0) {
-                holder.progressBar.setVisibility(View.VISIBLE);
-                holder.install.setVisibility(View.GONE);
-                holder.progressBar.setProgress(appLayoutGridviewInfo.getProgress());
-            }
-            switch (appLayoutGridviewInfo.getState()) {
+                    appInfo.getIconUrl()).into(holder.icon);
+            holder.name.setText(appInfo.getName());
+            holder.type.setText(appInfo.getType());
+            appInfo.setState(SPUtils.getDownloadState(mContext, appInfo.getAppPackageName() + ""));
+            switch (appInfo.getState()) {
                 case Constants.APP_NOT_INSTALL:
-                    setContent(holder.install, R.string.not_install,
+                    setContent(holder.install, R.string.install,
                             R.drawable.shape_button_white_cyan, R.color.button_cyan);
                     break;
                 case Constants.APP_HAVE_INSTALLED:
@@ -79,12 +78,15 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
                             R.drawable.shape_button_white_gray, R.color.button_gray);
                     break;
                 case Constants.APP_DOWNLOAD_CONTINUE:
-                    setContent(holder.install, R.string.continues,
-                            R.drawable.shape_button_white_cyan, R.color.button_cyan);
+                    holder.progressBar.setVisibility(View.VISIBLE);
+                    holder.progressBar.setProgress(appInfo.getProgress());
+                    setContent(holder.install, R.string.continues, 0, R.color.button_cyan);
+//                          R.drawable.shape_button_white_cyan, R.color.button_cyan);
                     break;
                 case Constants.APP_DOWNLOAD_PAUSE:
-                    setContent(holder.install, R.string.pause,
-                            R.drawable.shape_button_white_cyan, R.color.button_cyan);
+                    holder.progressBar.setVisibility(View.VISIBLE);
+                    holder.progressBar.setProgress(appInfo.getProgress());
+                    setContent(holder.install, R.string.pause, 0, R.color.button_cyan);
                     break;
                 case Constants.APP_NEED_UPDATE:
                     setContent(holder.install, R.string.update, R.drawable.shape_button_white_cyan,
@@ -113,7 +115,11 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
 
     private void setContent(Button btn, int text, int background, int color) {
         btn.setText(text);
-        btn.setBackgroundResource(background);
+        if (background != 0) {
+            btn.setBackgroundResource(background);
+        } else {
+            btn.setBackground(null);
+        }
         btn.setTextColor(mContext.getResources().getColor(color));
     }
 
@@ -121,7 +127,7 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
     public void onClick(View v) {
         int possition = (int) v.getTag();
         AppLayoutGridviewInfo appInfo = (AppLayoutGridviewInfo) mDatas.get(possition);
-        Map<String, Integer> downloadStateMap = MainActivity.mDownloadStateMap;
+//        Map<String, Integer> downloadStateMap = MainActivity.mDownloadStateMap;
         String appId = appInfo.getId() + "";
         switch (v.getId()) {
             case R.id.app_layout_gridview_install:
@@ -136,34 +142,51 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
 
                 if (btnStr.equals(continues)) {
                     install.setText(pause);
-                    downloadStateMap.put(appId, Constants.APP_DOWNLOAD_PAUSE);
+                    SPUtils.saveDownloadState(
+                            mContext, appInfo.getAppPackageName(), Constants.APP_DOWNLOAD_PAUSE);
                     MainActivity.mBinder.stopTask(appId);
                 } else if (btnStr.equals(pause)) {
                     install.setText(continues);
-                    downloadStateMap.put(appId, Constants.APP_DOWNLOAD_CONTINUE);
+                    SPUtils.saveDownloadState(
+                            mContext, appInfo.getAppPackageName(), Constants.APP_DOWNLOAD_CONTINUE);
                     MainActivity.mBinder.startTask(appId);
                 } else if (btnStr.equals(installs)) {
                     install.setText(continues);
-                    downloadStateMap.put(appId, Constants.APP_DOWNLOAD_CONTINUE);
+                    SPUtils.saveDownloadState(
+                            mContext, appInfo.getAppPackageName(), Constants.APP_DOWNLOAD_CONTINUE);
                     MainActivity.mBinder.addTask(appId, Constants.BASEURL + "/" +
                             appInfo.getDownloadUrl(),
-                            FileHelper.getNameFromUrl(appInfo.getDownloadUrl()));
+                            FileHelper.getNameFromUrl(appInfo.getDownloadUrl()),
+                            appInfo.getAppPackageName());
                 } else if (btnStr.equals(update)) {
                     install.setText(continues);
-                    downloadStateMap.put(appId, Constants.APP_DOWNLOAD_CONTINUE);
+                    SPUtils.saveDownloadState(
+                            mContext, appInfo.getAppPackageName(), Constants.APP_DOWNLOAD_CONTINUE);
                     MainActivity.mBinder.addTask(appId, Constants.BASEURL + "/" +
                             appInfo.getDownloadUrl(),
-                            FileHelper.getNameFromUrl(appInfo.getDownloadUrl()));
+                            FileHelper.getNameFromUrl(appInfo.getDownloadUrl()),
+                            appInfo.getAppPackageName());
                 } else if (btnStr.equals(finished)) {
-                    install.setText(finished);
-                    MainActivity.mHandler.sendEmptyMessage(Constants.MANAGER_FRAGMENT);
+                    File file =
+                            new File(FileHelper.getDefaultFileFromUrl(appInfo.getDownloadUrl()));
+                    if (file.exists() && file.length() != 0) {
+                        AppUtils.installApk(mContext, file.getAbsolutePath());
+                    } else {
+                        SPUtils.saveDownloadState(mContext, appInfo.getAppPackageName(),
+                                                  Constants.APP_NOT_INSTALL);
+                        notifyDataSetChanged();
+                        Message message = MainActivity.mHandler.obtainMessage();
+                        message.what = Constants.TOAST;
+                        message.obj = mContext.getString(R.string.this_file_is_not_exist);
+                        MainActivity.mHandler.sendMessage(message);
+                    }
                 }
                 break;
 
             default:
                 Message message = MainActivity.mHandler.obtainMessage();
                 message.what = Constants.DETAIL_FRAGMENT;
-                message.obj = appId;
+                message.obj = appId +" " + appInfo.getState();
                 MainActivity.mHandler.sendMessage(message);
                 break;
         }
@@ -174,14 +197,14 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
         private TextView name;
         private TextView type;
         private Button install;
-        private CustomProgressBar progressBar;
+        private ProgressBar progressBar;
 
         public ViewHolder(View view) {
             icon = (ImageView) view.findViewById(R.id.app_layout_gridview_icon);
             name = (TextView) view.findViewById(R.id.app_layout_gridview_name);
             type = (TextView) view.findViewById(R.id.app_layout_gridview_type);
             install = (Button) view.findViewById(R.id.app_layout_gridview_install);
-            progressBar = (CustomProgressBar) view.findViewById(
+            progressBar = (ProgressBar) view.findViewById(
                                                       R.id.app_layout_gridview_progressbar);
             progressBar.setVisibility(View.GONE);
         }

@@ -1,6 +1,7 @@
 package com.openthos.appstore.adapter;
 
 import android.content.Context;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,7 @@ import com.openthos.appstore.utils.download.DownLoadListener;
 import com.openthos.appstore.utils.download.DownLoadManager;
 import com.openthos.appstore.utils.FileHelper;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -119,8 +121,16 @@ public class ManagerDownloadAdapter extends BasicAdapter {
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
             if (isChecked) {
                 // continue download
-                mTaskInfo.setOnDownloading(true);
-                MainActivity.mBinder.startTask(mTaskInfo.getTaskID());
+                File file = new File(FileHelper.getDefaultFile(mTaskInfo.getFileName()));
+                if (mTaskInfo.getProgress() == 100 && file.exists() && file.length() != 0) {
+                    Message message = MainActivity.mHandler.obtainMessage();
+                    message.what = Constants.TOAST;
+                    message.obj = mContext.getString(R.string.this_task_have_been_download);
+                    MainActivity.mHandler.sendMessage(message);
+                } else {
+                    mTaskInfo.setOnDownloading(true);
+                    MainActivity.mBinder.startTask(mTaskInfo.getTaskID());
+                }
             } else {
                 //stop download
                 mTaskInfo.setOnDownloading(false);

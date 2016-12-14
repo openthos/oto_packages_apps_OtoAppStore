@@ -51,7 +51,7 @@ public class AppLayoutGridviewInfo implements Serializable {
         this.versionName = obj.getString("version");
         this.downloadUrl = obj.getString("download");
         this.comment = obj.optString("comment");
-        if (MainActivity.mAppPackageInfo != null && MainActivity.mDownloadStateMap != null) {
+        if (MainActivity.mAppPackageInfo != null) {
             this.state = setState();
         }
     }
@@ -117,7 +117,9 @@ public class AppLayoutGridviewInfo implements Serializable {
     }
 
     public void setState(int state) {
-        this.state = state;
+        if (state != Constants.APP_NOT_EXIST) {
+            this.state = state;
+        }
     }
 
     public String getType() {
@@ -140,18 +142,20 @@ public class AppLayoutGridviewInfo implements Serializable {
         for (SQLAppInstallInfo sqlAppInstallInfo : MainActivity.mAppPackageInfo) {
             if (appPackageName.equals(sqlAppInstallInfo.getPackageName())) {
                 if (versionName.equals(sqlAppInstallInfo.getVersionName())) {
+
                     return Constants.APP_HAVE_INSTALLED;
                 } else {
                     return Constants.APP_NEED_UPDATE;
                 }
             }
         }
-        Map<String, Integer> downloadStateMap = MainActivity.mDownloadStateMap;
-        if (downloadStateMap.containsKey(id + "")) {
-            return downloadStateMap.get(id + "");
-        } else {
-            return Constants.APP_NOT_INSTALL;
-        }
+//        Map<String, Integer> downloadStateMap = MainActivity.mDownloadStateMap;
+//        if (downloadStateMap.containsKey(id + "")) {
+//            return downloadStateMap.get(id + "");
+//        } else {
+//            return Constants.APP_NOT_INSTALL;
+//        }
+        return Constants.APP_NOT_INSTALL;
     }
 
     public int getProgress() {

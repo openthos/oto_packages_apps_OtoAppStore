@@ -40,17 +40,35 @@
                         android:scaleType="centerCrop"
                         android:src="@mipmap/ic_launcher"/>
 
-                    <Button
-                        android:id="@+id/fragment_detail_download"
+                    <FrameLayout
                         android:layout_width="100dp"
                         android:layout_height="24dp"
                         android:layout_gravity="center"
                         android:layout_marginTop="12dp"
-                        android:background="@drawable/shape_button_white_cyan"
-                        android:text="@string/download"
-                        android:textColor="@color/button_cyan"
-                        android:textSize="@dimen/first_title_size"
-                        />
+                        >
+
+                        <ProgressBar
+                            android:id="@+id/fragment_detail_progressbar"
+                            android:max="100"
+                            android:progress="0"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="100dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="center_vertical"
+                            android:visibility="gone"
+                            />
+
+                        <Button
+                            android:id="@+id/fragment_detail_download"
+                            android:layout_width="100dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="center"
+                            android:background="@null"
+                            android:text="@string/download"
+                            android:textColor="@color/button_cyan"
+                            android:textSize="@dimen/first_title_size"
+                            />
+                    </FrameLayout>
                 </LinearLayout>
 
                 <LinearLayout

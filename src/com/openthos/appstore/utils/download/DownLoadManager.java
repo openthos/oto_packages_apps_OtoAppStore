@@ -5,8 +5,10 @@ import android.content.SharedPreferences;
 
 import com.openthos.appstore.MainActivity;
 import com.openthos.appstore.app.Constants;
+import com.openthos.appstore.bean.AppLayoutGridviewInfo;
 import com.openthos.appstore.bean.SQLDownLoadInfo;
 import com.openthos.appstore.bean.TaskInfo;
+import com.openthos.appstore.utils.SPUtils;
 import com.openthos.appstore.utils.sql.DownloadKeeper;
 import com.openthos.appstore.utils.FileHelper;
 
@@ -36,6 +38,10 @@ public class DownLoadManager {
 
     private DownLoadListener mAlltasklistener;
 
+    private static final int FILE_EXIT = -1;
+    private static final int TASK_EXIT = 0;
+    private static final int ADD_TASK = 1;
+
     public DownLoadManager(Context context) {
         mContext = context;
         init(context);
@@ -54,8 +60,8 @@ public class DownLoadManager {
                     DownLoader deletedownloader = mTaskList.get(i);
                     if (deletedownloader.getTaskID().equals(taskID)) {
                         //                    mTaskList.remove(deletedownloader);
-                        MainActivity.mDownloadStateMap.put(
-                                taskID, Constants.APP_DOWNLOAD_FINISHED);
+//                        MainActivity.mDownloadStateMap.put(
+//                                taskID, Constants.APP_DOWNLOAD_FINISHED);
                         return;
                     }
                 }
@@ -113,16 +119,17 @@ public class DownLoadManager {
         return mUserID;
     }
 
-    public int addTask(String taskID, String url, String fileName) {
-        return addTask(taskID, url, fileName, null);
+    public int addTask(String taskID, String url, String fileName, String packageName) {
+        return addTask(taskID, url, fileName, packageName, null);
     }
 
-    public int addTask(String taskID, String url, String fileName, String filepath) {
+    public int addTask(String taskID, String url,
+                       String fileName, String packageName, String filepath) {
         if (taskID == null) {
             taskID = fileName;
         }
         int state = getAttachmentState(taskID, fileName, filepath);
-        if (state != 1) {
+        if (state != ADD_TASK) {
 //            return state;
             FileHelper.deleteFile(fileName);
         }
@@ -134,6 +141,7 @@ public class DownLoadManager {
         downloadinfo.setTaskID(taskID);
         downloadinfo.setFileName(fileName);
         downloadinfo.setUrl(url);
+        downloadinfo.setPackageName(packageName);
         if (filepath == null) {
             downloadinfo.setFilePath(FileHelper.getDefaultFile(fileName));
         } else {
@@ -157,22 +165,22 @@ public class DownLoadManager {
         for (int i = 0; i < mTaskList.size(); i++) {
             DownLoader downloader = mTaskList.get(i);
             if (downloader.getTaskID().equals(taskID)) {
-                return 0;
+                return TASK_EXIT;
             }
         }
         File file = null;
         if (filepath == null) {
             file = new File(FileHelper.getDefaultFile(fileName));
-            if (file.exists()) {
-                return -1;
+            if (file.exists() && file.length() != 0) {
+                return FILE_EXIT;
             }
         } else {
             file = new File(filepath);
-            if (file.exists()) {
-                return -1;
+            if (file.exists() && file.length() != 0) {
+                return FILE_EXIT;
             }
         }
-        return 1;
+        return ADD_TASK;
     }
 
     public void deleteTask(String taskID) {
@@ -310,6 +318,7 @@ public class DownLoadManager {
         taskinfo.setTaskID(sqldownloadinfo.getTaskID());
         taskinfo.setDownFileSize(sqldownloadinfo.getDownloadSize());
         taskinfo.setFileSize(sqldownloadinfo.getFileSize());
+        taskinfo.setPackageName(sqldownloadinfo.getPackageName());
         return taskinfo;
     }
 }

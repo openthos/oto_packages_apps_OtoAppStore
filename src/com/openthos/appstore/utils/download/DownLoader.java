@@ -4,9 +4,11 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 
+import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.bean.SQLDownLoadInfo;
 import com.openthos.appstore.utils.AppUtils;
 import com.openthos.appstore.utils.FileHelper;
+import com.openthos.appstore.utils.SPUtils;
 import com.openthos.appstore.utils.Tools;
 import com.openthos.appstore.utils.sql.DownloadKeeper;
 
@@ -436,6 +438,8 @@ public class DownLoader {
                 errorNotice((String) msg.obj);
             } else if (msg.what == TASK_SUCCESS) {
                 mSQLDownLoadInfo.setSpeech(0);
+                SPUtils.saveDownloadState(mContext,
+                        mSQLDownLoadInfo.getPackageName(), Constants.APP_DOWNLOAD_FINISHED);
                 successNotice();
                 AppUtils.installApk(mContext, mSQLDownLoadInfo.getFilePath());
             }

@@ -227,7 +227,6 @@ public class DownLoader {
                         }
                     }
                     if (mDownFileSize == mFileSize) {
-                        handler.sendEmptyMessage(TASK_SUCCESS);
                         boolean renameResult = RenameFile();
                         if (renameResult) {
                             mSQLDownLoadInfo.setDownloadSize(mFileSize);
@@ -341,6 +340,7 @@ public class DownLoader {
     private void saveDownloadInfo() {
         if (mIsSupportBreakpoint) {
             mSQLDownLoadInfo.setDownloadSize(mDownFileSize);
+            mSQLDownLoadInfo.setFileSize(mFileSize);
             mDatakeeper.saveDownLoadInfo(mSQLDownLoadInfo);
         }
     }

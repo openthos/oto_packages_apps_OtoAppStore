@@ -242,7 +242,11 @@ public class DownLoadManager {
     public void startAllTask() {
         for (int i = 0; i < mTaskList.size(); i++) {
             DownLoader deletedownloader = mTaskList.get(i);
-            deletedownloader.start();
+            SQLDownLoadInfo sqlDownLoadInfo = deletedownloader.getSQLDownLoadInfo();
+            if (sqlDownLoadInfo != null && sqlDownLoadInfo.getFileSize() != 0 &&
+                    sqlDownLoadInfo.getFileSize() != sqlDownLoadInfo.getDownloadSize()) {
+                deletedownloader.start();
+            }
         }
     }
 

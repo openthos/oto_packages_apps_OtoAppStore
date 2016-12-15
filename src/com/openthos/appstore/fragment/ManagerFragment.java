@@ -214,6 +214,7 @@ public class ManagerFragment extends BaseFragment
                 btn.setText(startAll);
                 MainActivity.mBinder.stopAllTask();
             }
+            mDownloadAdapter.addData(mDownLoadManager.getAllTask());
         } else {
             Tools.toast(getActivity(), getResources().getString(R.string.no_task));
         }

@@ -20,7 +20,6 @@ import com.openthos.appstore.R;
 import com.openthos.appstore.adapter.ManagerDownloadAdapter;
 import com.openthos.appstore.adapter.ManagerUpdateAdapter;
 import com.openthos.appstore.app.Constants;
-import com.openthos.appstore.bean.AppLayoutGridviewInfo;
 import com.openthos.appstore.bean.SQLAppInstallInfo;
 import com.openthos.appstore.bean.TaskInfo;
 import com.openthos.appstore.utils.DialogUtils;
@@ -56,7 +55,6 @@ public class ManagerFragment extends BaseFragment
 
     private final int mUpdaAdapter = 0;
     private final int mDownAdapter = 1;
-    private AppInstallReceiver mAppInstallReceiver;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -68,8 +66,6 @@ public class ManagerFragment extends BaseFragment
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        registBroadcast();
-
         mDownLoadManager = DownLoadService.getDownLoadManager();
 
         initView(view);
@@ -77,6 +73,12 @@ public class ManagerFragment extends BaseFragment
         if (mDownLoadManager != null) {
             initData();
         }
+    }
+
+    @Override
+    public void refresh() {
+        super.refresh();
+        initData();
     }
 
     public void initData() {
@@ -122,7 +124,6 @@ public class ManagerFragment extends BaseFragment
     @Override
     public void onDestroy() {
         super.onDestroy();
-        unregistBroadcast();
     }
 
     private void initView(View view) {
@@ -270,52 +271,5 @@ public class ManagerFragment extends BaseFragment
                 mDownloadAdapter.addData(datas);
                 break;
         }
-    }
-
-    public class AppInstallReceiver extends BroadcastReceiver {
-        public AppInstallReceiver() {
-
-        }
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Tools.printLog("ARV", "log in" + intent.getAction());
-            switch (intent.getAction()) {
-                case Intent.ACTION_PACKAGE_ADDED:
-                case Intent.ACTION_PACKAGE_REPLACED:
-                    if (intent.getDataString().substring(8) != null) {
-                        SPUtils.saveDownloadState(context,
-                                intent.getDataString().substring(8), Constants.APP_HAVE_INSTALLED);
-                    }
-                    break;
-                case Intent.ACTION_PACKAGE_REMOVED:
-                    if (intent.getDataString().substring(8) != null) {
-                        SPUtils.saveDownloadState(context,
-                                intent.getDataString().substring(8), Constants.APP_NOT_INSTALL);
-                    }
-                    break;
-            }
-            try {
-                MainActivity.mAppPackageInfo = AppUtils.getAppPackageInfo(getActivity());
-                initData();
-            } catch (PackageManager.NameNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void registBroadcast() {
-        mAppInstallReceiver = new AppInstallReceiver();
-
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
-        intentFilter.addAction(Intent.ACTION_PACKAGE_REPLACED);
-        intentFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
-        intentFilter.addDataScheme("package");
-        getActivity().registerReceiver(mAppInstallReceiver, intentFilter);
-    }
-
-    private void unregistBroadcast() {
-        getActivity().unregisterReceiver(mAppInstallReceiver);
     }
 }

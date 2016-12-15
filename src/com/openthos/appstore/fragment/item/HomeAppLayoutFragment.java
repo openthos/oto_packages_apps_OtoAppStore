@@ -50,6 +50,12 @@ public class HomeAppLayoutFragment extends BaseFragment {
         loadData();
     }
 
+    @Override
+    public void refresh() {
+        super.refresh();
+        loadData();
+    }
+
     private void loadData() {
         try {
             if (mRecommend != null) {

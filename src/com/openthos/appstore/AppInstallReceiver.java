@@ -1,0 +1,44 @@
+package com.openthos.appstore;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+
+import com.openthos.appstore.app.Constants;
+import com.openthos.appstore.utils.AppUtils;
+import com.openthos.appstore.utils.SPUtils;
+import com.openthos.appstore.utils.Tools;
+
+public class AppInstallReceiver extends BroadcastReceiver {
+
+    public AppInstallReceiver() {
+        super();
+    }
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        Tools.printLog("ARV", "log in" + intent.getAction());
+        switch (intent.getAction()) {
+            case Intent.ACTION_PACKAGE_ADDED:
+            case Intent.ACTION_PACKAGE_REPLACED:
+                if (intent.getDataString().substring(8) != null) {
+                    SPUtils.saveDownloadState(context,
+                            intent.getDataString().substring(8), Constants.APP_HAVE_INSTALLED);
+                }
+                break;
+            case Intent.ACTION_PACKAGE_REMOVED:
+                if (intent.getDataString().substring(8) != null) {
+                    SPUtils.saveDownloadState(context,
+                            intent.getDataString().substring(8), Constants.APP_NOT_INSTALL);
+                }
+                break;
+        }
+        try {
+            MainActivity.mAppPackageInfo = AppUtils.getAppPackageInfo(context);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        MainActivity.mHandler.sendEmptyMessage(Constants.REFRESH);
+    }
+}

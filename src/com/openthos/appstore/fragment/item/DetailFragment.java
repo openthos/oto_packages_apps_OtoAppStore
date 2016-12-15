@@ -198,6 +198,11 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
         }
     }
 
+    @Override
+    public void refresh() {
+        loadData();
+    }
+
     private class GetData implements Runnable {
         @Override
         public void run() {
@@ -227,6 +232,7 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
             DetailInfo detailInfo = new DetailInfo(new JSONObject(mNetStr));
             mContentInfo = detailInfo.getDetailContentInfo();
             if (mContentInfo != null) {
+                mContentInfo.setState(mState);
                 Picasso.with(getActivity()).
                         load(Constants.BASEURL + "/" + mContentInfo.getIconUrl()).into(mIcon);
                 mAppName.setText(mContentInfo.getName());
@@ -239,7 +245,7 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
                 mSize.setText(getActivity().getString(R.string.size) + mContentInfo.getFileSize());
                 mContentInfo.setState(SPUtils.getDownloadState(getActivity(),
                         mContentInfo.getPackageName() + ""));
-                switch (mState) {
+                switch (mContentInfo.getState()) {
                     case Constants.APP_NOT_INSTALL:
                         setContent(mDownload, R.string.install,
                                 R.drawable.shape_button_white_cyan, R.color.button_cyan);
@@ -287,7 +293,8 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
     private class DetailDownLoadListener implements DownLoadListener {
         @Override
         public void onStart(SQLDownLoadInfo sqlDownLoadInfo) {
-
+            mProgressBar.setVisibility(View.VISIBLE);
+            setContent(mDownload, R.string.continues, 0, R.color.button_cyan);
         }
 
         @Override
@@ -299,11 +306,13 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
             }
             mProgressBar.setVisibility(View.VISIBLE);
             mProgressBar.setProgress(progress);
+            setContent(mDownload, R.string.continues, 0, R.color.button_cyan);
         }
 
         @Override
         public void onStop(SQLDownLoadInfo sqlDownLoadInfo, boolean isSupportBreakpoint) {
-
+            mProgressBar.setVisibility(View.VISIBLE);
+            setContent(mDownload, R.string.pause, 0, R.color.button_cyan);
         }
 
         @Override
@@ -314,6 +323,8 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
         @Override
         public void onSuccess(SQLDownLoadInfo sqlDownLoadInfo) {
             mProgressBar.setVisibility(View.GONE);
+            setContent(mDownload, R.string.finished,
+                    R.drawable.shape_button_white_cyan, R.color.button_cyan);
         }
     }
 }

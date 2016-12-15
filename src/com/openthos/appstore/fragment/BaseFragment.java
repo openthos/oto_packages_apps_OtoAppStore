@@ -24,4 +24,8 @@ public class BaseFragment extends Fragment {
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_base, container, false);
     }
+
+    public void refresh(){
+
+    };
 }

@@ -29,6 +29,7 @@ import com.openthos.appstore.bean.DataInfo;
 import com.openthos.appstore.bean.AppLayoutGridviewInfo;
 import com.openthos.appstore.bean.AppLayoutInfo;
 import com.openthos.appstore.bean.SQLAppInstallInfo;
+import com.openthos.appstore.fragment.BaseFragment;
 import com.openthos.appstore.fragment.GameFragment;
 import com.openthos.appstore.fragment.HomeFragment;
 import com.openthos.appstore.fragment.ManagerFragment;
@@ -278,7 +279,11 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
                         Tools.toast(MainActivity.this, (String) msg.obj);
                         break;
                     case Constants.REFRESH:
-//                        mHandler.sendEmptyMessage(mWhat);
+                        Fragment currentFragment = getCurrentFragment();
+                        if (currentFragment!=null){
+                            BaseFragment baseFragment = (BaseFragment) currentFragment;
+                            baseFragment.refresh();
+                        }
                         break;
                 }
                 if (msg.what != Constants.TOAST && msg.what != Constants.REFRESH) {

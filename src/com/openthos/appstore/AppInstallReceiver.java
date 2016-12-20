@@ -3,7 +3,6 @@ package com.openthos.appstore;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 
 import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.utils.AppUtils;
@@ -36,9 +35,11 @@ public class AppInstallReceiver extends BroadcastReceiver {
         }
         try {
             MainActivity.mAppPackageInfo = AppUtils.getAppPackageInfo(context);
-        } catch (PackageManager.NameNotFoundException e) {
+            if (MainActivity.mHandler != null) {
+                 MainActivity.mHandler.sendEmptyMessage(Constants.REFRESH);
+            }
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        MainActivity.mHandler.sendEmptyMessage(Constants.REFRESH);
     }
 }

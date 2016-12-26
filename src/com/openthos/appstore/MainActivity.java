@@ -63,6 +63,7 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
     private Fragment mCurrentFragment;
     private ArrayList<Integer> mPage;
     private int mWhat = Constants.MANAGER_FRAGMENT;
+    private Map<Integer, Fragment> mFragments;
 
     private ServiceConnection conn = new ServiceConnection() {
         @Override
@@ -105,6 +106,7 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
     private void initData() {
         mManager = getSupportFragmentManager();
         mPage = new ArrayList<>();
+        mFragments = new HashMap<>();
 //        mDownloadStateMap = new HashMap<>();
         try {
             mAppPackageInfo = AppUtils.getAppPackageInfo(this);
@@ -201,18 +203,40 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
         FragmentTransaction transaction = mManager.beginTransaction();
+        transaction.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
+        Fragment fragment = null;
         switch (checkedId) {
             case R.id.rb_home:
-                addFragment(transaction, new HomeFragment(), Constants.HOME_FRAGMENT);
+                fragment = mFragments.get(Constants.HOME_FRAGMENT);
+                if (fragment == null) {
+                    fragment = new HomeFragment();
+                    mFragments.put(Constants.HOME_FRAGMENT, fragment);
+                }
+                addFragment(transaction, fragment, Constants.HOME_FRAGMENT);
                 break;
             case R.id.rb_software:
-                addFragment(transaction, new SoftwareFragment(), Constants.SOFTWARE_FRAGMENT);
+                fragment = mFragments.get(Constants.SOFTWARE_FRAGMENT);
+                if (fragment == null) {
+                    fragment = new SoftwareFragment();
+                    mFragments.put(Constants.SOFTWARE_FRAGMENT, fragment);
+                }
+                addFragment(transaction, fragment, Constants.SOFTWARE_FRAGMENT);
                 break;
             case R.id.rb_game:
-                addFragment(transaction, new GameFragment(), Constants.GAME_FRAGMENT);
+                fragment = mFragments.get(Constants.GAME_FRAGMENT);
+                if (fragment == null) {
+                    fragment = new GameFragment();
+                    mFragments.put(Constants.GAME_FRAGMENT, fragment);
+                }
+                addFragment(transaction, fragment, Constants.GAME_FRAGMENT);
                 break;
             case R.id.rb_manager:
-                addFragment(transaction, new ManagerFragment(), Constants.MANAGER_FRAGMENT);
+                fragment = mFragments.get(Constants.MANAGER_FRAGMENT);
+                if (fragment == null) {
+                    fragment = new ManagerFragment();
+                    mFragments.put(Constants.MANAGER_FRAGMENT, fragment);
+                }
+                addFragment(transaction, fragment, Constants.MANAGER_FRAGMENT);
                 break;
         }
         transaction.commit();
@@ -231,30 +255,54 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
                 Fragment fragment = null;
                 switch (msg.what) {
                     case Constants.HOME_FRAGMENT:
-                        fragment = new HomeFragment();
+                        fragment = mFragments.get(Constants.HOME_FRAGMENT);
+                        if (fragment == null) {
+                            fragment = new HomeFragment();
+                            mFragments.put(Constants.HOME_FRAGMENT, fragment);
+                        }
                         addFragment(transaction, fragment, msg.what);
                         break;
                     case Constants.SOFTWARE_FRAGMENT:
-                        fragment = new SoftwareFragment();
+                        fragment = mFragments.get(Constants.SOFTWARE_FRAGMENT);
+                        if (fragment == null) {
+                            fragment = new SoftwareFragment();
+                            mFragments.put(Constants.SOFTWARE_FRAGMENT, fragment);
+                        }
                         addFragment(transaction, fragment, msg.what);
                         break;
                     case Constants.GAME_FRAGMENT:
-                        fragment = new GameFragment();
+                        fragment = mFragments.get(Constants.GAME_FRAGMENT);
+                        if (fragment == null) {
+                            fragment = new GameFragment();
+                            mFragments.put(Constants.GAME_FRAGMENT, fragment);
+                        }
                         addFragment(transaction, fragment, msg.what);
                         break;
                     case Constants.MANAGER_FRAGMENT:
-                        fragment = new ManagerFragment();
+                        fragment = mFragments.get(Constants.MANAGER_FRAGMENT);
+                        if (fragment == null) {
+                            fragment = new ManagerFragment();
+                            mFragments.put(Constants.MANAGER_FRAGMENT, fragment);
+                        }
                         addFragment(transaction, fragment, msg.what);
                         break;
                     case Constants.DETAIL_FRAGMENT:
-                        fragment = new DetailFragment();
+                        fragment = mFragments.get(Constants.DETAIL_FRAGMENT);
+                        if (fragment == null) {
+                            fragment = new DetailFragment();
+                            mFragments.put(Constants.DETAIL_FRAGMENT, fragment);
+                        }
                         addFragment(transaction, fragment, msg.what);
                         if (getData(msg) != null) {
                             ((DetailFragment) fragment).setDatas((String) getData(msg));
                         }
                         break;
                     case Constants.MORE_FRAGMENT:
-                        fragment = new MoreFragment();
+                        fragment = mFragments.get(Constants.MORE_FRAGMENT);
+                        if (fragment == null) {
+                            fragment = new MoreFragment();
+                            mFragments.put(Constants.MORE_FRAGMENT, fragment);
+                        }
                         addFragment(transaction, fragment, msg.what);
 
                         if (getData(msg) != null) {
@@ -262,14 +310,22 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
                         }
                         break;
                     case Constants.COMMENT_FRAGMENT:
-                        fragment = new CommentFragment();
+                        fragment = mFragments.get(Constants.COMMENT_FRAGMENT);
+                        if (fragment == null) {
+                            fragment = new CommentFragment();
+                            mFragments.put(Constants.COMMENT_FRAGMENT, fragment);
+                        }
                         addFragment(transaction, fragment, msg.what);
 
                         ((CommentFragment) fragment).setDatas(Constants.getComment());
                         ((CommentFragment) fragment).setAll(true);
                         break;
                     case Constants.SEARCH_FRAGMENT:
-                        fragment = new SearchFragment();
+                        fragment = mFragments.get(Constants.SEARCH_FRAGMENT);
+                        if (fragment == null) {
+                            fragment = new SearchFragment();
+                            mFragments.put(Constants.SEARCH_FRAGMENT, fragment);
+                        }
                         addFragment(transaction, fragment, msg.what);
                         if (getData(msg) != null) {
                             ((SearchFragment) fragment).setDatas((String) getData(msg));
@@ -280,7 +336,7 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
                         break;
                     case Constants.REFRESH:
                         Fragment currentFragment = getCurrentFragment();
-                        if (currentFragment!=null){
+                        if (currentFragment != null) {
                             BaseFragment baseFragment = (BaseFragment) currentFragment;
                             baseFragment.refresh();
                         }
@@ -303,7 +359,15 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
         } else {
             mPage.add(what);
         }
-        transaction.replace(R.id.main_fragment_container, fragment, what + "");
+        Fragment currentFragment = getCurrentFragment();
+        if (!fragment.isAdded()) {
+            transaction.add(R.id.main_fragment_container, fragment, what + "");
+        }
+        if (currentFragment != null) {
+            transaction.hide(currentFragment).show(fragment);
+        } else {
+            transaction.show(fragment);
+        }
     }
 
     private Fragment getCurrentFragment() {

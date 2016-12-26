@@ -80,13 +80,13 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
                 case Constants.APP_DOWNLOAD_CONTINUE:
                     holder.progressBar.setVisibility(View.VISIBLE);
                     holder.progressBar.setProgress(appInfo.getProgress());
-                    setContent(holder.install, R.string.continues, 0, R.color.button_cyan);
+                    setContent(holder.install, R.string.pause, 0, R.color.button_cyan);
 //                          R.drawable.shape_button_white_cyan, R.color.button_cyan);
                     break;
                 case Constants.APP_DOWNLOAD_PAUSE:
                     holder.progressBar.setVisibility(View.VISIBLE);
                     holder.progressBar.setProgress(appInfo.getProgress());
-                    setContent(holder.install, R.string.pause, 0, R.color.button_cyan);
+                    setContent(holder.install, R.string.continues, 0, R.color.button_cyan);
                     break;
                 case Constants.APP_NEED_UPDATE:
                     setContent(holder.install, R.string.update, R.drawable.shape_button_white_cyan,
@@ -143,13 +143,13 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
                 if (btnStr.equals(continues)) {
                     install.setText(pause);
                     SPUtils.saveDownloadState(
-                            mContext, appInfo.getAppPackageName(), Constants.APP_DOWNLOAD_PAUSE);
-                    MainActivity.mBinder.stopTask(appId);
+                            mContext, appInfo.getAppPackageName(), Constants.APP_DOWNLOAD_CONTINUE);
+                    MainActivity.mBinder.startTask(appId);
                 } else if (btnStr.equals(pause)) {
                     install.setText(continues);
                     SPUtils.saveDownloadState(
-                            mContext, appInfo.getAppPackageName(), Constants.APP_DOWNLOAD_CONTINUE);
-                    MainActivity.mBinder.startTask(appId);
+                            mContext, appInfo.getAppPackageName(), Constants.APP_DOWNLOAD_PAUSE);
+                    MainActivity.mBinder.stopTask(appId);
                 } else if (btnStr.equals(installs)) {
                     install.setText(continues);
                     SPUtils.saveDownloadState(
@@ -186,7 +186,7 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
             default:
                 Message message = MainActivity.mHandler.obtainMessage();
                 message.what = Constants.DETAIL_FRAGMENT;
-                message.obj = appId +" " + appInfo.getState();
+                message.obj = appId + " " + appInfo.getState();
                 MainActivity.mHandler.sendMessage(message);
                 break;
         }
@@ -227,7 +227,7 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
     private class AppDownLoadListener implements DownLoadListener {
         @Override
         public void onStart(SQLDownLoadInfo sqlDownLoadInfo) {
-
+            notifyDataSetChanged();
         }
 
         @Override
@@ -245,7 +245,7 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
 
         @Override
         public void onStop(SQLDownLoadInfo sqlDownLoadInfo, boolean isSupportBreakpoint) {
-
+            notifyDataSetChanged();
         }
 
         @Override

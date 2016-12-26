@@ -3,12 +3,9 @@ package com.openthos.appstore.utils.download;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.openthos.appstore.MainActivity;
 import com.openthos.appstore.app.Constants;
-import com.openthos.appstore.bean.AppLayoutGridviewInfo;
 import com.openthos.appstore.bean.SQLDownLoadInfo;
 import com.openthos.appstore.bean.TaskInfo;
-import com.openthos.appstore.utils.SPUtils;
 import com.openthos.appstore.utils.sql.DownloadKeeper;
 import com.openthos.appstore.utils.FileHelper;
 
@@ -41,6 +38,7 @@ public class DownLoadManager {
     private static final int FILE_EXIT = -1;
     private static final int TASK_EXIT = 0;
     private static final int ADD_TASK = 1;
+    private static int mCount = 0;
 
     public DownLoadManager(Context context) {
         mContext = context;
@@ -156,7 +154,7 @@ public class DownLoadManager {
             taskDownLoader.setSupportBreakpoint(false);
         }
         taskDownLoader.start();
-        taskDownLoader.setDownLoadListener("public", mAlltasklistener);
+//        taskDownLoader.setDownLoadListener("" + (mCount++), adapter.getDownLoadListener());
         mTaskList.add(0, taskDownLoader);
         return 1;
     }
@@ -269,10 +267,11 @@ public class DownLoadManager {
 
     public void setAllTaskListener(DownLoadListener listener) {
         mAlltasklistener = listener;
-        for (int i = 0; i < mTaskList.size(); i++) {
-            DownLoader deletedownloader = mTaskList.get(i);
-            deletedownloader.setDownLoadListener("public", listener);
-        }
+        DownLoader.setDownLoadListener("" + (++mCount), listener);
+//        for (int i = 0; i < mTaskList.size(); i++) {
+//            DownLoader deletedownloader = mTaskList.get(i);
+//            deletedownloader.setDownLoadListener("public", listener);
+//        }
     }
 
     public void removeDownLoadListener(String taskID) {

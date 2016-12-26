@@ -153,19 +153,18 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
 
             if (btnStr.equals(continues)) {
                 mProgressBar.setVisibility(View.VISIBLE);
-                mDownload.setText(pause);
-                SPUtils.saveDownloadState(
-                        mContext, mContentInfo.getPackageName(), Constants.APP_DOWNLOAD_PAUSE);
-                MainActivity.mBinder.stopTask(mContentInfo.getId() + "");
+                mDownload.setText(pause);SPUtils.saveDownloadState(
+                        mContext, mContentInfo.getPackageName(), Constants.APP_DOWNLOAD_CONTINUE);
+                MainActivity.mBinder.startTask(mContentInfo.getId() + "");
             } else if (btnStr.equals(pause)) {
                 mProgressBar.setVisibility(View.VISIBLE);
                 mDownload.setText(continues);
                 SPUtils.saveDownloadState(
-                        mContext, mContentInfo.getPackageName(), Constants.APP_DOWNLOAD_CONTINUE);
-                MainActivity.mBinder.startTask(mContentInfo.getId() + "");
+                        mContext, mContentInfo.getPackageName(), Constants.APP_DOWNLOAD_PAUSE);
+                MainActivity.mBinder.stopTask(mContentInfo.getId() + "");
             } else if (btnStr.equals(installs)) {
                 mProgressBar.setVisibility(View.VISIBLE);
-                mDownload.setText(continues);
+                mDownload.setText(pause);
                 SPUtils.saveDownloadState(
                         mContext, mContentInfo.getPackageName(), Constants.APP_DOWNLOAD_CONTINUE);
                 MainActivity.mBinder.addTask(mContentInfo.getId() + "", Constants.BASEURL + "/" +

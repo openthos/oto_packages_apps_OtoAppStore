@@ -47,7 +47,7 @@ public class AppTypeAdapter extends BasicAdapter implements View.OnClickListener
             adapter.addDatas(appTypeInfo.getList());
             holder.listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
-                public void onItemClick (
+                public void onItemClick(
                         AdapterView<?> adapterView, View view, int position, long id) {
                     Tools.printLog("ljh", id + " " + appTypeInfo.getList().get(position).getType());
                     mOnItemClickListener.OnItemClick(id,

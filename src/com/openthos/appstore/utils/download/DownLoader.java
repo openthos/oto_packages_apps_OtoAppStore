@@ -24,6 +24,7 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
 
 public class DownLoader {
@@ -44,7 +45,7 @@ public class DownLoader {
     private String mUserID;
 
     private DownloadKeeper mDatakeeper;
-    private HashMap<String, DownLoadListener> mListenerMap;
+    private static Map<String, DownLoadListener> mListenerMap = new HashMap<>();
     private DownLoadSuccess mDownLoadSuccess;
     private SQLDownLoadInfo mSQLDownLoadInfo;
     private DownLoadThread mDownLoadThread;
@@ -68,7 +69,6 @@ public class DownLoader {
         mFileSize = sqlFileInfo.getFileSize();
         mDownFileSize = sqlFileInfo.getDownloadSize();
         mDatakeeper = new DownloadKeeper(context);
-        mListenerMap = new HashMap<String, DownLoadListener>();
         mSQLDownLoadInfo = sqlFileInfo;
 
         if (isNewTask) {
@@ -99,7 +99,7 @@ public class DownLoader {
         }
     }
 
-    public void setDownLoadListener(String key, DownLoadListener listener) {
+    public static void setDownLoadListener(String key, DownLoadListener listener) {
         if (listener == null) {
             removeDownLoadListener(key);
         } else {
@@ -107,7 +107,7 @@ public class DownLoader {
         }
     }
 
-    public void removeDownLoadListener(String key) {
+    public static void removeDownLoadListener(String key) {
         if (mListenerMap.containsKey(key)) {
             mListenerMap.remove(key);
         }
@@ -187,6 +187,7 @@ public class DownLoader {
                             mDownFileSize = new File(
                                     FileHelper.getTempFile(mSQLDownLoadInfo.getFileName())).length();
                             urlConn.setRequestProperty("Range", "bytes=" + mDownFileSize + "-");
+                            urlConn.setUseCaches(false);
                         } else {
                             mFileSize = 0;
                             mDownFileSize = 0;

@@ -13,6 +13,7 @@ import com.openthos.appstore.R;
 import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.bean.AppLayoutInfo;
 import com.openthos.appstore.bean.SQLDownLoadInfo;
+import com.openthos.appstore.utils.Tools;
 import com.openthos.appstore.view.CustomGridView;
 
 import java.util.ArrayList;
@@ -56,10 +57,13 @@ public class AppLayoutAdapter extends BasicAdapter
             AppLayoutInfo appLayoutInfo = (AppLayoutInfo) mDatas.get(position);
             holder.name.setText(getType(appLayoutInfo.getType()));
             AppLayoutGridviewAdapter appLayoutGridviewAdapter =
-                    new AppLayoutGridviewAdapter(mContext, mIsAll);
-            holder.gridView.setAdapter(appLayoutGridviewAdapter);
+                    (AppLayoutGridviewAdapter) holder.gridView.getAdapter();
+            if (holder.gridView.getAdapter() == null) {
+                appLayoutGridviewAdapter = new AppLayoutGridviewAdapter(mContext, mIsAll);
+                holder.gridView.setAdapter(appLayoutGridviewAdapter);
+                appLayoutGridviewAdapter.setUpdateProcessListener(this);
+            }
             appLayoutGridviewAdapter.addDatas(appLayoutInfo.getAppLayoutGridviewList());
-            appLayoutGridviewAdapter.setUpdateProcessListener(this);
 
             if (mIsAll) {
                 holder.more.setVisibility(View.GONE);

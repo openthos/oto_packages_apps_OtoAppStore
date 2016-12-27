@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -433,5 +434,13 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
                 }
             }
         }).start();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        setContentView(R.layout.activity_main);
+        init();
+        mHandler.sendEmptyMessage(Constants.HOME_FRAGMENT);
     }
 }

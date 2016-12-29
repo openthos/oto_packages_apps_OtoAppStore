@@ -44,6 +44,12 @@ public class SearchFragment extends BaseFragment {
         initData();
     }
 
+    @Override
+    public void refresh() {
+        super.refresh();
+        initData();
+    }
+
     public void initData() {
         List<String> searchData = SPUtils.getSearchData(getActivity(), mContent);
         List<AppLayoutGridviewInfo> datas = new ArrayList<>();

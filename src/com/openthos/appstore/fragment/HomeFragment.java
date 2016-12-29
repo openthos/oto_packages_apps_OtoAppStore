@@ -59,6 +59,12 @@ public class HomeFragment extends BaseFragment {
         initListener();
     }
 
+    @Override
+    public void refresh() {
+        super.refresh();
+        initData();
+    }
+
     private void initData() {
         new Thread(new GetData()).start();
     }

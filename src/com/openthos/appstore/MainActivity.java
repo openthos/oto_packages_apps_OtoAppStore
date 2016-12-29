@@ -64,7 +64,7 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
     private Fragment mCurrentFragment;
     private ArrayList<Integer> mPage;
     private int mWhat = Constants.MANAGER_FRAGMENT;
-    private Map<Integer, Fragment> mFragments;
+    private Map<Integer, BaseFragment> mFragments;
 
     private ServiceConnection conn = new ServiceConnection() {
         @Override
@@ -205,7 +205,7 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
     public void onCheckedChanged(RadioGroup group, int checkedId) {
         FragmentTransaction transaction = mManager.beginTransaction();
         transaction.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
-        Fragment fragment = null;
+        BaseFragment fragment = null;
         switch (checkedId) {
             case R.id.rb_home:
                 fragment = mFragments.get(Constants.HOME_FRAGMENT);
@@ -241,6 +241,8 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
                 break;
         }
         transaction.commit();
+        mManager.executePendingTransactions();
+        fragment.refresh();
     }
 
     private void initHandler() {
@@ -253,7 +255,7 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
 //                if (mCurrentFragment != null) {
 //                    transaction.hide(mCurrentFragment);
 //                }
-                Fragment fragment = null;
+                BaseFragment fragment = null;
                 switch (msg.what) {
                     case Constants.HOME_FRAGMENT:
                         fragment = mFragments.get(Constants.HOME_FRAGMENT);
@@ -345,6 +347,8 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
                 }
                 if (msg.what != Constants.TOAST && msg.what != Constants.REFRESH) {
                     transaction.commit();
+                    mManager.executePendingTransactions();
+                    fragment.refresh();
                     mWhat = msg.what;
                 }
             }

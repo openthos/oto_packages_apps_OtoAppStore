@@ -199,7 +199,7 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
 
     @Override
     public void refresh() {
-        loadData();
+        initData();
     }
 
     private class GetData implements Runnable {

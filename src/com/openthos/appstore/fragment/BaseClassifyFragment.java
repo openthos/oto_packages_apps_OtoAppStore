@@ -54,7 +54,7 @@ public abstract class BaseClassifyFragment extends BaseFragment
     @Override
     public void refresh() {
         super.refresh();
-        loadLayout();
+        initTypeData();
     }
 
     public abstract void initTypeData();

@@ -37,6 +37,7 @@ public class AppInstallReceiver extends BroadcastReceiver {
             MainActivity.mAppPackageInfo = AppUtils.getAppPackageInfo(context);
             if (MainActivity.mHandler != null) {
                  MainActivity.mHandler.sendEmptyMessage(Constants.REFRESH);
+                 MainActivity.mHandler.sendEmptyMessage(Constants.UPDATE);
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -344,8 +344,12 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
                             baseFragment.refresh();
                         }
                         break;
+                    case Constants.UPDATE:
+                        saveAllData();
+                        break;
                 }
-                if (msg.what != Constants.TOAST && msg.what != Constants.REFRESH) {
+                if (msg.what != Constants.TOAST && msg.what != Constants.REFRESH
+                        && msg.what != Constants.UPDATE) {
                     transaction.commit();
                     mManager.executePendingTransactions();
                     fragment.refresh();
@@ -423,6 +427,8 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
                             for (int i = 0; i < appList.size(); i++) {
                                 AppLayoutGridviewInfo appInfo = appList.get(i);
                                 SPUtils.saveAllData(MainActivity.this, appInfo);
+                                SPUtils.saveDownloadState(MainActivity.this,
+                                        appInfo.getAppPackageName(), appInfo.getState());
                             }
                         }
                         Tools.printLog("SA", dataInfo.getAppList().size() + "");
@@ -436,6 +442,7 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
                         saveAllData();
                     }
                 }
+                mHandler.sendEmptyMessage(Constants.REFRESH);
             }
         }).start();
     }

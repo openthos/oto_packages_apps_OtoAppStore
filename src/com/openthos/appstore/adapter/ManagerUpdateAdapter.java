@@ -13,9 +13,11 @@ import android.widget.TextView;
 import com.openthos.appstore.MainActivity;
 import com.openthos.appstore.R;
 import com.openthos.appstore.app.Constants;
+import com.openthos.appstore.bean.AppLayoutGridviewInfo;
 import com.openthos.appstore.bean.SQLAppInstallInfo;
 import com.openthos.appstore.bean.ManagerInfo;
 import com.openthos.appstore.utils.FileHelper;
+import com.openthos.appstore.utils.SPUtils;
 import com.openthos.appstore.utils.Tools;
 import com.openthos.appstore.utils.AppUtils;
 import com.openthos.appstore.utils.DialogUtils;
@@ -27,14 +29,20 @@ import android.net.Uri;
 import android.provider.Settings;
 import android.content.Intent;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Created by luojunhuan on 16-11-1.
  */
 public class ManagerUpdateAdapter extends BasicAdapter
         implements View.OnClickListener {
 
+    private Context mContext = null;
+
     public ManagerUpdateAdapter(Context context, boolean isAll) {
         super(context, isAll);
+        mContext = context;
     }
 
     public void setAll(boolean all) {
@@ -69,6 +77,25 @@ public class ManagerUpdateAdapter extends BasicAdapter
             holder.appName.setText(sqlAppInstallInfo.getName());
             holder.appVersion.setText(sqlAppInstallInfo.getVersionName());
             holder.appContent.setText(getType(sqlAppInstallInfo.getComment()));
+            List<String> res = SPUtils.getSearchData(mContext, sqlAppInstallInfo.getName());
+            if (res.size() > 0) {
+                String data = SPUtils.getData(mContext, Constants.SP_ALL_DATA, res.get(0));
+                AppLayoutGridviewInfo gridviewInfo = null;
+                try {
+                    gridviewInfo = new AppLayoutGridviewInfo(new JSONObject(data));
+                    if (!gridviewInfo.getVersionName().equals(sqlAppInstallInfo.getVersionName())) {
+                        sqlAppInstallInfo.setState(Constants.APP_NEED_UPDATE);
+                        sqlAppInstallInfo.setDownloadUrl(Constants.BASEURL + "/"
+                                + gridviewInfo.getDownloadUrl());
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            int state = SPUtils.getDownloadState(mContext, sqlAppInstallInfo.getPackageName() + "");
+            if (Constants.APP_NEED_UPDATE != sqlAppInstallInfo.getState()) {
+                sqlAppInstallInfo.setState(state);
+            }
             switch (sqlAppInstallInfo.getState()) {
                 case Constants.APP_NEED_UPDATE:
                     holder.appTask.setText(mContext.getString(R.string.update));

@@ -45,6 +45,7 @@ public class Constants {
     public static final int SEARCH_FRAGMENT = 9;
     public static final int TOAST = 10;
     public static final int REFRESH = 11;
+    public static final int UPDATE = 12;
 
     public static final int COMMENT_NUM_FALSE = 4;
     public static final int APP_NUM_FALSE = 8;

@@ -117,12 +117,17 @@ public class DownLoadManager {
         return mUserID;
     }
 
+    public int addTask(String taskID, String url, String fileName,
+                       String packageName, String iconUrl) {
+        return addTask(taskID, url, fileName, packageName, null, iconUrl);
+    }
+
     public int addTask(String taskID, String url, String fileName, String packageName) {
         return addTask(taskID, url, fileName, packageName, null);
     }
 
     public int addTask(String taskID, String url,
-                       String fileName, String packageName, String filepath) {
+                       String fileName, String packageName, String filepath, String iconUrl) {
         if (taskID == null) {
             taskID = fileName;
         }
@@ -140,6 +145,7 @@ public class DownLoadManager {
         downloadinfo.setFileName(fileName);
         downloadinfo.setUrl(url);
         downloadinfo.setPackageName(packageName);
+        downloadinfo.setIconUrl(iconUrl);
         if (filepath == null) {
             downloadinfo.setFilePath(FileHelper.getDefaultFile(fileName));
         } else {
@@ -212,6 +218,9 @@ public class DownLoadManager {
             taskinfo.setTaskID(sqldownloadinfo.getTaskID());
             taskinfo.setFileSize(sqldownloadinfo.getFileSize());
             taskinfo.setDownFileSize(sqldownloadinfo.getDownloadSize());
+            taskinfo.setIconUrl(sqldownloadinfo.getIconUrl());
+            taskinfo.setFilePath(sqldownloadinfo.getFilePath());
+            taskinfo.setPackageName(sqldownloadinfo.getPackageName());
             taskInfolist.add(taskinfo);
         }
         return taskInfolist;

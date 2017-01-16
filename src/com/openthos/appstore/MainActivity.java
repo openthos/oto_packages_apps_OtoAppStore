@@ -427,8 +427,6 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
                             for (int i = 0; i < appList.size(); i++) {
                                 AppLayoutGridviewInfo appInfo = appList.get(i);
                                 SPUtils.saveAllData(MainActivity.this, appInfo);
-                                SPUtils.saveDownloadState(MainActivity.this,
-                                        appInfo.getAppPackageName(), appInfo.getState());
                             }
                         }
                         Tools.printLog("SA", dataInfo.getAppList().size() + "");

@@ -1,12 +1,15 @@
 package com.openthos.appstore.adapter;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -16,10 +19,12 @@ import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.bean.SQLDownLoadInfo;
 import com.openthos.appstore.bean.TaskInfo;
 import com.openthos.appstore.utils.AppUtils;
+import com.openthos.appstore.utils.SPUtils;
 import com.openthos.appstore.utils.Tools;
 import com.openthos.appstore.utils.download.DownLoadListener;
 import com.openthos.appstore.utils.download.DownLoadManager;
 import com.openthos.appstore.utils.FileHelper;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -55,14 +60,35 @@ public class ManagerDownloadAdapter extends BasicAdapter {
 
         TaskInfo taskInfo = (TaskInfo) mDatas.get(position);
         holder.fileName.setText(taskInfo.getFileName());
-        holder.fileProgress.setProgress(taskInfo.getProgress());
-        holder.textProgress.setText(taskInfo.getProgress() + "%");
-        holder.speech.setText(taskInfo.getSpeech() + "k/s");
-        holder.downloadIcon.setOnCheckedChangeListener(new CheckedChangeListener(position));
-        if (taskInfo.isOnDownloading()) {
-            holder.downloadIcon.setChecked(true);
+
+        if (taskInfo.getProgress() < Constants.MAX_PROGRESS) {
+            holder.fileProgress.setProgress(taskInfo.getProgress());
+            holder.textProgress.setText(taskInfo.getProgress() + "%");
+            holder.speech.setText(Tools.transformFileSize(taskInfo.getSpeech() * 1024) + "/s");
+            holder.fileProgress.setVisibility(View.VISIBLE);
+            holder.controlDownload.setVisibility(View.VISIBLE);
+            Picasso.with(mContext).load(taskInfo.getIconUrl()).into(holder.appIcon);
         } else {
-            holder.downloadIcon.setChecked(false);
+            holder.fileProgress.setVisibility(View.INVISIBLE);
+            holder.textProgress.setText(Tools.transformFileSize(taskInfo.getFileSize()));
+            holder.speech.setText("");
+            Drawable appIcon = AppUtils.getAPKIcon(mContext, taskInfo.getFilePath());
+            if (appIcon != null) {
+                holder.appIcon.setBackground(appIcon);
+            } else {
+                holder.appIcon.setBackgroundResource(R.mipmap.ic_launcher);
+            }
+        }
+        holder.controlDownload.setOnClickListener(new BtnStateOnclickListener(position));
+        if (taskInfo.isOnDownloading()) {
+            holder.controlDownload.setText(mContext.getResources().getString(R.string.pause));
+        } else if (taskInfo.getProgress() == Constants.MAX_PROGRESS) {
+//            holder.controlDownload.setText(mContext.getResources().getString(R.string.install));
+            holder.controlDownload.setVisibility(View.INVISIBLE);
+//            SPUtils.saveDownloadState(mContext, taskInfo.getPackageName(),
+//                                                               Constants.APP_DOWNLOAD_FINISHED);
+        } else {
+            holder.controlDownload.setText(mContext.getResources().getString(R.string.continues));
         }
 
         return convertView;
@@ -77,14 +103,16 @@ public class ManagerDownloadAdapter extends BasicAdapter {
         private TextView textProgress;
         private TextView speech;
         private ProgressBar fileProgress;
-        private CheckBox downloadIcon;
+        private Button controlDownload;
+        private ImageView appIcon;
 
         public ViewHolder(View view) {
+            appIcon = (ImageView) view.findViewById(R.id.app_icon);
             fileName = (TextView) view.findViewById(R.id.file_name);
             textProgress = (TextView) view.findViewById(R.id.file_size);
             speech = (TextView) view.findViewById(R.id.file_speech);
             fileProgress = (ProgressBar) view.findViewById(R.id.progressbar);
-            downloadIcon = (CheckBox) view.findViewById(R.id.checkbox);
+            controlDownload = (Button) view.findViewById(R.id.control_download);
 //            downloadIcon.setVisibility(View.GONE);
         }
     }
@@ -108,21 +136,30 @@ public class ManagerDownloadAdapter extends BasicAdapter {
         notifyDataSetInvalidated();
     }
 
-    class CheckedChangeListener implements CompoundButton.OnCheckedChangeListener {
+    class BtnStateOnclickListener implements View.OnClickListener {
+
         int position = 0;
         TaskInfo mTaskInfo;
 
-        public CheckedChangeListener(int position) {
+        public BtnStateOnclickListener(int position) {
             this.position = position;
             mTaskInfo = (TaskInfo) mDatas.get(position);
         }
 
         @Override
-        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            if (isChecked) {
-                // continue download
+        public void onClick(View v) {
+            Button button_state = (Button)v;
+            String currentState = (button_state).getText().toString().trim();
+            final String stateContinue = mContext.getResources().getString(R.string.continues);
+            final String statePause = mContext.getResources().getString(R.string.pause);
+//            final String stateInstall = mContext.getResources().getString(R.string.install);
+
+            if(stateContinue.equals(currentState)) {
+                button_state.setText(statePause);
                 File file = new File(FileHelper.getDefaultFile(mTaskInfo.getFileName()));
-                if (mTaskInfo.getProgress() == 100 && file.exists() && file.length() != 0) {
+
+                if (mTaskInfo.getProgress() == Constants.MAX_PROGRESS && file.exists()
+                        && file.length() != 0) {
                     Message message = MainActivity.mHandler.obtainMessage();
                     message.what = Constants.TOAST;
                     message.obj = mContext.getString(R.string.this_task_have_been_download);
@@ -131,11 +168,20 @@ public class ManagerDownloadAdapter extends BasicAdapter {
                     mTaskInfo.setOnDownloading(true);
                     MainActivity.mBinder.startTask(mTaskInfo.getTaskID());
                 }
-            } else {
-                //stop download
+
+            } else if (statePause.equals(currentState)) {
+                button_state.setText(stateContinue);
                 mTaskInfo.setOnDownloading(false);
                 MainActivity.mBinder.stopTask(mTaskInfo.getTaskID());
             }
+//            else if(stateInstall.equals(currentState)) {
+//                String result = AppUtils.installApk(mContext,
+//                        FileHelper.getDefaultFile(mTaskInfo.getFileName()));
+//                if (result != null) {
+//                    Tools.toast(mContext, result);
+//                }
+//            }
+
             ManagerDownloadAdapter.this.notifyDataSetChanged();
         }
     }

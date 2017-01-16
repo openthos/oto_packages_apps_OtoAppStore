@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import com.openthos.appstore.bean.SQLDownLoadInfo;
+
 import java.util.ArrayList;
 
 public class DownloadKeeper {
@@ -27,6 +28,7 @@ public class DownloadKeeper {
         cv.put("url", downloadInfo.getUrl());
         cv.put("packageName", downloadInfo.getPackageName());
         cv.put("isSuccess", downloadInfo.isSuccess() + "");
+        cv.put("iconUrl", downloadInfo.getIconUrl());
         Cursor cursor = null;
         try {
             mDb = mDbhelper.getWritableDatabase();
@@ -101,6 +103,7 @@ public class DownloadKeeper {
             downloadinfo.setUserID(cursor.getString(cursor.getColumnIndex("userID")));
             downloadinfo.setIsSuccess("true".
                     equals(cursor.getString(cursor.getColumnIndex("isSuccess"))));
+            downloadinfo.setIconUrl(cursor.getString(cursor.getColumnIndex("iconUrl")));
             downloadinfoList.add(downloadinfo);
         }
         cursor.close();
@@ -128,6 +131,7 @@ public class DownloadKeeper {
                 downloadinfo.setPackageName(cursor.getString(cursor.getColumnIndex("packageName")));
                 downloadinfo.setIsSuccess("true".
                         equals(cursor.getString(cursor.getColumnIndex("isSuccess"))));
+                downloadinfo.setIconUrl(cursor.getString(cursor.getColumnIndex("iconUrl")));
                 downloadinfoList.add(downloadinfo);
             }
             cursor.close();

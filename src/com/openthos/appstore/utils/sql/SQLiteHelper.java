@@ -34,7 +34,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 + "fileSize VARCHAR, "
                 + "downLoadSize VARCHAR, "
                 + "isSuccess VARCHAR , "
-                + "packageName VARCHAR "
+                + "packageName VARCHAR, "
+                + "iconUrl VARCHAR "
                 + ")";
         db.execSQL(downloadsql);
 

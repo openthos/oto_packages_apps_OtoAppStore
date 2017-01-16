@@ -25,6 +25,9 @@ import com.openthos.appstore.utils.download.DownLoadService;
 import com.openthos.appstore.view.CustomProgressBar;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +54,9 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        boolean isFirstInit = false;
         if (convertView == null) {
+            isFirstInit = true;
             convertView = LayoutInflater.from(mContext).inflate(
                     R.layout.app_layout_gridview, parent, false);
         }
@@ -67,7 +72,11 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
                     appInfo.getIconUrl()).into(holder.icon);
             holder.name.setText(appInfo.getName());
             holder.type.setText(appInfo.getType());
-            appInfo.setState(SPUtils.getDownloadState(mContext, appInfo.getAppPackageName() + ""));
+            if (!isFirstInit) {
+                appInfo.setState(SPUtils.getDownloadState(mContext, appInfo.getAppPackageName()));
+            } else {
+                SPUtils.saveDownloadState(mContext, appInfo.getAppPackageName(), appInfo.getState());
+            }
             switch (appInfo.getState()) {
                 case Constants.APP_NOT_INSTALL:
                     setContent(holder.install, R.string.install,
@@ -157,7 +166,8 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
                     MainActivity.mBinder.addTask(appId, Constants.BASEURL + "/" +
                             appInfo.getDownloadUrl(),
                             FileHelper.getNameFromUrl(appInfo.getDownloadUrl()),
-                            appInfo.getAppPackageName());
+                            appInfo.getAppPackageName(),
+                            Constants.BASEURL + "/" + appInfo.getIconUrl());
                 } else if (btnStr.equals(update)) {
                     install.setText(continues);
                     SPUtils.saveDownloadState(
@@ -165,7 +175,8 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
                     MainActivity.mBinder.addTask(appId, Constants.BASEURL + "/" +
                             appInfo.getDownloadUrl(),
                             FileHelper.getNameFromUrl(appInfo.getDownloadUrl()),
-                            appInfo.getAppPackageName());
+                            appInfo.getAppPackageName(),
+                            Constants.BASEURL + "/" + appInfo.getIconUrl());
                 } else if (btnStr.equals(finished)) {
                     File file =
                             new File(FileHelper.getDefaultFileFromUrl(appInfo.getDownloadUrl()));

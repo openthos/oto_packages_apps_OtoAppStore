@@ -4,8 +4,11 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.openthos.appstore.app.Constants;
+
 import java.io.Closeable;
 import java.io.IOException;
+import java.text.DecimalFormat;
 
 /**
  * Created by luojunhuan on 16-10-27.
@@ -44,5 +47,17 @@ public class Tools {
             }
         }
         return false;
+    }
+
+    public static String transformFileSize(long fileSize) {
+        float formatSize;
+        String unit = "b";
+        if ((formatSize = fileSize / ((float) Constants.MB)) >= 1){
+            unit = "Mb";
+        } else if ((formatSize = fileSize / (float) Constants.KB) >= 1) {
+            unit = "Kb";
+        }
+        DecimalFormat format = new DecimalFormat("0.00");
+        return format.format(formatSize) + unit;
     }
 }

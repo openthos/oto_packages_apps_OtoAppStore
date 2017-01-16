@@ -67,6 +67,10 @@ public class Constants {
     public static final int DELAY_TIME_3 = 3000;
     public static final int DELAY_TIME_5 = 5000;
 
+    public static final int KB = 1024;
+    public static final int MB = 1024 * KB;
+
+    public static final int MAX_PROGRESS = 100;
 
     public static List<String> getString() {
         List<String> data = new ArrayList<>();

@@ -11,6 +11,7 @@ public class SQLDownLoadInfo {
     private boolean isSuccess;
     private long speech;
     private String packageName;
+    private String iconUrl;
 
     public String getUserID() {
         return userID;
@@ -90,5 +91,13 @@ public class SQLDownLoadInfo {
 
     public void setPackageName(String packageName) {
         this.packageName = packageName;
+    }
+
+    public String getIconUrl() {
+        return iconUrl;
+    }
+
+    public void setIconUrl(String iconUrl) {
+        this.iconUrl = iconUrl;
     }
 }

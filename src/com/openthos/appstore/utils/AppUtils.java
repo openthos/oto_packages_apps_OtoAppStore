@@ -42,6 +42,19 @@ public class AppUtils {
         return null;
     }
 
+    public static Drawable getAPKIcon(Context context, String absPath) {
+        PackageManager pm = context.getPackageManager();
+        PackageInfo packageInfo = pm.getPackageArchiveInfo(absPath, PackageManager.GET_ACTIVITIES);
+        if (packageInfo != null) {
+            ApplicationInfo applicationInfo = packageInfo.applicationInfo;
+            applicationInfo.sourceDir = absPath;
+            applicationInfo.publicSourceDir = absPath;
+            Drawable apkIcon = pm.getApplicationIcon(applicationInfo);
+            return apkIcon;
+        }
+        return null;
+    }
+
     public static String getVersionName(Context context) {
         try {
             PackageManager packageManager = context.getPackageManager();

@@ -5,6 +5,8 @@ public class TaskInfo {
     private String packageName;
     private String taskID;
     private String fileName;
+    private String filePath;
+    private String iconUrl;
     private long fileSize = 0;
     private long downFileSize = 0;
     private long speech;
@@ -82,5 +84,21 @@ public class TaskInfo {
 
     public void setPackageName(String packageName) {
         this.packageName = packageName;
+    }
+
+    public String getIconUrl() {
+        return iconUrl;
+    }
+
+    public void setIconUrl(String iconUrl) {
+        this.iconUrl = iconUrl;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
     }
 }

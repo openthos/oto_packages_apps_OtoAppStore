@@ -79,7 +79,7 @@ public class HomeFragment extends BaseFragment {
         homeAppLayoutFragment.setDatas(recommend, praise, welcome);
         transaction.replace(R.id.fragment_home_left, homeAppLayoutFragment);
 
-        transaction.commit();
+        transaction.commitAllowingStateLoss();
 
         AppLayoutAdapter appLayoutAdapter = new AppLayoutAdapter(getActivity(), 1, true);
         mListView.setAdapter(appLayoutAdapter);

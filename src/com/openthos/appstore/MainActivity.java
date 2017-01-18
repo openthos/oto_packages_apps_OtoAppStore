@@ -201,7 +201,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         }
 
         previousButton = (Button) findViewById(R.id.rb_home);
-        previousButton.setTextColor(ContextCompat.getColor(this, R.color.blue));
+        previousButton.setTextColor(getResources().getColor( R.color.blue));
     }
 
     @Override
@@ -211,8 +211,8 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         BaseFragment fragment = null;
         currentButton = (Button) v;
         if (currentButton != previousButton) {
-            currentButton.setTextColor(ContextCompat.getColor(this, R.color.blue));
-            previousButton.setTextColor(ContextCompat.getColor(this, R.color.gray));
+            currentButton.setTextColor(getResources().getColor(R.color.blue));
+            previousButton.setTextColor(getResources().getColor( R.color.gray));
             previousButton = currentButton;
         }
         switch (v.getId()) {

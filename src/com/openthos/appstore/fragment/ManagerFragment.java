@@ -122,6 +122,15 @@ public class ManagerFragment extends BaseFragment
     }
 
     @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
+            mLaunchDownload.setText(getResources().getString(R.string.launch));
+            mLaunchUpdate.setText(getResources().getString(R.string.launch));
+        }
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
     }

@@ -16,13 +16,14 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.openthos.appstore.app.Constants;
@@ -53,18 +54,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MainActivity extends FragmentActivity implements RadioGroup.OnCheckedChangeListener {
+public class MainActivity extends FragmentActivity implements View.OnClickListener {
     private static final String HANDLER_WHAT = "what";
     public static Handler mHandler;
     public static List<SQLAppInstallInfo> mAppPackageInfo;
     public static DownLoadService.AppStoreBinder mBinder;
     //    public static Map<String, Integer> mDownloadStateMap;
-    private RadioGroup mRadioGroup;
     private FragmentManager mManager;
     private Fragment mCurrentFragment;
     private ArrayList<Integer> mPage;
     private int mWhat = Constants.MANAGER_FRAGMENT;
     private Map<Integer, BaseFragment> mFragments;
+    private Button currentButton;
+    private Button previousButton;
 
     private ServiceConnection conn = new ServiceConnection() {
         @Override
@@ -173,40 +175,47 @@ public class MainActivity extends FragmentActivity implements RadioGroup.OnCheck
     }
 
     private void initView() {
-        mRadioGroup = (RadioGroup) findViewById(R.id.main_radioGroup);
-        mRadioGroup.setOnCheckedChangeListener(this);
+//        mRadioGroup = (RadioGroup) findViewById(R.id.main_radioGroup);
+//        mRadioGroup.setOnCheckedChangeListener(this);
 
-        if (mRadioGroup != null) {
-            int[] drawables = new int[] {
-                    R.drawable.select_home_drawable,
-                    R.drawable.select_software_drawable,
-                    R.drawable.select_game_drawable,
-                    R.drawable.select_manager_drawable
-            };
-
-            int[] rids = new int[] {
-                    R.id.rb_home,
-                    R.id.rb_software,
-                    R.id.rb_game,
-                    R.id.rb_manager
-            };
-            Resources res = getResources();
-            for (int i = 0; i < rids.length; i++) {
-                RadioButton rb = (RadioButton) mRadioGroup.findViewById(rids[i]);
-                Drawable drawable = res.getDrawable(drawables[i]);
-                drawable.setBounds(0, 0, Constants.DRAWABLE_SIZE, Constants.DRAWABLE_SIZE);
-                rb.setCompoundDrawablePadding(Constants.DRAWABLE_PADDING);
-                rb.setCompoundDrawables(drawable, null, null, null);
-            }
+        int[] drawables = new int[] {
+                R.drawable.select_home_drawable,
+                R.drawable.select_software_drawable,
+                R.drawable.select_game_drawable,
+                R.drawable.select_manager_drawable
+        };
+        int[] rids = new int[] {
+                R.id.rb_home,
+                R.id.rb_software,
+                R.id.rb_game,
+                R.id.rb_manager
+        };
+        Resources res = getResources();
+        for (int i = 0; i < rids.length; i++) {
+            Button rb = (Button) findViewById(rids[i]);
+            rb.setOnClickListener(this);
+            Drawable drawable = res.getDrawable(drawables[i]);
+            drawable.setBounds(0, 0, Constants.DRAWABLE_SIZE, Constants.DRAWABLE_SIZE);
+            rb.setCompoundDrawablePadding(Constants.DRAWABLE_PADDING);
+            rb.setCompoundDrawables(drawable, null, null, null);
         }
+
+        previousButton = (Button) findViewById(R.id.rb_home);
+        previousButton.setTextColor(ContextCompat.getColor(this, R.color.blue));
     }
 
     @Override
-    public void onCheckedChanged(RadioGroup group, int checkedId) {
+    public void onClick(View v) {
         FragmentTransaction transaction = mManager.beginTransaction();
         transaction.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
         BaseFragment fragment = null;
-        switch (checkedId) {
+        currentButton = (Button) v;
+        if (currentButton != previousButton) {
+            currentButton.setTextColor(ContextCompat.getColor(this, R.color.blue));
+            previousButton.setTextColor(ContextCompat.getColor(this, R.color.gray));
+            previousButton = currentButton;
+        }
+        switch (v.getId()) {
             case R.id.rb_home:
                 fragment = mFragments.get(Constants.HOME_FRAGMENT);
                 if (fragment == null) {

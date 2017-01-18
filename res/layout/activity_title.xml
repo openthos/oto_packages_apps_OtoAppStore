@@ -34,51 +34,45 @@
                 />
         </LinearLayout>
 
-        <RadioGroup
-            android:id="@+id/main_radioGroup"
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="2"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:layout_gravity="center"
-            >
-            <RadioButton
+            android:layout_gravity="center">
+
+            <Button
                 android:id="@+id/rb_home"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:checked="true"
-                style="@style/Main_RadioButton"
+                style="@style/Main_Button"
                 android:text="@string/home"
                 />
-            <RadioButton
+            <Button
                 android:id="@+id/rb_software"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:checked="false"
-                style="@style/Main_RadioButton"
+                style="@style/Main_Button"
                 android:layout_marginLeft="20dp"
                 android:text="@string/software"
                 />
-            <RadioButton
+            <Button
                 android:id="@+id/rb_game"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                style="@style/Main_RadioButton"
-                android:checked="false"
+                style="@style/Main_Button"
                 android:layout_marginLeft="20dp"
                 android:text="@string/game"
                 />
-            <RadioButton
+            <Button
                 android:id="@+id/rb_manager"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                style="@style/Main_RadioButton"
+                style="@style/Main_Button"
                 android:layout_marginLeft="20dp"
-                android:checked="false"
                 android:text="@string/manager"
                 />
-        </RadioGroup>
+
+        </LinearLayout>
 
         <RelativeLayout
             android:layout_width="0dp"

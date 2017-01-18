@@ -74,9 +74,9 @@ public class ManagerDownloadAdapter extends BasicAdapter {
             holder.speech.setText("");
             Drawable appIcon = AppUtils.getAPKIcon(mContext, taskInfo.getFilePath());
             if (appIcon != null) {
-                holder.appIcon.setBackground(appIcon);
+                holder.appIcon.setImageDrawable(appIcon);
             } else {
-                holder.appIcon.setBackgroundResource(R.mipmap.ic_launcher);
+                holder.appIcon.setImageResource(R.mipmap.ic_launcher);
             }
         }
         holder.controlDownload.setOnClickListener(new BtnStateOnclickListener(position));

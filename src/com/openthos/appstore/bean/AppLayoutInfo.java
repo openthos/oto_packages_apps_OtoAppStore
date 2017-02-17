@@ -1,9 +1,5 @@
 package com.openthos.appstore.bean;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,25 +21,6 @@ public class AppLayoutInfo implements Serializable {
         this.appLayoutGridviewList = appLayoutGridviewList;
     }
 
-    public AppLayoutInfo(AppLayoutGridviewInfo appLayoutGridviewInfo) {
-        appLayoutGridviewList = new ArrayList<>();
-        if (appLayoutGridviewInfo != null) {
-            appLayoutGridviewList.add(appLayoutGridviewInfo);
-        }
-    }
-
-    public AppLayoutInfo(JSONObject obj) throws JSONException {
-        this.id = obj.getLong("id");
-        this.type = obj.getString("type");
-        this.appLayoutGridviewList = new ArrayList<>();
-        JSONArray info = obj.getJSONArray("info");
-        AppLayoutGridviewInfo leftGridviewInfo = null;
-        for (int i = 0; i < info.length(); i++) {
-            leftGridviewInfo = new AppLayoutGridviewInfo(info.getJSONObject(i));
-            this.appLayoutGridviewList.add(leftGridviewInfo);
-        }
-    }
-
     public long getId() {
         return id;
     }
@@ -62,11 +39,6 @@ public class AppLayoutInfo implements Serializable {
 
     public List<AppLayoutGridviewInfo> getAppLayoutGridviewList() {
         return appLayoutGridviewList;
-    }
-
-    public void setAppLayoutGridviewList(List<AppLayoutGridviewInfo>
-                                                 appLayoutGridviewInfos) {
-        this.appLayoutGridviewList = appLayoutGridviewInfos;
     }
 
     @Override

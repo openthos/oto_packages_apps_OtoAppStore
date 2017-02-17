@@ -7,7 +7,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
-import java.util.Map;
 
 /**
  * Created by luojunhuan on 16-10-26.
@@ -25,21 +24,8 @@ public class AppLayoutGridviewInfo implements Serializable {
     private long downFileSize;
     private String comment;
 
-    public long getDownFileSize() {
-        return downFileSize;
-    }
-
     public void setDownFileSize(long downFileSize) {
         this.downFileSize = downFileSize;
-    }
-
-    public AppLayoutGridviewInfo(long id, String iconUrl, String name,
-                                 String type, int state) {
-        this.id = id;
-        this.iconUrl = iconUrl;
-        this.name = name;
-        this.type = type;
-        this.state = state;
     }
 
     public AppLayoutGridviewInfo(JSONObject obj) throws JSONException {
@@ -68,10 +54,6 @@ public class AppLayoutGridviewInfo implements Serializable {
         return iconUrl;
     }
 
-    public void setIconUrl(String iconUrl) {
-        this.iconUrl = iconUrl;
-    }
-
     public String getName() {
         return name;
     }
@@ -84,16 +66,8 @@ public class AppLayoutGridviewInfo implements Serializable {
         return appPackageName;
     }
 
-    public void setAppPackageName(String appPackageName) {
-        this.appPackageName = appPackageName;
-    }
-
     public String getDownloadUrl() {
         return downloadUrl;
-    }
-
-    public void setDownloadUrl(String downloadUrl) {
-        this.downloadUrl = downloadUrl;
     }
 
     public long getFileSize() {
@@ -106,10 +80,6 @@ public class AppLayoutGridviewInfo implements Serializable {
 
     public String getVersionName() {
         return versionName;
-    }
-
-    public void setVersionName(String versionName) {
-        this.versionName = versionName;
     }
 
     public int getState() {
@@ -130,14 +100,6 @@ public class AppLayoutGridviewInfo implements Serializable {
         this.type = type;
     }
 
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
     private int setState() {
         for (SQLAppInstallInfo sqlAppInstallInfo : MainActivity.mAppPackageInfo) {
             if (appPackageName.equals(sqlAppInstallInfo.getPackageName())) {
@@ -149,12 +111,6 @@ public class AppLayoutGridviewInfo implements Serializable {
                 }
             }
         }
-//        Map<String, Integer> downloadStateMap = MainActivity.mDownloadStateMap;
-//        if (downloadStateMap.containsKey(id + "")) {
-//            return downloadStateMap.get(id + "");
-//        } else {
-//            return Constants.APP_NOT_INSTALL;
-//        }
         return Constants.APP_NOT_INSTALL;
     }
 

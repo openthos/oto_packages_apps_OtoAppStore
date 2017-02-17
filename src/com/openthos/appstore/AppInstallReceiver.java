@@ -17,7 +17,6 @@ public class AppInstallReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Tools.printLog("ARV", "log in" + intent.getAction());
         switch (intent.getAction()) {
             case Intent.ACTION_PACKAGE_ADDED:
             case Intent.ACTION_PACKAGE_REPLACED:

@@ -2,13 +2,7 @@ package com.openthos.appstore.app;
 
 import android.os.Environment;
 
-import com.openthos.appstore.R;
-import com.openthos.appstore.bean.AppLayoutInfo;
 import com.openthos.appstore.bean.CommentInfo;
-import com.openthos.appstore.bean.AppLayoutGridviewInfo;
-import com.openthos.appstore.bean.AppTypeInfo;
-import com.openthos.appstore.bean.AppTypeListviewInfo;
-import com.openthos.appstore.bean.ManagerInfo;
 
 import java.util.ArrayList;
 import java.util.List;

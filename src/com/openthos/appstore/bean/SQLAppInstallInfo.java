@@ -25,10 +25,6 @@ public class SQLAppInstallInfo {
         this.icon = icon;
     }
 
-    public String getVersionCode() {
-        return versionCode;
-    }
-
     public void setVersionCode(String versionCode) {
         this.versionCode = versionCode;
     }
@@ -77,24 +73,12 @@ public class SQLAppInstallInfo {
         return comment;
     }
 
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
     public String getDownloadUrl() {
         return downloadUrl;
     }
 
     public void setDownloadUrl(String downloadUrl) {
         this.downloadUrl = downloadUrl;
-    }
-
-    public String getTaskId() {
-        return taskId;
-    }
-
-    public void setTaskId(String taskId) {
-        this.taskId = taskId;
     }
 
     @Override

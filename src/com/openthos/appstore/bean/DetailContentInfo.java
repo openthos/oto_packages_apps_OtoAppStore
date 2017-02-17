@@ -74,40 +74,12 @@ public class DetailContentInfo {
         return iconUrl;
     }
 
-    public void setIconUrl(String iconUrl) {
-        this.iconUrl = iconUrl;
-    }
-
     public String getDownloadUrl() {
         return downloadUrl;
     }
 
-    public void setDownloadUrl(String downloadUrl) {
-        this.downloadUrl = downloadUrl;
-    }
-
     public String getPackageName() {
         return packageName;
-    }
-
-    public void setPackageName(String packageName) {
-        this.packageName = packageName;
-    }
-
-    public String getVersionName() {
-        return versionName;
-    }
-
-    public void setVersionName(String versionName) {
-        this.versionName = versionName;
-    }
-
-    public int getVersionCode() {
-        return versionCode;
-    }
-
-    public void setVersionCode(int versionCode) {
-        this.versionCode = versionCode;
     }
 
     public String getName() {
@@ -122,10 +94,6 @@ public class DetailContentInfo {
         return company;
     }
 
-    public void setCompany(String company) {
-        this.company = company;
-    }
-
     public String getType() {
         return type;
     }
@@ -138,10 +106,6 @@ public class DetailContentInfo {
         return star;
     }
 
-    public void setStar(float star) {
-        this.star = star;
-    }
-
     public String getContent() {
         return content;
     }
@@ -152,10 +116,6 @@ public class DetailContentInfo {
 
     public String getPromulgator() {
         return promulgator;
-    }
-
-    public void setPromulgator(String promulgator) {
-        this.promulgator = promulgator;
     }
 
     public int getState() {
@@ -176,25 +136,5 @@ public class DetailContentInfo {
         } else {
             return (fileSize * 100 / (1024 * 1024)) / 100.0 + "Mb";
         }
-    }
-
-    public void setFileSize(long fileSize) {
-        this.fileSize = fileSize;
-    }
-
-    public List<CommentInfo> getCommentInfoList() {
-        return commentInfoList;
-    }
-
-    public void setCommentInfoList(List<CommentInfo> commentInfoList) {
-        this.commentInfoList = commentInfoList;
-    }
-
-    public List<PicturesInfo> getPicInfoList() {
-        return picInfoList;
-    }
-
-    public void setPicInfoList(List<PicturesInfo> picInfoList) {
-        this.picInfoList = picInfoList;
     }
 }

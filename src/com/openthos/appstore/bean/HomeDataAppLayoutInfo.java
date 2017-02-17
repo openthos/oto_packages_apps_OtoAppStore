@@ -1,14 +1,10 @@
 package com.openthos.appstore.bean;
 
-import com.openthos.appstore.R;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by luojunhuan on 16-10-26.
@@ -60,16 +56,8 @@ public class HomeDataAppLayoutInfo implements Serializable {
         return appLayoutSoftwareInfo;
     }
 
-    public void setAppLayoutSoftwareInfo(AppLayoutInfo appLayoutSoftwareInfo) {
-        this.appLayoutSoftwareInfo = appLayoutSoftwareInfo;
-    }
-
     public AppLayoutInfo getAppLayoutGameInfo() {
         return appLayoutGameInfo;
-    }
-
-    public void setAppLayoutGameInfo(AppLayoutInfo appLayoutGameInfo) {
-        this.appLayoutGameInfo = appLayoutGameInfo;
     }
 
     @Override

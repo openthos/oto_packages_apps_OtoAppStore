@@ -10,11 +10,6 @@ public class AppTypeListviewInfo {
     private long id;
     private String type;
 
-    public AppTypeListviewInfo(long id, String type) {
-        this.id = id;
-        this.type = type;
-    }
-
     public AppTypeListviewInfo(JSONObject obj) throws JSONException {
         this.id = obj.getLong("id");
         this.type = obj.getString("type");

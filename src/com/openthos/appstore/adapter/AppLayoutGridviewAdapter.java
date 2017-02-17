@@ -90,7 +90,6 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
                     holder.progressBar.setVisibility(View.VISIBLE);
                     holder.progressBar.setProgress(appInfo.getProgress());
                     setContent(holder.install, R.string.pause, 0, R.color.button_cyan);
-//                          R.drawable.shape_button_white_cyan, R.color.button_cyan);
                     break;
                 case Constants.APP_DOWNLOAD_PAUSE:
                     holder.progressBar.setVisibility(View.VISIBLE);
@@ -136,7 +135,6 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
     public void onClick(View v) {
         int possition = (int) v.getTag();
         AppLayoutGridviewInfo appInfo = (AppLayoutGridviewInfo) mDatas.get(possition);
-//        Map<String, Integer> downloadStateMap = MainActivity.mDownloadStateMap;
         String appId = appInfo.getId() + "";
         switch (v.getId()) {
             case R.id.app_layout_gridview_install:
@@ -243,7 +241,6 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
 
         @Override
         public void onProgress(SQLDownLoadInfo sqlDownLoadInfo, boolean isSupportBreakpoint) {
-            Tools.printLog("ljh", sqlDownLoadInfo.getFileName());
             for (AppLayoutGridviewInfo appInfo : (List<AppLayoutGridviewInfo>) mDatas) {
                 if ((appInfo.getId() + "").equals(sqlDownLoadInfo.getTaskID())) {
                     appInfo.setDownFileSize(sqlDownLoadInfo.getDownloadSize());

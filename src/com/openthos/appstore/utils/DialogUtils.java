@@ -5,27 +5,13 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
+
 import com.openthos.appstore.R;
 
 /**
  * Created by forward on 2016/11/13.
  */
 public class DialogUtils {
-    public void dialogUpdate(Context context, final UpdateManager updateManager) {
-        final AlertDialog dialog = new AlertDialog.Builder(context).create();
-        View inflate = LayoutInflater.from(context).inflate(R.layout.dialog_function, null, false);
-        TextView uninstall = (TextView) inflate.findViewById(R.id.dialog_function_text1);
-        uninstall.setVisibility(View.VISIBLE);
-        uninstall.setText(R.string.uninstall);
-        uninstall.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                updateManager.uninstall(dialog);
-            }
-        });
-        dialog.setView(inflate);
-        dialog.show();
-    }
 
     public void dialogDownload(Context context, final DownloadManager downloadManager) {
         final AlertDialog dialog = new AlertDialog.Builder(context).create();
@@ -49,13 +35,8 @@ public class DialogUtils {
                 downloadManager.removeTask(dialog);
             }
         });
-//        dialog.setView(inflate);
         dialog.show();
         dialog.setContentView(inflate);
-    }
-
-    public interface UpdateManager {
-        void uninstall(AlertDialog dialog);
     }
 
     public interface DownloadManager {

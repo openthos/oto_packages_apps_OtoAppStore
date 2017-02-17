@@ -17,8 +17,6 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-//import java.io.RandomAccessFile;
-import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Collection;
@@ -145,7 +143,6 @@ public class DownLoader {
     class DownLoadThread extends Thread {
         private boolean isdownloading;
         private URL url;
-        //        private RandomAccessFile localFile;
         private HttpURLConnection urlConn;
         private InputStream inputStream;
         private int progress = -1;
@@ -181,9 +178,6 @@ public class DownLoader {
                     } else {
                         if (new File(TEMP_FILEPATH + "/" +
                                 mSQLDownLoadInfo.getFileName()).exists()) {
-//                            localFile = new RandomAccessFile(
-//                                    TEMP_FILEPATH + "/" + mSQLDownLoadInfo.getFileName(), "rwd");
-//                            localFile.seek(mDownFileSize);
                             mDownFileSize = new File(
                                     FileHelper.getTempFile(mSQLDownLoadInfo.getFileName())).length();
                             urlConn.setRequestProperty("Range", "bytes=" + mDownFileSize + "-");
@@ -209,7 +203,6 @@ public class DownLoader {
                     saveDownloadInfo();
 
                     while ((length = bis.read(buffer)) != -1 && isdownloading) {
-//                        localFile.write(buffer, 0, length);
                         bos.write(buffer, 0, length);
                         bos.flush();
                         mDownFileSize += length;
@@ -220,7 +213,6 @@ public class DownLoader {
                             long speech = (mDownFileSize - downloadSize) /
                                     (currentTimeMillis - timeMillis);
                             downloadSize = mDownFileSize;
-                            Tools.printLog("ljh", speech + "");
                             mSQLDownLoadInfo.setSpeech(speech);
                             timeMillis = currentTimeMillis;
                             saveDownloadInfo();
@@ -238,7 +230,6 @@ public class DownLoader {
                             handler.sendEmptyMessage(TASK_ERROR);
                         }
 
-//                        mDatakeeper.deleteDownLoadInfo(mUserID, mSQLDownLoadInfo.getTaskID());
                         mDownLoadThread = null;
                         mOndownload = false;
                     }
@@ -284,13 +275,6 @@ public class DownLoader {
                         e.printStackTrace();
                     }
                     Tools.closeStream(bis, bos);
-//                    try {
-//                        if (localFile != null) {
-//                            localFile.close();
-//                        }
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
                 }
             }
         }
@@ -308,9 +292,6 @@ public class DownLoader {
             long urlfilesize = urlConn.getContentLength();
             if (urlfilesize > 0) {
                 isFolderExist();
-//                localFile = new RandomAccessFile(TEMP_FILEPATH + "/" +
-//                        mSQLDownLoadInfo.getFileName(), "rwd");
-//                localFile.setLength(urlfilesize);
                 mSQLDownLoadInfo.setFileSize(urlfilesize);
                 mFileSize = urlfilesize;
                 if (isdownloading) {
@@ -425,7 +406,6 @@ public class DownLoader {
     Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            // TODO Auto-generated method stub
             if (msg.what == TASK_START) {
                 mSQLDownLoadInfo.setSpeech(0);
                 startNotice();

@@ -49,7 +49,6 @@ public class AppTypeAdapter extends BasicAdapter implements View.OnClickListener
                 @Override
                 public void onItemClick(
                         AdapterView<?> adapterView, View view, int position, long id) {
-                    Tools.printLog("ljh", id + " " + appTypeInfo.getList().get(position).getType());
                     mOnItemClickListener.OnItemClick(id,
                                              appTypeInfo.getList().get(position).getType());
                 }

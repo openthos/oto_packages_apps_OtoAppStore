@@ -1,19 +1,16 @@
 package com.openthos.appstore.utils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.Signature;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 
 import com.openthos.appstore.R;
 import com.openthos.appstore.app.Constants;
-import com.openthos.appstore.bean.AppLayoutGridviewInfo;
 import com.openthos.appstore.bean.SQLAppInstallInfo;
-
-import android.content.Intent;
-import android.net.Uri;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -29,19 +26,6 @@ public class AppUtils {
         throw new UnsupportedOperationException("cannot be instantiated");
     }
 
-    public static String getAppName(Context context) {
-        try {
-            PackageManager packageManager = context.getPackageManager();
-            PackageInfo packageInfo = packageManager.getPackageInfo(
-                    context.getPackageName(), 0);
-            int labelRes = packageInfo.applicationInfo.labelRes;
-            return context.getResources().getString(labelRes);
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     public static Drawable getAPKIcon(Context context, String absPath) {
         PackageManager pm = context.getPackageManager();
         PackageInfo packageInfo = pm.getPackageArchiveInfo(absPath, PackageManager.GET_ACTIVITIES);
@@ -53,36 +37,6 @@ public class AppUtils {
             return apkIcon;
         }
         return null;
-    }
-
-    public static String getVersionName(Context context) {
-        try {
-            PackageManager packageManager = context.getPackageManager();
-            PackageInfo packageInfo = packageManager.getPackageInfo(
-                    context.getPackageName(), 0);
-            return packageInfo.versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public static boolean isAvilible(Context context, String packageName) {
-        final PackageManager packageManager = context.getPackageManager();
-        List<PackageInfo> pinfo = packageManager.getInstalledPackages(0);
-
-        List<String> pName = new ArrayList<String>();
-        if (pinfo != null) {
-            for (int i = 0; i < pinfo.size(); i++) {
-                PackageInfo packageInfo = pinfo.get(i);
-                String pn = packageInfo.packageName;
-                Signature[] signatures = packageInfo.signatures;
-                int versionCode = packageInfo.versionCode;
-
-                pName.add(pn);
-            }
-        }
-        return pName.contains(packageName);
     }
 
     public static List<SQLAppInstallInfo> getAppPackageInfo(Context context) throws
@@ -126,11 +80,5 @@ public class AppUtils {
                 "application/vnd.android.package-archive");
         mContext.startActivity(i);
         return "";
-    }
-
-    public static void uninstallApk(Context context, String packageName) {
-        Uri uri = Uri.parse("package:" + packageName);
-        Intent intent = new Intent(Intent.ACTION_DELETE, uri);
-        context.startActivity(intent);
     }
 }

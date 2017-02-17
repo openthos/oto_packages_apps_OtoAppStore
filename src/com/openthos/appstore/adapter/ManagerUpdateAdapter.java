@@ -1,7 +1,9 @@
 package com.openthos.appstore.adapter;
 
-import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,22 +17,15 @@ import com.openthos.appstore.R;
 import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.bean.AppLayoutGridviewInfo;
 import com.openthos.appstore.bean.SQLAppInstallInfo;
-import com.openthos.appstore.bean.ManagerInfo;
+import com.openthos.appstore.utils.AppUtils;
 import com.openthos.appstore.utils.FileHelper;
 import com.openthos.appstore.utils.SPUtils;
 import com.openthos.appstore.utils.Tools;
-import com.openthos.appstore.utils.AppUtils;
-import com.openthos.appstore.utils.DialogUtils;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import android.net.Uri;
-import android.provider.Settings;
-import android.content.Intent;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.List;
 
 /**
  * Created by luojunhuan on 16-11-1.

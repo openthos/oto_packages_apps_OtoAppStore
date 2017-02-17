@@ -49,23 +49,7 @@ public class CommentInfo {
         return star;
     }
 
-    public void setStar(int star) {
-        this.star = star;
-    }
-
-    public String getCommentPerson() {
-        return commentPerson;
-    }
-
-    public void setCommentPerson(String commentPerson) {
-        this.commentPerson = commentPerson;
-    }
-
     public String getTime() {
         return time;
-    }
-
-    public void setTime(String time) {
-        this.time = time;
     }
 }

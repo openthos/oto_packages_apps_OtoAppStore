@@ -8,11 +8,6 @@
         <!--<item name="colorAccent">@color/colorAccent</item>-->
     </style>
 
-    <style name="RadingStyle" parent="@android:style/Widget.RatingBar">
-        <item name="android:progressDrawable">@drawable/ratingbar_drawable</item>
-        <item name="android:minHeight">80dp</item>
-    </style>
-
     <style name="Main_Button">
         <item name="android:background">@color/transparent</item>
         <item name="android:textColor">@drawable/select_radiobutton_color</item>

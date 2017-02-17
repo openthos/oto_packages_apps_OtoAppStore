@@ -19,14 +19,6 @@ public class HomeDataInfo {
         appLayoutInfo = new HomeDataAppLayoutInfo(data);
     }
 
-    public int getResult() {
-        return result;
-    }
-
-    public void setResult(int result) {
-        this.result = result;
-    }
-
     public String getMessage() {
         return message;
     }
@@ -37,10 +29,6 @@ public class HomeDataInfo {
 
     public HomeDataAppLayoutInfo getAppLayoutInfo() {
         return appLayoutInfo;
-    }
-
-    public void setAppLayoutInfo(HomeDataAppLayoutInfo appLayoutInfo) {
-        this.appLayoutInfo = appLayoutInfo;
     }
 
     @Override

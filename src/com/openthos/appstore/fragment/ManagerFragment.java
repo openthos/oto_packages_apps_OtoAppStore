@@ -130,11 +130,6 @@ public class ManagerFragment extends BaseFragment
         }
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
-
     private void initView(View view) {
         mUpdateNum = (TextView) view.findViewById(R.id.fragment_manager_updateNum);
         mDownloadNum = (TextView) view.findViewById(R.id.fragment_manager_downloadNum);
@@ -157,7 +152,7 @@ public class ManagerFragment extends BaseFragment
             case R.id.fragment_manager_updateAll:
                 updateAll();
                 break;
-            case R.id.fragment_manager_launch1://updateFold
+            case R.id.fragment_manager_launch1:
                 try {
                     MainActivity.mAppPackageInfo = AppUtils.getAppPackageInfo(getActivity());
                     foldOrLaunch(mUpdaAdapter, MainActivity.mAppPackageInfo, mLaunchUpdate);
@@ -165,7 +160,7 @@ public class ManagerFragment extends BaseFragment
                     e.printStackTrace();
                 }
                 break;
-            case R.id.fragment_manager_launch2://downloadFold
+            case R.id.fragment_manager_launch2:
                 foldOrLaunch(mDownAdapter, mDownLoadManager.getAllTask(), mLaunchDownload);
                 break;
             default:

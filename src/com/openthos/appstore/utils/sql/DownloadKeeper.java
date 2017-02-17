@@ -61,31 +61,6 @@ public class DownloadKeeper {
         mDoSaveTimes = 0;
     }
 
-    public SQLDownLoadInfo getDownLoadInfo(String userID, String taskID) {
-        SQLDownLoadInfo downloadinfo = null;
-        mDb = mDbhelper.getWritableDatabase();
-        Cursor cursor = mDb.rawQuery(
-                "SELECT * from " + SQLiteHelper.DOWNLOAD_INFO
-                        + "WHERE userID = ? AND taskID = ? ", new String[]{userID, taskID});
-        if (cursor.moveToNext()) {
-            downloadinfo = new SQLDownLoadInfo();
-            downloadinfo.setDownloadSize(
-                    cursor.getLong(cursor.getColumnIndex("downLoadSize")));
-            downloadinfo.setFileName(cursor.getString(cursor.getColumnIndex("fileName")));
-            downloadinfo.setFilePath(cursor.getString(cursor.getColumnIndex("filePath")));
-            downloadinfo.setFileSize(cursor.getLong(cursor.getColumnIndex("fileSize")));
-            downloadinfo.setUrl(cursor.getString(cursor.getColumnIndex("url")));
-            downloadinfo.setTaskID(cursor.getString(cursor.getColumnIndex("taskID")));
-            downloadinfo.setPackageName(cursor.getString(cursor.getColumnIndex("packageName")));
-            downloadinfo.setUserID(cursor.getString(cursor.getColumnIndex("userID")));
-            downloadinfo.setIsSuccess("true".
-                    equals(cursor.getString(cursor.getColumnIndex("isSuccess"))));
-        }
-        cursor.close();
-        mDb.close();
-        return downloadinfo;
-    }
-
     public ArrayList<SQLDownLoadInfo> getAllDownLoadInfo() {
         ArrayList<SQLDownLoadInfo> downloadinfoList = new ArrayList<SQLDownLoadInfo>();
         mDb = mDbhelper.getWritableDatabase();
@@ -146,12 +121,6 @@ public class DownloadKeeper {
         mDb = mDbhelper.getWritableDatabase();
         mDb.delete(SQLiteHelper.DOWNLOAD_INFO, "userID = ? AND taskID = ? ",
                 new String[]{userID, taskID});
-        mDb.close();
-    }
-
-    public void deleteAllDownLoadInfo() {
-        mDb = mDbhelper.getWritableDatabase();
-        mDb.delete(SQLiteHelper.DOWNLOAD_INFO, null, null);
         mDb.close();
     }
 }

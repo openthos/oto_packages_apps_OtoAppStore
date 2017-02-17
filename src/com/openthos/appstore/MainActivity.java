@@ -55,15 +55,11 @@ import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends FragmentActivity implements View.OnClickListener {
-    private static final String HANDLER_WHAT = "what";
     public static Handler mHandler;
     public static List<SQLAppInstallInfo> mAppPackageInfo;
     public static DownLoadService.AppStoreBinder mBinder;
-    //    public static Map<String, Integer> mDownloadStateMap;
     private FragmentManager mManager;
-    private Fragment mCurrentFragment;
     private ArrayList<Integer> mPage;
-    private int mWhat = Constants.MANAGER_FRAGMENT;
     private Map<Integer, BaseFragment> mFragments;
     private Button currentButton;
     private Button previousButton;
@@ -92,8 +88,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         mHandler.sendEmptyMessage(Constants.HOME_FRAGMENT);
 
         saveAllData();
-
-//        new DownloadKeeper(this).deleteAllDownLoadInfo();
     }
 
     private void init() {
@@ -110,7 +104,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         mManager = getSupportFragmentManager();
         mPage = new ArrayList<>();
         mFragments = new HashMap<>();
-//        mDownloadStateMap = new HashMap<>();
         try {
             mAppPackageInfo = AppUtils.getAppPackageInfo(this);
         } catch (PackageManager.NameNotFoundException e) {
@@ -165,7 +158,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         if (mPage.size() > 1) {
             mPage.remove(mPage.size() - 1);
             Integer what = mPage.get(mPage.size() - 1);
-            Tools.printLog("MAc", "get" + what);
             if (what == Constants.SEARCH_FRAGMENT) {
                 checked();
             } else {
@@ -175,9 +167,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     }
 
     private void initView() {
-//        mRadioGroup = (RadioGroup) findViewById(R.id.main_radioGroup);
-//        mRadioGroup.setOnCheckedChangeListener(this);
-
         int[] drawables = new int[] {
                 R.drawable.select_home_drawable,
                 R.drawable.select_software_drawable,
@@ -260,10 +249,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
                 FragmentTransaction transaction = mManager.beginTransaction();
-//                mCurrentFragment = getCurrentFragment();
-//                if (mCurrentFragment != null) {
-//                    transaction.hide(mCurrentFragment);
-//                }
                 BaseFragment fragment = null;
                 switch (msg.what) {
                     case Constants.HOME_FRAGMENT:
@@ -362,14 +347,12 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                     transaction.commit();
                     mManager.executePendingTransactions();
                     fragment.refresh();
-                    mWhat = msg.what;
                 }
             }
         };
     }
 
     private void addFragment(FragmentTransaction transaction, Fragment fragment, int what) {
-        Tools.printLog("MAc", "add" + what);
         if (mPage.size() > 1) {
             if (mPage.get(mPage.size() - 1) != what) {
                 mPage.add(what);
@@ -438,7 +421,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                                 SPUtils.saveAllData(MainActivity.this, appInfo);
                             }
                         }
-                        Tools.printLog("SA", dataInfo.getAppList().size() + "");
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

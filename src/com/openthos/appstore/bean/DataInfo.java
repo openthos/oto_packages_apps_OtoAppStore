@@ -11,12 +11,10 @@ import java.util.List;
  * Created by ljh on 16-11-30.
  */
 public class DataInfo {
-    private int result;
     private String message;
     private List<AppLayoutGridviewInfo> appList;
 
     public DataInfo(JSONObject obj) throws JSONException {
-        result = obj.getInt("result");
         message = obj.getString("message");
         appList = new ArrayList<>();
         AppLayoutGridviewInfo appInfo;
@@ -25,14 +23,6 @@ public class DataInfo {
             appInfo = new AppLayoutGridviewInfo(array.getJSONObject(i));
             appList.add(appInfo);
         }
-    }
-
-    public int getResult() {
-        return result;
-    }
-
-    public void setResult(int result) {
-        this.result = result;
     }
 
     public String getMessage() {
@@ -45,9 +35,5 @@ public class DataInfo {
 
     public List<AppLayoutGridviewInfo> getAppList() {
         return appList;
-    }
-
-    public void setAppList(List<AppLayoutGridviewInfo> appList) {
-        this.appList = appList;
     }
 }

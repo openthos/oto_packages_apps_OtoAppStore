@@ -57,9 +57,6 @@ public class DownLoadManager {
                 for (int i = 0; i < taskSize; i++) {
                     DownLoader deletedownloader = mTaskList.get(i);
                     if (deletedownloader.getTaskID().equals(taskID)) {
-                        //                    mTaskList.remove(deletedownloader);
-//                        MainActivity.mDownloadStateMap.put(
-//                                taskID, Constants.APP_DOWNLOAD_FINISHED);
                         return;
                     }
                 }
@@ -104,19 +101,6 @@ public class DownLoadManager {
         mIsSupportBreakpoint = isSupportBreakpoint;
     }
 
-    public void changeUser(String userID) {
-        mUserID = userID;
-        SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putString("UserID", userID);
-        editor.commit();
-        FileHelper.setUserID(userID);
-        recoverData(mContext, userID);
-    }
-
-    public String getUserID() {
-        return mUserID;
-    }
-
     public int addTask(String taskID, String url, String fileName,
                        String packageName, String iconUrl) {
         return addTask(taskID, url, fileName, packageName, null, iconUrl);
@@ -133,7 +117,6 @@ public class DownLoadManager {
         }
         int state = getAttachmentState(taskID, fileName, filepath);
         if (state != ADD_TASK) {
-//            return state;
             FileHelper.deleteFile(fileName);
         }
 
@@ -160,7 +143,6 @@ public class DownLoadManager {
             taskDownLoader.setSupportBreakpoint(false);
         }
         taskDownLoader.start();
-//        taskDownLoader.setDownLoadListener("" + (mCount++), adapter.getDownLoadListener());
         mTaskList.add(0, taskDownLoader);
         return 1;
     }
@@ -196,15 +178,6 @@ public class DownLoadManager {
                 break;
             }
         }
-    }
-
-    public ArrayList<String> getAllTaskID() {
-        ArrayList<String> taskIDlist = new ArrayList<String>();
-        for (int i = 0; i < mTaskList.size(); i++) {
-            DownLoader deletedownloader = mTaskList.get(i);
-            taskIDlist.add(deletedownloader.getTaskID());
-        }
-        return taskIDlist;
     }
 
     public ArrayList<TaskInfo> getAllTask() {
@@ -264,73 +237,8 @@ public class DownLoadManager {
         }
     }
 
-    public void setSingleTaskListener(String taskID, DownLoadListener listener) {
-        for (int i = 0; i < mTaskList.size(); i++) {
-            DownLoader deletedownloader = mTaskList.get(i);
-            if (deletedownloader.getTaskID().equals(taskID)) {
-                deletedownloader.setDownLoadListener("private", listener);
-                break;
-            }
-        }
-    }
-
     public void setAllTaskListener(DownLoadListener listener) {
         mAlltasklistener = listener;
         DownLoader.setDownLoadListener("" + (++mCount), listener);
-//        for (int i = 0; i < mTaskList.size(); i++) {
-//            DownLoader deletedownloader = mTaskList.get(i);
-//            deletedownloader.setDownLoadListener("public", listener);
-//        }
-    }
-
-    public void removeDownLoadListener(String taskID) {
-        DownLoader downLoader = getDownloader(taskID);
-        if (downLoader != null) {
-            downLoader.removeDownLoadListener("private");
-        }
-    }
-
-    public void removeAllDownLoadListener() {
-        for (int i = 0; i < mTaskList.size(); i++) {
-            DownLoader deletedownloader = mTaskList.get(i);
-            deletedownloader.removeDownLoadListener("public");
-        }
-    }
-
-    public boolean isTaskdownloading(String taskID) {
-        DownLoader downLoader = getDownloader(taskID);
-        if (downLoader != null) {
-            return downLoader.isDownLoading();
-        }
-        return false;
-    }
-
-    private DownLoader getDownloader(String taskID) {
-        for (int i = 0; i < mTaskList.size(); i++) {
-            DownLoader downloader = mTaskList.get(i);
-            if (taskID != null && taskID.equals(downloader.getTaskID())) {
-                return downloader;
-            }
-        }
-        return null;
-    }
-
-    public TaskInfo getTaskInfo(String taskID) {
-        DownLoader downloader = getDownloader(taskID);
-        if (downloader == null) {
-            return null;
-        }
-        SQLDownLoadInfo sqldownloadinfo = downloader.getSQLDownLoadInfo();
-        if (sqldownloadinfo == null) {
-            return null;
-        }
-        TaskInfo taskinfo = new TaskInfo();
-        taskinfo.setFileName(sqldownloadinfo.getFileName());
-        taskinfo.setOnDownloading(downloader.isDownLoading());
-        taskinfo.setTaskID(sqldownloadinfo.getTaskID());
-        taskinfo.setDownFileSize(sqldownloadinfo.getDownloadSize());
-        taskinfo.setFileSize(sqldownloadinfo.getFileSize());
-        taskinfo.setPackageName(sqldownloadinfo.getPackageName());
-        return taskinfo;
     }
 }

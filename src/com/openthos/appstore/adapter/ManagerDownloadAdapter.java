@@ -113,13 +113,7 @@ public class ManagerDownloadAdapter extends BasicAdapter {
             speech = (TextView) view.findViewById(R.id.file_speech);
             fileProgress = (ProgressBar) view.findViewById(R.id.progressbar);
             controlDownload = (Button) view.findViewById(R.id.control_download);
-//            downloadIcon.setVisibility(View.GONE);
         }
-    }
-
-    public void addItem(TaskInfo taskinfo) {
-        mDatas.add(taskinfo);
-        notifyDataSetInvalidated();
     }
 
     public void addData(List<TaskInfo> listdata) {
@@ -195,8 +189,6 @@ public class ManagerDownloadAdapter extends BasicAdapter {
 
         @Override
         public void onProgress(SQLDownLoadInfo sqlDownLoadInfo, boolean isSupportBreakpoint) {
-            //According to listen to the information to find a list of corresponding tasks,
-            // the progress of the corresponding task
             for (TaskInfo taskInfo : (ArrayList<TaskInfo>) mDatas) {
                 if (taskInfo.getTaskID().equals(sqlDownLoadInfo.getTaskID())) {
                     taskInfo.setDownFileSize(sqlDownLoadInfo.getDownloadSize());
@@ -212,7 +204,6 @@ public class ManagerDownloadAdapter extends BasicAdapter {
         public void onStop(SQLDownLoadInfo sqlDownLoadInfo, boolean isSupportBreakpoint) {
             for (TaskInfo taskInfo : (ArrayList<TaskInfo>) mDatas) {
                 if (taskInfo.getTaskID().equals(sqlDownLoadInfo.getTaskID())) {
-//                    mDatas.remove(taskInfo);
                     taskInfo.setSpeech(0);
                     taskInfo.setOnDownloading(false);
                     ManagerDownloadAdapter.this.notifyDataSetChanged();
@@ -223,11 +214,8 @@ public class ManagerDownloadAdapter extends BasicAdapter {
 
         @Override
         public void onSuccess(SQLDownLoadInfo sqlDownLoadInfo) {
-            //According to listen to the information to find a list of corresponding tasks,
-            // the progress of the delete task
             for (TaskInfo taskInfo : (ArrayList<TaskInfo>) mDatas) {
                 if (taskInfo.getTaskID().equals(sqlDownLoadInfo.getTaskID())) {
-//                    mDatas.remove(taskInfo);
                     taskInfo.setSpeech(0);
                     taskInfo.setOnDownloading(false);
                     taskInfo.setDownFileSize(sqlDownLoadInfo.getDownloadSize());
@@ -240,8 +228,6 @@ public class ManagerDownloadAdapter extends BasicAdapter {
 
         @Override
         public void onError(SQLDownLoadInfo sqlDownLoadInfo, String error) {
-            //According to listen to the information to find a list of corresponding tasks,
-            // the progress of the stop task
             for (TaskInfo taskInfo : (ArrayList<TaskInfo>) mDatas) {
                 if (taskInfo.getTaskID().equals(sqlDownLoadInfo.getTaskID())) {
                     taskInfo.setOnDownloading(false);
@@ -253,7 +239,6 @@ public class ManagerDownloadAdapter extends BasicAdapter {
                 }
             }
             Tools.toast(mContext, error + "");
-            Tools.printLog("ljh", error + "");
         }
     }
 }

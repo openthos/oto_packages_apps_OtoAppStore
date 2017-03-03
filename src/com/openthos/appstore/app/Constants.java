@@ -68,11 +68,11 @@ public class Constants {
 
     public static List<String> getString() {
         List<String> data = new ArrayList<>();
-        data.add("http://pic22.nipic.com/20120731/8193302_121949417315_2.jpg");
-        data.add("http://tupian.enterdesk.com/2012/1212/gha/fjtu%20%2821%29.jpg");
-        data.add("http://img1.sc115.com/uploads/sc/jpg/HD/2/45.jpg");
-        data.add("http://pic76.nipic.com/file/20150824/21321671_171432499000_2.jpg");
-        data.add("http://img.taopic.com/uploads/allimg/100922/173-100922212H60.jpg");
+        data.add(BASEURL + "/carousel/1.jpg");
+        data.add(BASEURL + "/carousel/2.jpg");
+        data.add(BASEURL + "/carousel/3.jpg");
+        data.add(BASEURL + "/carousel/4.jpg");
+        data.add(BASEURL + "/carousel/5.jpg");
         return data;
     }
 

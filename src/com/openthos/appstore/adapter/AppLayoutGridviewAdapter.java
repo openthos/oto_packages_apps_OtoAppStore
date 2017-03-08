@@ -17,21 +17,16 @@ import com.openthos.appstore.bean.AppLayoutGridviewInfo;
 import com.openthos.appstore.bean.SQLDownLoadInfo;
 import com.openthos.appstore.utils.AppUtils;
 import com.openthos.appstore.utils.FileHelper;
+import com.openthos.appstore.utils.ImageCache;
+import com.openthos.appstore.utils.NetUtils;
 import com.openthos.appstore.utils.SPUtils;
-import com.openthos.appstore.utils.Tools;
 import com.openthos.appstore.utils.download.DownLoadListener;
 import com.openthos.appstore.utils.download.DownLoadManager;
 import com.openthos.appstore.utils.download.DownLoadService;
-import com.openthos.appstore.view.CustomProgressBar;
-import com.squareup.picasso.Picasso;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by luojunhuan on 16-10-26.
@@ -68,8 +63,7 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
 
         if (mDatas != null && mDatas.size() != 0) {
             AppLayoutGridviewInfo appInfo = (AppLayoutGridviewInfo) mDatas.get(position);
-            Picasso.with(mContext).load(Constants.BASEURL + "/" +
-                    appInfo.getIconUrl()).into(holder.icon);
+            ImageCache.loadImage(holder.icon, Constants.BASEURL + "/" + appInfo.getIconUrl());
             holder.name.setText(appInfo.getName());
             holder.type.setText(appInfo.getType());
             if (!isFirstInit) {
@@ -146,36 +140,43 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
                 String installs = mContext.getResources().getString(R.string.install);
                 String update = mContext.getResources().getString(R.string.update);
                 String finished = mContext.getResources().getString(R.string.finished);
-
-                if (btnStr.equals(continues)) {
-                    install.setText(pause);
-                    SPUtils.saveDownloadState(
-                            mContext, appInfo.getAppPackageName(), Constants.APP_DOWNLOAD_CONTINUE);
-                    MainActivity.mBinder.startTask(appId);
-                } else if (btnStr.equals(pause)) {
-                    install.setText(continues);
-                    SPUtils.saveDownloadState(
-                            mContext, appInfo.getAppPackageName(), Constants.APP_DOWNLOAD_PAUSE);
-                    MainActivity.mBinder.stopTask(appId);
-                } else if (btnStr.equals(installs)) {
-                    install.setText(continues);
-                    SPUtils.saveDownloadState(
-                            mContext, appInfo.getAppPackageName(), Constants.APP_DOWNLOAD_CONTINUE);
-                    MainActivity.mBinder.addTask(appId, Constants.BASEURL + "/" +
-                            appInfo.getDownloadUrl(),
-                            FileHelper.getNameFromUrl(appInfo.getDownloadUrl()),
-                            appInfo.getAppPackageName(),
-                            Constants.BASEURL + "/" + appInfo.getIconUrl());
-                } else if (btnStr.equals(update)) {
-                    install.setText(continues);
-                    SPUtils.saveDownloadState(
-                            mContext, appInfo.getAppPackageName(), Constants.APP_DOWNLOAD_CONTINUE);
-                    MainActivity.mBinder.addTask(appId, Constants.BASEURL + "/" +
-                            appInfo.getDownloadUrl(),
-                            FileHelper.getNameFromUrl(appInfo.getDownloadUrl()),
-                            appInfo.getAppPackageName(),
-                            Constants.BASEURL + "/" + appInfo.getIconUrl());
-                } else if (btnStr.equals(finished)) {
+                if (NetUtils.isConnected(mContext)) {
+                    if (btnStr.equals(continues)) {
+                        install.setText(pause);
+                        SPUtils.saveDownloadState(mContext,
+                                appInfo.getAppPackageName(), Constants.APP_DOWNLOAD_CONTINUE);
+                        MainActivity.mBinder.startTask(appId);
+                    } else if (btnStr.equals(pause)) {
+                        install.setText(continues);
+                        SPUtils.saveDownloadState(mContext,
+                                appInfo.getAppPackageName(), Constants.APP_DOWNLOAD_PAUSE);
+                        MainActivity.mBinder.stopTask(appId);
+                    } else if (btnStr.equals(installs)) {
+                        install.setText(continues);
+                        SPUtils.saveDownloadState(mContext,
+                                appInfo.getAppPackageName(), Constants.APP_DOWNLOAD_CONTINUE);
+                        MainActivity.mBinder.addTask(appId, Constants.BASEURL + "/" +
+                                        appInfo.getDownloadUrl(),
+                                FileHelper.getNameFromUrl(appInfo.getDownloadUrl()),
+                                appInfo.getAppPackageName(),
+                                Constants.BASEURL + "/" + appInfo.getIconUrl());
+                    } else if (btnStr.equals(update)) {
+                        install.setText(continues);
+                        SPUtils.saveDownloadState(mContext,
+                                appInfo.getAppPackageName(), Constants.APP_DOWNLOAD_CONTINUE);
+                        MainActivity.mBinder.addTask(appId, Constants.BASEURL + "/" +
+                                        appInfo.getDownloadUrl(),
+                                FileHelper.getNameFromUrl(appInfo.getDownloadUrl()),
+                                appInfo.getAppPackageName(),
+                                Constants.BASEURL + "/" + appInfo.getIconUrl());
+                    }
+                } else {
+                    Message message = MainActivity.mHandler.obtainMessage();
+                    message.what = Constants.TOAST;
+                    message.obj = mContext.getResources().getString(R.string.check_net_state);
+                    MainActivity.mHandler.sendMessage(message);
+                }
+                if (btnStr.equals(finished)) {
                     File file =
                             new File(FileHelper.getDefaultFileFromUrl(appInfo.getDownloadUrl()));
                     if (file.exists() && file.length() != 0) {

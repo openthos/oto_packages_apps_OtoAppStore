@@ -13,7 +13,6 @@ import com.openthos.appstore.R;
 import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.bean.AppLayoutInfo;
 import com.openthos.appstore.bean.SQLDownLoadInfo;
-import com.openthos.appstore.utils.Tools;
 import com.openthos.appstore.view.CustomGridView;
 
 import java.util.ArrayList;

@@ -2,10 +2,14 @@ package com.openthos.appstore.utils.download;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Message;
 
+import com.openthos.appstore.MainActivity;
+import com.openthos.appstore.R;
 import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.bean.SQLDownLoadInfo;
 import com.openthos.appstore.bean.TaskInfo;
+import com.openthos.appstore.utils.NetUtils;
 import com.openthos.appstore.utils.sql.DownloadKeeper;
 import com.openthos.appstore.utils.FileHelper;
 

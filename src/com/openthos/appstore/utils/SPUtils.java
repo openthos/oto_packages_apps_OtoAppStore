@@ -68,4 +68,8 @@ public class SPUtils {
         }
         return list;
     }
+
+    public static void clearData(Context context, String fileName) {
+        context.getSharedPreferences(fileName, Context.MODE_PRIVATE).edit().clear().commit();
+    }
 }

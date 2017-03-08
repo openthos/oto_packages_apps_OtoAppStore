@@ -16,7 +16,7 @@ import android.widget.LinearLayout;
 
 import com.openthos.appstore.R;
 import com.openthos.appstore.app.Constants;
-import com.squareup.picasso.Picasso;
+import com.openthos.appstore.utils.ImageCache;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -148,12 +148,11 @@ public class Kanner extends FrameLayout {
             iv.setScaleType(ScaleType.FIT_XY);
 //            iv.setBackgroundResource(R.mipmap.loading);
             if (i == 0) {
-                Picasso.with(mContext).load(imagesUrl[mCount - 1]).into(iv);
+                ImageCache.loadImage(iv, imagesUrl[mCount - 1]);
             } else if (i == mCount + 1) {
-                Picasso.with(mContext).load(imagesUrl[0]).into(iv);
+                ImageCache.loadImage(iv, imagesUrl[0]);
             } else {
-                Picasso.with(mContext).load(imagesUrl[i - 1]).into(iv);
-
+                ImageCache.loadImage(iv, imagesUrl[i - 1]);
             }
             mImageViews.add(iv);
         }
@@ -241,7 +240,7 @@ public class Kanner extends FrameLayout {
                 imgs[i].setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                       mOnItemClickListener.onItemClick(v, j - 1 + finalI);
+                        mOnItemClickListener.onItemClick(v, j - 1 + finalI);
                     }
                 });
             }
@@ -250,33 +249,32 @@ public class Kanner extends FrameLayout {
             if (size == 1) {
                 imgs[1].setVisibility(View.GONE);
                 imgs[2].setVisibility(View.GONE);
-                Picasso.with(mContext).load(mImagesUrl.get(0)).into(imgs[0]);
+                ImageCache.loadImage(imgs[0], mImagesUrl.get(0));
             } else if (size == 2) {
                 imgs[2].setVisibility(View.GONE);
-                Picasso.with(mContext).load(mImagesUrl.get(0)).into(imgs[0]);
-                Picasso.with(mContext).load(mImagesUrl.get(1)).into(imgs[1]);
+                ImageCache.loadImage(imgs[0], mImagesUrl.get(0));
+                ImageCache.loadImage(imgs[1], mImagesUrl.get(1));
             } else if (size == 3) {
-                Picasso.with(mContext).load(mImagesUrl.get(0)).into(imgs[0]);
-                Picasso.with(mContext).load(mImagesUrl.get(1)).into(imgs[1]);
-                Picasso.with(mContext).load(mImagesUrl.get(2)).into(imgs[2]);
+                ImageCache.loadImage(imgs[0], mImagesUrl.get(0));
+                ImageCache.loadImage(imgs[1], mImagesUrl.get(1));
+                ImageCache.loadImage(imgs[2], mImagesUrl.get(2));
             } else {
                 if (j == 0 || j == size) {
-                    //mImageLoader.displayImage(mImagesUrl.get(mCount - 1), iv, options);
-                    Picasso.with(mContext).load(mImagesUrl.get(size - 1)).into(imgs[0]);
-                    Picasso.with(mContext).load(mImagesUrl.get(0)).into(imgs[1]);
-                    Picasso.with(mContext).load(mImagesUrl.get(1)).into(imgs[2]);
+                    ImageCache.loadImage(imgs[0], mImagesUrl.get(size - 1));
+                    ImageCache.loadImage(imgs[1], mImagesUrl.get(0));
+                    ImageCache.loadImage(imgs[2], mImagesUrl.get(1));
                 } else if (j == size - 1) {
-                    Picasso.with(mContext).load(mImagesUrl.get(size - 2)).into(imgs[0]);
-                    Picasso.with(mContext).load(mImagesUrl.get(size - 1)).into(imgs[1]);
-                    Picasso.with(mContext).load(mImagesUrl.get(0)).into(imgs[2]);
+                    ImageCache.loadImage(imgs[0], mImagesUrl.get(size - 2));
+                    ImageCache.loadImage(imgs[1], mImagesUrl.get(size - 1));
+                    ImageCache.loadImage(imgs[2], mImagesUrl.get(0));
                 } else if (j == size + 1) {
-                    Picasso.with(mContext).load(mImagesUrl.get(0)).into(imgs[0]);
-                    Picasso.with(mContext).load(mImagesUrl.get(1)).into(imgs[1]);
-                    Picasso.with(mContext).load(mImagesUrl.get(2)).into(imgs[2]);
+                    ImageCache.loadImage(imgs[0], mImagesUrl.get(0));
+                    ImageCache.loadImage(imgs[1], mImagesUrl.get(1));
+                    ImageCache.loadImage(imgs[2], mImagesUrl.get(2));
                 } else {
-                    Picasso.with(mContext).load(mImagesUrl.get(j - 1)).into(imgs[0]);
-                    Picasso.with(mContext).load(mImagesUrl.get(j)).into(imgs[1]);
-                    Picasso.with(mContext).load(mImagesUrl.get(j + 1)).into(imgs[2]);
+                    ImageCache.loadImage(imgs[0], mImagesUrl.get(j - 1));
+                    ImageCache.loadImage(imgs[1], mImagesUrl.get(j));
+                    ImageCache.loadImage(imgs[2], mImagesUrl.get(j + 1));
                 }
             }
             container.addView(ret);
@@ -286,7 +284,6 @@ public class Kanner extends FrameLayout {
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
             container.removeView((View) object);
-//            container.removeView(mImageViews.get(position));
         }
     }
 

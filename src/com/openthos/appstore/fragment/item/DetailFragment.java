@@ -25,13 +25,13 @@ import com.openthos.appstore.bean.SQLDownLoadInfo;
 import com.openthos.appstore.fragment.BaseFragment;
 import com.openthos.appstore.utils.AppUtils;
 import com.openthos.appstore.utils.FileHelper;
+import com.openthos.appstore.utils.ImageCache;
 import com.openthos.appstore.utils.NetUtils;
 import com.openthos.appstore.utils.SPUtils;
 import com.openthos.appstore.utils.download.DownLoadListener;
 import com.openthos.appstore.utils.download.DownLoadManager;
 import com.openthos.appstore.utils.download.DownLoadService;
 import com.openthos.appstore.view.Kanner;
-import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -153,7 +153,8 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
 
             if (btnStr.equals(continues)) {
                 mProgressBar.setVisibility(View.VISIBLE);
-                mDownload.setText(pause);SPUtils.saveDownloadState(
+                mDownload.setText(pause);
+                SPUtils.saveDownloadState(
                         mContext, mContentInfo.getPackageName(), Constants.APP_DOWNLOAD_CONTINUE);
                 MainActivity.mBinder.startTask(mContentInfo.getId() + "");
             } else if (btnStr.equals(pause)) {
@@ -232,8 +233,7 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
             mContentInfo = detailInfo.getDetailContentInfo();
             if (mContentInfo != null) {
                 mContentInfo.setState(mState);
-                Picasso.with(getActivity()).
-                        load(Constants.BASEURL + "/" + mContentInfo.getIconUrl()).into(mIcon);
+                ImageCache.loadImage(mIcon, Constants.BASEURL + "/" + mContentInfo.getIconUrl());
                 mAppName.setText(mContentInfo.getName());
                 mAppCompany.setText(mContentInfo.getCompany());
                 mCommentStar.setRating(mContentInfo.getStar());

@@ -7,8 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -19,12 +17,11 @@ import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.bean.SQLDownLoadInfo;
 import com.openthos.appstore.bean.TaskInfo;
 import com.openthos.appstore.utils.AppUtils;
-import com.openthos.appstore.utils.SPUtils;
+import com.openthos.appstore.utils.ImageCache;
 import com.openthos.appstore.utils.Tools;
 import com.openthos.appstore.utils.download.DownLoadListener;
 import com.openthos.appstore.utils.download.DownLoadManager;
 import com.openthos.appstore.utils.FileHelper;
-import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -67,7 +64,7 @@ public class ManagerDownloadAdapter extends BasicAdapter {
             holder.speech.setText(Tools.transformFileSize(taskInfo.getSpeech() * 1024) + "/s");
             holder.fileProgress.setVisibility(View.VISIBLE);
             holder.controlDownload.setVisibility(View.VISIBLE);
-            Picasso.with(mContext).load(taskInfo.getIconUrl()).into(holder.appIcon);
+            ImageCache.loadImage(holder.appIcon, taskInfo.getIconUrl());
         } else {
             holder.fileProgress.setVisibility(View.INVISIBLE);
             holder.textProgress.setText(Tools.transformFileSize(taskInfo.getFileSize()));
@@ -142,13 +139,13 @@ public class ManagerDownloadAdapter extends BasicAdapter {
 
         @Override
         public void onClick(View v) {
-            Button button_state = (Button)v;
+            Button button_state = (Button) v;
             String currentState = (button_state).getText().toString().trim();
             final String stateContinue = mContext.getResources().getString(R.string.continues);
             final String statePause = mContext.getResources().getString(R.string.pause);
 //            final String stateInstall = mContext.getResources().getString(R.string.install);
 
-            if(stateContinue.equals(currentState)) {
+            if (stateContinue.equals(currentState)) {
                 button_state.setText(statePause);
                 File file = new File(FileHelper.getDefaultFile(mTaskInfo.getFileName()));
 

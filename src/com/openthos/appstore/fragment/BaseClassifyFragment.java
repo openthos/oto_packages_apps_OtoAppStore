@@ -16,7 +16,7 @@ import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.bean.AppLayoutInfo;
 import com.openthos.appstore.bean.AppTypeInfo;
 import com.openthos.appstore.bean.DataInfo;
-import com.openthos.appstore.utils.NetUtils;
+import com.openthos.appstore.utils.DataCache;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -90,7 +90,7 @@ public abstract class BaseClassifyFragment extends BaseFragment
 
         @Override
         public void run() {
-            mNetStr = NetUtils.getNetStr(getActivity(), mUrl);
+            mNetStr = DataCache.loadData(getActivity(), mUrl);
             if (!TextUtils.isEmpty(mNetStr)) {
                 switch (mFrom) {
                     case LAYOUT_BACK:

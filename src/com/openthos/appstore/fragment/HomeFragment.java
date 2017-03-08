@@ -10,19 +10,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.openthos.appstore.R;
 import com.openthos.appstore.adapter.AppLayoutAdapter;
 import com.openthos.appstore.app.Constants;
-import com.openthos.appstore.app.StoreApplication;
 import com.openthos.appstore.bean.AppLayoutInfo;
 import com.openthos.appstore.bean.DataInfo;
 import com.openthos.appstore.fragment.item.HomeAppLayoutFragment;
-import com.openthos.appstore.fragment.item.AppTypeFragment;
-import com.openthos.appstore.utils.NetUtils;
-import com.openthos.appstore.utils.SPUtils;
-import com.openthos.appstore.utils.Tools;
+import com.openthos.appstore.utils.DataCache;
 import com.openthos.appstore.view.CustomListView;
 import com.openthos.appstore.view.Kanner;
 
@@ -139,37 +134,12 @@ public class HomeFragment extends BaseFragment {
     class GetData implements Runnable {
         @Override
         public void run() {
-            String recommandUrl = "/list/recommend";
-            String praiseUrl = "/list/praise";
-            String welcomeUrl = "/list/welcome";
-            String frequentUrl = "/home/frequent";
-
-            mRecommend = SPUtils.getData(getActivity(),
-                    Constants.SP_CACHE_DATA, "recommend" + StoreApplication.DATE_FORMAT);
-            mPraise = SPUtils.getData(getActivity(),
-                    Constants.SP_CACHE_DATA, "praise" + StoreApplication.DATE_FORMAT);
-            mWelcome = SPUtils.getData(getActivity(),
-                    Constants.SP_CACHE_DATA, "welcome" + StoreApplication.DATE_FORMAT);
-            mFrequent = SPUtils.getData(getActivity(),
-                    Constants.SP_CACHE_DATA, "frequent" + StoreApplication.DATE_FORMAT);
-            if (mRecommend == null || mPraise == null || mWelcome == null || mFrequent == null) {
-                mRecommend = NetUtils.getNetStr(getActivity(), recommandUrl);
-                mPraise = NetUtils.getNetStr(getActivity(), welcomeUrl);
-                mWelcome = NetUtils.getNetStr(getActivity(), praiseUrl);
-                mFrequent = NetUtils.getNetStr(getActivity(), frequentUrl);
-                if (mRecommend != null &&
-                        mPraise != null && mWelcome != null && mFrequent != null) {
-                    mHandler.sendEmptyMessage(0);
-                    SPUtils.saveData(getActivity(), Constants.SP_CACHE_DATA,
-                            "recommend" + StoreApplication.DATE_FORMAT, mRecommend);
-                    SPUtils.saveData(getActivity(), Constants.SP_CACHE_DATA,
-                            "praise" + StoreApplication.DATE_FORMAT, mPraise);
-                    SPUtils.saveData(getActivity(), Constants.SP_CACHE_DATA,
-                            "welcome" + StoreApplication.DATE_FORMAT, mWelcome);
-                    SPUtils.saveData(getActivity(), Constants.SP_CACHE_DATA,
-                            "frequent" + StoreApplication.DATE_FORMAT, mFrequent);
-                }
-            } else {
+            mRecommend = DataCache.loadData(getActivity(), "/list/recommend");
+            mPraise = DataCache.loadData(getActivity(), "/list/praise");
+            mWelcome = DataCache.loadData(getActivity(), "/list/welcome");
+            mFrequent = DataCache.loadData(getActivity(), "/home/frequent");
+            if (mRecommend != null &&
+                    mPraise != null && mWelcome != null && mFrequent != null) {
                 mHandler.sendEmptyMessage(0);
             }
         }

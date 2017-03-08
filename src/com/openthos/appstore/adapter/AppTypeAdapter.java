@@ -10,7 +10,6 @@ import android.widget.Toast;
 
 import com.openthos.appstore.R;
 import com.openthos.appstore.bean.AppTypeInfo;
-import com.openthos.appstore.utils.Tools;
 import com.openthos.appstore.view.CustomListView;
 
 import java.util.List;

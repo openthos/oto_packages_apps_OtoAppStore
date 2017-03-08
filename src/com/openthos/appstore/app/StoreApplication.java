@@ -2,6 +2,10 @@ package com.openthos.appstore.app;
 
 import android.app.Application;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.utils.StorageUtils;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -15,5 +19,14 @@ public class StoreApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        initImageLoader();
+    }
+
+    public void initImageLoader(){
+        StorageUtils.getOwnCacheDirectory(getApplicationContext(),"appStore/cache");
+        ImageLoaderConfiguration configuration = new ImageLoaderConfiguration.Builder(getApplicationContext())
+                .threadPoolSize(3)
+                .build();
+        ImageLoader.getInstance().init(configuration);
     }
 }

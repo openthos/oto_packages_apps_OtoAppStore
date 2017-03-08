@@ -75,10 +75,12 @@ public class AppUtils {
         if (!apkfile.exists()) {
             return mContext.getString(R.string.this_file_is_not_exist);
         }
-        Intent i = new Intent(Intent.ACTION_VIEW);
-        i.setDataAndType(Uri.parse("file://" + apkfile.toString()),
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        intent.setDataAndType(Uri.parse("file://" + apkfile.toString()),
                 "application/vnd.android.package-archive");
-        mContext.startActivity(i);
+        mContext.startActivity(intent);
         return "";
     }
 }

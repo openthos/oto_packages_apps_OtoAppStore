@@ -18,7 +18,6 @@ public class DialogUtils {
         View inflate = LayoutInflater.from(context).inflate(R.layout.dialog_function, null, false);
         TextView installs = (TextView) inflate.findViewById(R.id.dialog_function_text1);
         TextView removeTask = (TextView) inflate.findViewById(R.id.dialog_function_text2);
-        installs.setVisibility(View.VISIBLE);
         installs.setText(R.string.install);
         installs.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -26,8 +25,6 @@ public class DialogUtils {
                 downloadManager.install(dialog);
             }
         });
-
-        removeTask.setVisibility(View.VISIBLE);
         removeTask.setText(R.string.remove_task);
         removeTask.setOnClickListener(new View.OnClickListener() {
             @Override

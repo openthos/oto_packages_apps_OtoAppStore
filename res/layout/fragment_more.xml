@@ -5,9 +5,14 @@
     android:layout_height="match_parent"
     android:background="@color/white">
 
-    <FrameLayout
-        android:id="@+id/fragment_more_left"
+    <com.openthos.appstore.view.CustomGridView
+        android:id="@+id/fragment_app_layout_gridview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:padding="10dp"
+        android:divider="@null"
+        android:scrollbars="none"
+        android:fitsSystemWindows="true"
+        />
 
 </LinearLayout>

@@ -26,6 +26,8 @@ public class StoreApplication extends Application {
         StorageUtils.getOwnCacheDirectory(getApplicationContext(),"appStore/cache");
         ImageLoaderConfiguration configuration = new ImageLoaderConfiguration.Builder(getApplicationContext())
                 .threadPoolSize(3)
+                .diskCacheSize(Constants.DISK_CACHE_SIZE)
+                .memoryCacheSize(Constants.MEMORY_CACHE_SIZE)
                 .build();
         ImageLoader.getInstance().init(configuration);
     }

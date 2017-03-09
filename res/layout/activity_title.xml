@@ -89,6 +89,8 @@
                 android:orientation="horizontal"
                 android:background="@drawable/shape_button_title_gray"
                 android:layout_marginRight="15dp"
+                android:focusableInTouchMode="true"
+                android:focusable="false"
                 >
 
                 <EditText

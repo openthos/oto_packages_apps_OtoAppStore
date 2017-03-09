@@ -65,6 +65,8 @@ public class Constants {
     public static final int MB = 1024 * KB;
 
     public static final int MAX_PROGRESS = 100;
+    public static final int DISK_CACHE_SIZE = 50 * 1020 * 1024;
+    public static final int MEMORY_CACHE_SIZE = 2 * 1020 * 1024;
 
     public static List<String> getString() {
         List<String> data = new ArrayList<>();

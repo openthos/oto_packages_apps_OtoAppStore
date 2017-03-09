@@ -15,7 +15,7 @@
         <com.openthos.appstore.view.Kanner
             android:id="@+id/fragment_home_kanner"
             android:layout_width="match_parent"
-            android:layout_height="160dp"/>
+            android:layout_height="220dp"/>
 
         <ImageView
             android:id="@+id/fragment_home_back"

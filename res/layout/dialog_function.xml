@@ -6,31 +6,28 @@
 
     <TextView
         android:id="@+id/dialog_function_text1"
-        android:layout_width="400dp"
-        android:layout_height="@dimen/item_linearlayout"
+        android:layout_width="300dp"
+        android:layout_height="60dp"
         android:layout_gravity="center_vertical"
-        android:gravity="center_vertical"
-        android:paddingLeft="15dp"
-        android:textSize="@dimen/second_title_size"
-        android:visibility="gone" />
+        android:gravity="center"
+        android:background="@color/activity_title"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:paddingLeft="15dp"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/white"/>
 
     <TextView
         android:id="@+id/dialog_function_text2"
-        android:layout_width="400dp"
-        android:layout_height="@dimen/item_linearlayout"
+        android:layout_width="300dp"
+        android:layout_height="60dp"
         android:layout_gravity="center_vertical"
-        android:gravity="center_vertical"
-        android:paddingLeft="15dp"
-        android:textSize="@dimen/second_title_size"
-        android:visibility="gone" />
-
-    <TextView
-        android:id="@+id/dialog_function_text3"
-        android:layout_width="400dp"
-        android:layout_height="@dimen/item_linearlayout"
-        android:layout_gravity="center_vertical"
-        android:gravity="center_vertical"
-        android:paddingLeft="15dp"
-        android:textSize="@dimen/second_title_size"
-        android:visibility="gone" />
+        android:gravity="center"
+        android:background="@color/activity_title"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:paddingLeft="15dp"/>
 </LinearLayout>

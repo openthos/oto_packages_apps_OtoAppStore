@@ -61,6 +61,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private Map<Integer, BaseFragment> mFragments;
     private Button currentButton;
     private Button previousButton;
+    public boolean isFirstInit = true;
 
     private ServiceConnection conn = new ServiceConnection() {
         @Override

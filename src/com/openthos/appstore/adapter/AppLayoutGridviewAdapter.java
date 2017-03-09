@@ -1,6 +1,7 @@
 package com.openthos.appstore.adapter;
 
 import android.content.Context;
+import android.os.Handler;
 import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +24,7 @@ import com.openthos.appstore.utils.SPUtils;
 import com.openthos.appstore.utils.download.DownLoadListener;
 import com.openthos.appstore.utils.download.DownLoadManager;
 import com.openthos.appstore.utils.download.DownLoadService;
+import com.openthos.appstore.utils.sql.DownloadKeeper;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -34,9 +36,13 @@ import java.util.List;
 public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnClickListener {
     private DownLoadManager mDownLoadManager;
     private UpdateProgress mUpdateProgress;
+    private Context mContext;
+
+    private final int UPDATE_PROGRESS = 0;
 
     public AppLayoutGridviewAdapter(Context context, boolean isAll) {
         super(context, isAll);
+        mContext = context;
         mDatas = new ArrayList<>();
         mDownLoadManager = DownLoadService.getDownLoadManager();
         mDownLoadManager.setAllTaskListener(new AppDownLoadListener());
@@ -49,9 +55,7 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        boolean isFirstInit = false;
         if (convertView == null) {
-            isFirstInit = true;
             convertView = LayoutInflater.from(mContext).inflate(
                     R.layout.app_layout_gridview, parent, false);
         }
@@ -66,11 +70,12 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
             ImageCache.loadImage(holder.icon, Constants.BASEURL + "/" + appInfo.getIconUrl());
             holder.name.setText(appInfo.getName());
             holder.type.setText(appInfo.getType());
-            if (!isFirstInit) {
-                appInfo.setState(SPUtils.getDownloadState(mContext, appInfo.getAppPackageName()));
-            } else {
+            if (((MainActivity) mContext).isFirstInit
+                    && appInfo.getState() == Constants.APP_NEED_UPDATE) {
+                ((MainActivity) mContext).isFirstInit = false;
                 SPUtils.saveDownloadState(mContext, appInfo.getAppPackageName(), appInfo.getState());
             }
+            appInfo.setState(SPUtils.getDownloadState(mContext, appInfo.getAppPackageName()));
             switch (appInfo.getState()) {
                 case Constants.APP_NOT_INSTALL:
                     setContent(holder.install, R.string.install,
@@ -82,12 +87,12 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
                     break;
                 case Constants.APP_DOWNLOAD_CONTINUE:
                     holder.progressBar.setVisibility(View.VISIBLE);
-                    holder.progressBar.setProgress(appInfo.getProgress());
+                    updateProgress(holder.progressBar, appInfo.getAppPackageName());
                     setContent(holder.install, R.string.pause, 0, R.color.button_cyan);
                     break;
                 case Constants.APP_DOWNLOAD_PAUSE:
                     holder.progressBar.setVisibility(View.VISIBLE);
-                    holder.progressBar.setProgress(appInfo.getProgress());
+                    updateProgress(holder.progressBar, appInfo.getAppPackageName());
                     setContent(holder.install, R.string.continues, 0, R.color.button_cyan);
                     break;
                 case Constants.APP_NEED_UPDATE:
@@ -114,6 +119,39 @@ public class AppLayoutGridviewAdapter extends BasicAdapter implements View.OnCli
 
         return convertView;
     }
+
+    private void updateProgress(final ProgressBar progressBar, final String packageName) {
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                SQLDownLoadInfo downLoadInfo = new DownloadKeeper(mContext)
+                                .getDownLoadInfoByPackageName(packageName);
+                int progress = 0;
+                if (downLoadInfo.getFileSize() != 0) {
+                        progress = (int) ((downLoadInfo.getDownloadSize() * 100)
+                                            / downLoadInfo.getFileSize());
+                }
+                Message msg = mHandler.obtainMessage();
+                msg.obj = progressBar;
+                msg.arg1 = progress;
+                msg.what = UPDATE_PROGRESS;
+                msg.sendToTarget();
+            }
+        }.start();
+    }
+
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case UPDATE_PROGRESS:
+                    ProgressBar progressBar = (ProgressBar) msg.obj;
+                    progressBar.setProgress(msg.arg1);
+            }
+        }
+    };
 
     private void setContent(Button btn, int text, int background, int color) {
         btn.setText(text);

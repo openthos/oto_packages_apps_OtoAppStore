@@ -61,6 +61,27 @@ public class DownloadKeeper {
         mDoSaveTimes = 0;
     }
 
+    public SQLDownLoadInfo getDownLoadInfoByPackageName(String packageName) {
+        SQLDownLoadInfo downloadinfo = new SQLDownLoadInfo();
+        mDb = mDbhelper.getReadableDatabase();
+        Cursor cursor = mDb.rawQuery("SELECT * FROM " + SQLiteHelper.DOWNLOAD_INFO
+                        + " WHERE packageName=\"" + packageName + "\"", null);
+        while (cursor.moveToNext()) {
+            downloadinfo.setDownloadSize(cursor.getLong(cursor.getColumnIndex("downLoadSize")));
+            downloadinfo.setFileName(cursor.getString(cursor.getColumnIndex("fileName")));
+            downloadinfo.setFilePath(cursor.getString(cursor.getColumnIndex("filePath")));
+            downloadinfo.setFileSize(cursor.getLong(cursor.getColumnIndex("fileSize")));
+            downloadinfo.setUrl(cursor.getString(cursor.getColumnIndex("url")));
+            downloadinfo.setTaskID(cursor.getString(cursor.getColumnIndex("taskID")));
+            downloadinfo.setPackageName(cursor.getString(cursor.getColumnIndex("packageName")));
+            downloadinfo.setUserID(cursor.getString(cursor.getColumnIndex("userID")));
+            downloadinfo.setIsSuccess("true".
+                            equals(cursor.getString(cursor.getColumnIndex("isSuccess"))));
+            downloadinfo.setIconUrl(cursor.getString(cursor.getColumnIndex("iconUrl")));
+        }
+        return downloadinfo;
+    }
+
     public ArrayList<SQLDownLoadInfo> getAllDownLoadInfo() {
         ArrayList<SQLDownLoadInfo> downloadinfoList = new ArrayList<SQLDownLoadInfo>();
         mDb = mDbhelper.getWritableDatabase();

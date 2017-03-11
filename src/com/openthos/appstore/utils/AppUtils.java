@@ -72,7 +72,7 @@ public class AppUtils {
 
     public static String installApk(Context mContext, String saveFileName) {
         File apkfile = new File(saveFileName);
-        if (!apkfile.exists()) {
+        if (!apkfile.exists() || apkfile.length() == 0) {
             return mContext.getString(R.string.this_file_is_not_exist);
         }
         Intent intent = new Intent(Intent.ACTION_VIEW);

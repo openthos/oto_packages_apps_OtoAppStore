@@ -174,7 +174,7 @@ public class ManagerFragment extends BaseFragment
             public void install(AlertDialog dialog) {
                 String result = AppUtils.installApk(getActivity(),
                         FileHelper.getDefaultFile(taskInfo.getFileName()));
-                if (result != null) {
+                if (result != null && result != "") {
                     Tools.toast(getActivity(), result);
                 }
                 dialog.cancel();

@@ -1,88 +1,80 @@
 package com.openthos.appstore.utils;
 
+import android.text.TextUtils;
+
 import com.openthos.appstore.app.Constants;
 
 import java.io.File;
 import java.io.IOException;
 
 public class FileHelper {
-    private static File getFile(String filePath) {
+    public static File getFile(String filePath){
         return new File(filePath);
     }
 
-    public static boolean creatFile(String filePath) {
-        String dirpath = filePath.substring(0, filePath.lastIndexOf("/"));
-        if (dirpath != null) {
-            creatDirFile(dirpath);
-            if (!getFile(filePath).exists()) {
-                try {
-                    getFile(filePath).createNewFile();
-                    return true;
-                } catch (IOException e) {
-                    Tools.printLog("FH", "FH " + filePath + " " + e.toString());
-                    return false;
-                }
-            }
-        } else {
-            return false;
-        }
-
-        return true;
-    }
-
     public static void creatDirFile(String dirPath) {
-        if (!getFile(dirPath).exists()) {
-            getFile(dirPath).mkdirs();
+        if (!TextUtils.isEmpty(dirPath)) {
+            creatDirFile(getFile(dirPath));
         }
     }
 
-    public static String getDefaultPath() {
-        creatDirFile(Constants.DOWNFILEPATH);
-        return Constants.DOWNFILEPATH;
-    }
-
-    public static String getTempPath() {
-        creatDirFile(Constants.TEMP_FILEPATH);
-        return Constants.TEMP_FILEPATH;
-    }
-
-    public static String getDefaultFile(String flieName) {
-        if (flieName == null || "".equals(flieName)) {
-            return null;
+    public static void creatDirFile(File dirFile) {
+        if (dirFile != null && !dirFile.exists()) {
+            dirFile.mkdirs();
         }
-        creatFile(getDefaultPath() + "/" + flieName);
-        return getDefaultPath() + "/" + flieName;
     }
 
-    public static String getTempFile(String flieName) {
-        if (flieName == null || "".equals(flieName)) {
-            return null;
+    public static void creatFile(String filePath) throws IOException {
+        if (TextUtils.isEmpty(filePath)) {
+            creatFile(getFile(filePath));
         }
-        creatFile(getTempPath() + "/" + flieName);
-        return getTempPath() + "/" + flieName;
     }
 
-    public static String getDefaultFileFromUrl(String url) {
-        return getDefaultFile(getNameFromUrl(url));
+    public static void creatFile(File file) throws IOException {
+        if (file != null && !file.exists()) {
+            creatDirFile(file.getParentFile());
+            file.createNewFile();
+        }
+    }
+
+    public static String getDownloadDir() {
+        return Constants.BASE_FILEPATH + "/app";
+    }
+
+    public static String getDownloadPath(String fileName) {
+        return getDownloadDir() + "/" + fileName;
+    }
+
+    public static File getDownloadFile(String fileName) {
+        return getFile(getDownloadPath(fileName));
+    }
+
+    public static File getDownloadUrlFile(String downloadUrl) {
+        return getFile(getDownloadPath(getNameFromUrl(downloadUrl)));
+    }
+
+    public static String getDownloadTempPath(String fileName) {
+        return getDownloadDir() + "/.temp/" + fileName + ".temp";
+    }
+
+    public static File getDownloadTempFile(String fileName) {
+        return getFile(getDownloadTempPath(fileName));
     }
 
     public static String getNameFromUrl(String downloadUrl) {
-        if (downloadUrl == null) {
+        if (TextUtils.isEmpty(downloadUrl)) {
             return null;
         }
         return downloadUrl.substring(downloadUrl.lastIndexOf("/") + 1, downloadUrl.length());
     }
 
-    public static void setUserID(String newUserID) {
-        Constants.USER_ID = newUserID;
+    public static void deleteFile(String filePath) {
+        deleteFile(getFile(filePath));
     }
 
-    public static boolean deleteFile(String fileName) {
-        File file = new File(getDefaultFile(fileName));
+    public static void deleteFile(File file) {
         if (file.exists()) {
             file.delete();
-            return true;
         }
-        return false;
     }
 }

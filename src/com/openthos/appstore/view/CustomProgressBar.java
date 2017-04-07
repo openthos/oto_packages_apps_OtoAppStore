@@ -8,9 +8,6 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.widget.ProgressBar;
 
-/**
- * Created by ljh on 16-12-2.
- */
 public class CustomProgressBar extends ProgressBar{
     private String mText;
     private Paint mPaint;

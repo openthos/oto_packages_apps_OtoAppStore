@@ -2,7 +2,8 @@
 <resources>
     <color name="item_title">#4a4a4a</color>
     <color name="item_type">#9b9b9b</color>
-    <color name="right_background">#f4f6f8</color>
+    <color name="item_more">#5b41a2</color>
+    <color name="item_bg">#f4f6f8</color>
     <color name="view_line">#c3cad4</color>
     <color name="button_cyan">#6cc95d</color>
     <color name="button_gray">#c3cad4</color>

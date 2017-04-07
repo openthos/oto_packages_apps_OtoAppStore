@@ -1,8 +1,6 @@
 package com.openthos.appstore.adapter;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,108 +12,77 @@ import android.widget.TextView;
 import com.openthos.appstore.MainActivity;
 import com.openthos.appstore.R;
 import com.openthos.appstore.app.Constants;
-import com.openthos.appstore.bean.SQLDownLoadInfo;
+import com.openthos.appstore.bean.DownloadInfo;
 import com.openthos.appstore.bean.TaskInfo;
+import com.openthos.appstore.download.DownloadListener;
+import com.openthos.appstore.download.DownloadManager;
 import com.openthos.appstore.utils.AppUtils;
+import com.openthos.appstore.utils.FileHelper;
 import com.openthos.appstore.utils.ImageCache;
 import com.openthos.appstore.utils.Tools;
-import com.openthos.appstore.utils.download.DownLoadListener;
-import com.openthos.appstore.utils.download.DownLoadManager;
-import com.openthos.appstore.utils.FileHelper;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
-public class ManagerDownloadAdapter extends BasicAdapter {
-    private DownLoadManager mDownLoadManager;
+public class ManagerDownloadAdapter extends BasicAdapter implements View.OnClickListener {
+    private DownloadManager mDownloadManager;
 
-    public ManagerDownloadAdapter(Context context, DownLoadManager downLoadManager) {
+    public ManagerDownloadAdapter(Context context, DownloadManager DownloadManager) {
         super(context);
-        if (downLoadManager != null) {
-            mDownLoadManager = downLoadManager;
-            mDownLoadManager.setAllTaskListener(new DownloadManagerListener());
+        if (DownloadManager != null) {
+            mDownloadManager = DownloadManager;
+            mDownloadManager.setAllTaskListener(new DownloadManagerListener());
         }
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return 0;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
             convertView = LayoutInflater.from(mContext).
-                    inflate(R.layout.item_manager_download, null);
+                    inflate(R.layout.item_download, null);
         }
         ViewHolder holder = (ViewHolder) convertView.getTag();
         if (holder == null) {
             holder = new ViewHolder(convertView);
             convertView.setTag(holder);
         }
-
-        TaskInfo taskInfo = (TaskInfo) mDatas.get(position);
-        holder.fileName.setText(taskInfo.getFileName());
-
-        if (taskInfo.getProgress() < Constants.MAX_PROGRESS) {
-            holder.fileProgress.setProgress(taskInfo.getProgress());
-            holder.textProgress.setText(taskInfo.getProgress() + "%");
-            holder.speech.setText(Tools.transformFileSize(taskInfo.getSpeech() * 1024) + "/s");
-            holder.fileProgress.setVisibility(View.VISIBLE);
-            holder.controlDownload.setVisibility(View.VISIBLE);
+        if (mDatas.size() != 0) {
+            TaskInfo taskInfo = (TaskInfo) mDatas.get(position);
             ImageCache.loadImage(holder.appIcon, taskInfo.getIconUrl());
-        } else {
-            holder.fileProgress.setVisibility(View.INVISIBLE);
-            holder.textProgress.setText(Tools.transformFileSize(taskInfo.getFileSize()));
-            holder.speech.setText("");
-            Drawable appIcon = AppUtils.getAPKIcon(mContext, taskInfo.getFilePath());
-            if (appIcon != null) {
-                holder.appIcon.setImageDrawable(appIcon);
-            } else {
-                holder.appIcon.setImageResource(R.mipmap.ic_launcher);
+            holder.appName.setText(taskInfo.getFileName());
+            holder.fileProgress.setProgress(taskInfo.getProgress());
+            switch (taskInfo.getDownloadState()) {
+                case Constants.APP_HAVE_INSTALLED:
+                    holder.install.setText(R.string.open);
+                    holder.downloadState.setText(R.string.finished);
+                    break;
+                case Constants.APP_DOWNLOAD_PAUSE:
+                    holder.install.setText(R.string.continues);
+                    holder.downloadState.setText(taskInfo.getProgress() + "%     " +
+                            Tools.transFormFileSize(taskInfo.getSpeed() * 1024) + "/s");
+                    break;
+                case Constants.APP_DOWNLOAD_CONTINUE:
+                    holder.install.setText(R.string.pause);
+                    holder.downloadState.setText(taskInfo.getProgress() + "%     " +
+                            Tools.transFormFileSize(taskInfo.getSpeed() * 1024) + "/s");
+                    break;
+                case Constants.APP_DOWNLOAD_FINISHED:
+                    holder.install.setText(R.string.install);
+                    holder.downloadState.setText(R.string.finished);
+                    break;
+                default:
+                    break;
             }
+            holder.install.setOnClickListener(this);
+            holder.remove.setOnClickListener(this);
+            holder.install.setTag(position);
+            holder.remove.setTag(position);
         }
-        holder.controlDownload.setOnClickListener(new BtnStateOnclickListener(position));
-        if (taskInfo.isOnDownloading()) {
-            holder.controlDownload.setText(mContext.getResources().getString(R.string.pause));
-        } else if (taskInfo.getProgress() == Constants.MAX_PROGRESS) {
-//            holder.controlDownload.setText(mContext.getResources().getString(R.string.install));
-            holder.controlDownload.setVisibility(View.INVISIBLE);
-//            SPUtils.saveDownloadState(mContext, taskInfo.getPackageName(),
-//                                                               Constants.APP_DOWNLOAD_FINISHED);
-        } else {
-            holder.controlDownload.setText(mContext.getResources().getString(R.string.continues));
-        }
-
         return convertView;
     }
 
-    public void setAll(boolean isAll) {
-        mIsAll = isAll;
-    }
-
-    class ViewHolder {
-        private TextView fileName;
-        private TextView textProgress;
-        private TextView speech;
-        private ProgressBar fileProgress;
-        private Button controlDownload;
-        private ImageView appIcon;
-
-        public ViewHolder(View view) {
-            appIcon = (ImageView) view.findViewById(R.id.app_icon);
-            fileName = (TextView) view.findViewById(R.id.file_name);
-            textProgress = (TextView) view.findViewById(R.id.file_size);
-            speech = (TextView) view.findViewById(R.id.file_speech);
-            fileProgress = (ProgressBar) view.findViewById(R.id.progressbar);
-            controlDownload = (Button) view.findViewById(R.id.control_download);
-        }
-    }
-
-    public void addData(List<TaskInfo> listdata) {
+    public void addData(List<TaskInfo> listdata, boolean isAll) {
         mDatas.clear();
-        if (mIsAll) {
+        if (isAll) {
             mDatas = listdata;
         } else {
             int len = listdata == null ? null : (listdata.size() > Constants.MANAGER_NUM_FALSE ?
@@ -127,115 +94,115 @@ public class ManagerDownloadAdapter extends BasicAdapter {
         notifyDataSetInvalidated();
     }
 
-    class BtnStateOnclickListener implements View.OnClickListener {
-
-        int position = 0;
-        TaskInfo mTaskInfo;
-
-        public BtnStateOnclickListener(int position) {
-            this.position = position;
-            mTaskInfo = (TaskInfo) mDatas.get(position);
-        }
-
-        @Override
-        public void onClick(View v) {
-            Button button_state = (Button) v;
-            String currentState = (button_state).getText().toString().trim();
-            final String stateContinue = mContext.getResources().getString(R.string.continues);
-            final String statePause = mContext.getResources().getString(R.string.pause);
-//            final String stateInstall = mContext.getResources().getString(R.string.install);
-
-            if (stateContinue.equals(currentState)) {
-                button_state.setText(statePause);
-                File file = new File(FileHelper.getDefaultFile(mTaskInfo.getFileName()));
-
-                if (mTaskInfo.getProgress() == Constants.MAX_PROGRESS && file.exists()
-                        && file.length() != 0) {
-                    Message message = MainActivity.mHandler.obtainMessage();
-                    message.what = Constants.TOAST;
-                    message.obj = mContext.getString(R.string.this_task_have_been_download);
-                    MainActivity.mHandler.sendMessage(message);
-                } else {
-                    mTaskInfo.setOnDownloading(true);
-                    MainActivity.mBinder.startTask(mTaskInfo.getTaskID());
+    @Override
+    public void onClick(View view) {
+        int position = (int) view.getTag();
+        TaskInfo taskInfo = (TaskInfo) mDatas.get(position);
+        switch (view.getId()) {
+            case R.id.item_download_install:
+                String s = ((Button) view).getText().toString();
+                if (s.equals(mContext.getResources().getString(R.string.open))) {
+                    AppUtils.startApk(mContext, taskInfo.getPackageName());
+                } else if (s.equals(mContext.getResources().getString(R.string.continues))) {
+                    MainActivity.mDownloadService.startTask(taskInfo.getTaskID());
+                    taskInfo.setOnDownloading(true);
+                } else if (s.equals(mContext.getResources().getString(R.string.pause))) {
+                    MainActivity.mDownloadService.stopTask(taskInfo.getTaskID());
+                    taskInfo.setOnDownloading(false);
+                } else if (s.equals(mContext.getResources().getString(R.string.install))) {
+                    MainActivity.mHandler.sendMessage(MainActivity.mHandler.
+                            obtainMessage(Constants.INSTALL_APK, taskInfo.getFilePath()));
                 }
+                break;
+            case R.id.item_download_remove:
+                MainActivity.mDownloadService.stopTask(taskInfo.getTaskID());
+                mDownloadManager.deleteTask(taskInfo.getTaskID());
+                mDatas.remove(taskInfo.getTaskID());
+                break;
+            default:
+                break;
+        }
+        MainActivity.mHandler.sendEmptyMessage(Constants.REFRESH);
+    }
 
-            } else if (statePause.equals(currentState)) {
-                button_state.setText(stateContinue);
-                mTaskInfo.setOnDownloading(false);
-                MainActivity.mBinder.stopTask(mTaskInfo.getTaskID());
-            }
-//            else if(stateInstall.equals(currentState)) {
-//                String result = AppUtils.installApk(mContext,
-//                        FileHelper.getDefaultFile(mTaskInfo.getFileName()));
-//                if (result != null) {
-//                    Tools.toast(mContext, result);
-//                }
-//            }
+    private class ViewHolder {
+        private TextView appName;
+        private TextView downloadState;
+        private ProgressBar fileProgress;
+        private Button install;
+        private Button remove;
+        private ImageView appIcon;
 
-            ManagerDownloadAdapter.this.notifyDataSetChanged();
+        public ViewHolder(View view) {
+            appIcon = (ImageView) view.findViewById(R.id.item_download_appIcon);
+            appName = (TextView) view.findViewById(R.id.item_download_appName);
+            downloadState = (TextView) view.findViewById(R.id.item_download_downloadState);
+            fileProgress = (ProgressBar) view.findViewById(R.id.item_download_progressBar);
+            install = (Button) view.findViewById(R.id.item_download_install);
+            remove = (Button) view.findViewById(R.id.item_download_remove);
         }
     }
 
-    private class DownloadManagerListener implements DownLoadListener {
+    private class DownloadManagerListener implements DownloadListener {
 
         @Override
-        public void onStart(SQLDownLoadInfo sqlDownLoadInfo) {
-            Tools.toast(mContext, mContext.getString(R.string.start_download));
+        public void onStart(DownloadInfo downloadInfo) {
+            Tools.toast(mContext, mContext.getResources().getString(R.string.start_download));
+
         }
 
         @Override
-        public void onProgress(SQLDownLoadInfo sqlDownLoadInfo, boolean isSupportBreakpoint) {
-            for (TaskInfo taskInfo : (ArrayList<TaskInfo>) mDatas) {
-                if (taskInfo.getTaskID().equals(sqlDownLoadInfo.getTaskID())) {
-                    taskInfo.setDownFileSize(sqlDownLoadInfo.getDownloadSize());
-                    taskInfo.setFileSize(sqlDownLoadInfo.getFileSize());
-                    taskInfo.setSpeech(sqlDownLoadInfo.getSpeech());
-                    ManagerDownloadAdapter.this.notifyDataSetChanged();
+        public void onProgress(DownloadInfo downloadInfo, boolean isSupportFTP) {
+            for (TaskInfo info : (List<TaskInfo>) mDatas) {
+                if (downloadInfo.getTaskID().equals(info.getTaskID())) {
+                    info.setDownFileSize(downloadInfo.getDownloadSize());
+                    info.setFileSize(downloadInfo.getFileSize());
+                    info.setSpeed(downloadInfo.getSpeed());
+                    notifyDataSetChanged();
                     break;
                 }
             }
         }
 
         @Override
-        public void onStop(SQLDownLoadInfo sqlDownLoadInfo, boolean isSupportBreakpoint) {
-            for (TaskInfo taskInfo : (ArrayList<TaskInfo>) mDatas) {
-                if (taskInfo.getTaskID().equals(sqlDownLoadInfo.getTaskID())) {
-                    taskInfo.setSpeech(0);
-                    taskInfo.setOnDownloading(false);
-                    ManagerDownloadAdapter.this.notifyDataSetChanged();
+        public void onStop(DownloadInfo downloadInfo, boolean isSupportFTP) {
+            for (TaskInfo info : (List<TaskInfo>) mDatas) {
+                if (downloadInfo.getTaskID().equals(info.getTaskID())) {
+                    info.setSpeed(0);
+                    info.setOnDownloading(false);
+                    notifyDataSetChanged();
                     break;
                 }
             }
         }
 
         @Override
-        public void onSuccess(SQLDownLoadInfo sqlDownLoadInfo) {
-            for (TaskInfo taskInfo : (ArrayList<TaskInfo>) mDatas) {
-                if (taskInfo.getTaskID().equals(sqlDownLoadInfo.getTaskID())) {
-                    taskInfo.setSpeech(0);
-                    taskInfo.setOnDownloading(false);
-                    taskInfo.setDownFileSize(sqlDownLoadInfo.getDownloadSize());
-                    taskInfo.setFileSize(sqlDownLoadInfo.getFileSize());
-                    ManagerDownloadAdapter.this.notifyDataSetChanged();
+        public void onSuccess(DownloadInfo downloadInfo) {
+            for (TaskInfo info : (List<TaskInfo>) mDatas) {
+                if (downloadInfo.getTaskID().equals(info.getTaskID())) {
+                    info.setSpeed(0);
+                    info.setOnDownloading(false);
+                    info.setDownFileSize(downloadInfo.getDownloadSize());
+                    info.setFileSize(downloadInfo.getFileSize());
+                    MainActivity.mHandler.sendEmptyMessage(Constants.REFRESH);
                     break;
                 }
             }
         }
 
         @Override
-        public void onError(SQLDownLoadInfo sqlDownLoadInfo, String error) {
-            for (TaskInfo taskInfo : (ArrayList<TaskInfo>) mDatas) {
-                if (taskInfo.getTaskID().equals(sqlDownLoadInfo.getTaskID())) {
-                    taskInfo.setOnDownloading(false);
-                    FileHelper.deleteFile(sqlDownLoadInfo.getFileName());
-                    taskInfo.setDownFileSize(sqlDownLoadInfo.getDownloadSize());
-                    taskInfo.setFileSize(sqlDownLoadInfo.getFileSize());
-                    ManagerDownloadAdapter.this.notifyDataSetChanged();
+        public void onError(DownloadInfo downloadInfo, String error) {
+            for (TaskInfo info : (List<TaskInfo>) mDatas) {
+                if (info.getTaskID().equals(downloadInfo.getTaskID())) {
+                    info.setOnDownloading(false);
+                    FileHelper.deleteFile(downloadInfo.getFilePath());
+                    info.setDownFileSize(downloadInfo.getDownloadSize());
+                    info.setFileSize(downloadInfo.getFileSize());
+                    MainActivity.mHandler.sendEmptyMessage(Constants.REFRESH);
                     break;
                 }
             }
-            Tools.toast(mContext, error + "");
+            Tools.toast(mContext, error);
         }
     }
 }

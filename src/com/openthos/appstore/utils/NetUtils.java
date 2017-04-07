@@ -3,25 +3,18 @@ package com.openthos.appstore.utils;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Message;
 
-import com.openthos.appstore.MainActivity;
-import com.openthos.appstore.R;
-import com.openthos.appstore.app.Constants;
+import com.openthos.appstore.app.StoreApplication;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 
-/**
- * Created by luojunhuan on 16-10-31.
- */
 public class NetUtils {
-    private NetUtils() {
-        /* cannot be instantiated */
-        throw new UnsupportedOperationException("cannot be instantiated");
-    }
-
     public static boolean isConnected(Context context) {
         if (context != null) {
             ConnectivityManager mConnectivityManager = (ConnectivityManager) context
@@ -36,52 +29,42 @@ public class NetUtils {
         return false;
     }
 
-    public static String getNetStr(Context context, String path) {
+    public static String getNetStr(String urlPath) {
+        InputStream in = null;
+        HttpURLConnection conn = null;
         try {
-            if (isConnected(context)) {
-                InputStream is = null;
-                HttpURLConnection conn = null;
-                try {
-                    URL url = new URL(Constants.BASEURL + path);
-                    conn = (HttpURLConnection) url.openConnection();
-                    conn.setConnectTimeout(5 * 1000);
-                    conn.setRequestMethod("GET");
-                    conn.setDoInput(true);
-                    conn.setDoOutput(true);
-                    conn.connect();
-                    int code = conn.getResponseCode();
+            URL url = new URL(StoreApplication.mBaseUrl + urlPath);
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setConnectTimeout(5 * 1000);
+            conn.setRequestMethod("GET");
+            conn.setDoInput(true);
+            conn.setDoOutput(true);
+            conn.connect();
 
-                    if (code == HttpURLConnection.HTTP_OK) {
-                        is = conn.getInputStream();
-                        int len = -1;
-                        StringBuffer buffer = new StringBuffer();
-                        byte[] bytes = new byte[1024];
-                        while ((len = is.read(bytes)) != -1) {
-                            buffer.append(new String(bytes, 0, len));
-                        }
-                        return new String(buffer.toString().getBytes("UTF-8"));
-                    } else {
-                        return null;
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return null;
-                } finally {
-                    Tools.closeStream(is);
-                    if (conn != null) {
-                        conn.disconnect();
-                    }
+            if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                in = conn.getInputStream();
+                int len = -1;
+                StringBuffer buffer = new StringBuffer();
+                byte[] bytes = new byte[1024];
+                while ((len = in.read(bytes)) != -1) {
+                    buffer.append(new String(bytes, 0, len));
                 }
-            } else {
-                Message message = MainActivity.mHandler.obtainMessage();
-                message.what = Constants.TOAST;
-                message.obj = context.getString(R.string.check_net_state);
-                MainActivity.mHandler.sendMessage(message);
-                return null;
+                return new String(buffer.toString().getBytes("UTF-8"));
             }
-        } catch (Exception e) {
+        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
-            return null;
+        } catch (ProtocolException e) {
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            Tools.closeStream(in);
+            if (conn != null) {
+                conn.disconnect();
+            }
         }
+        return null;
     }
 }

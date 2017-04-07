@@ -1,73 +1,24 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/white"
-    android:orientation="vertical"
-    tools:context="com.openthos.appstore.fragment.HomeFragment"
-    >
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/white"
+              android:orientation="vertical"
+              tools:context="com.openthos.appstore.fragment.HomeFragment">
 
-    <FrameLayout
+    <com.openthos.appstore.view.BannerView
+        android:id="@+id/fragment_home_carousel"
         android:layout_width="match_parent"
-        android:layout_height="160dp">
+        android:layout_height="220dp"/>
 
-        <com.openthos.appstore.view.Kanner
-            android:id="@+id/fragment_home_kanner"
-            android:layout_width="match_parent"
-            android:layout_height="220dp"/>
-
-        <ImageView
-            android:id="@+id/fragment_home_back"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_gravity="left|center_vertical"
-            android:layout_marginLeft="15dp"
-            android:src="@drawable/banner_back"
-            />
-
-        <ImageView
-            android:id="@+id/fragment_home_forward"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_gravity="right|center_vertical"
-            android:layout_marginRight="15dp"
-            android:src="@drawable/banner_next"
-            />
-
-    </FrameLayout>
-
-    <TextView
-        android:id="@+id/text21"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"/>
-
-    <LinearLayout
+    <com.openthos.appstore.view.CustomListView
+        android:id="@+id/fragment_home_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="30dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
-        android:layout_marginTop="10dp"
-        android:orientation="horizontal"
-        >
-
-        <FrameLayout
-            android:id="@+id/fragment_home_left"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="3"
-            />
-
-        <com.openthos.appstore.view.CustomListView
-            android:id="@+id/fragment_home_listview"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginTop="5dp"
-            android:layout_weight="1"
-            android:paddingLeft="20dp"
-            />
-    </LinearLayout>
-
+        android:divider="@null"
+        android:dividerHeight="1dp"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
+        android:scrollbars="none"/>
 </LinearLayout>

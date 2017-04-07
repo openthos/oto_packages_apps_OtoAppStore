@@ -4,16 +4,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.openthos.appstore.app.Constants;
-import com.openthos.appstore.bean.AppLayoutGridviewInfo;
+import com.openthos.appstore.bean.AppItemInfo;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Created by luojunhuan on 16-10-31.
- */
 public class SPUtils {
     public static void saveData(Context context, String fileName, String key, String data) {
         SharedPreferences.Editor edit =
@@ -39,18 +36,23 @@ public class SPUtils {
                 Context.MODE_PRIVATE).getInt(key, Constants.APP_NOT_EXIST);
     }
 
-    public static void saveAllData(Context context, AppLayoutGridviewInfo appInfo) {
+    public static void saveAllData(Context context, AppItemInfo appInfo) {
         SharedPreferences.Editor edit =
                 context.getSharedPreferences(Constants.SP_ALL_DATA, Context.MODE_PRIVATE).edit();
-        String json = "{\"id\":" + appInfo.getId() + "," +
-                "\"packagename\":\"" + appInfo.getAppPackageName() + "\"," +
-                "\"name\":\"" + appInfo.getName() + "\"," +
-                "\"version\":\"" + appInfo.getVersionName() + "\"," +
-                "\"icon\":\"" + appInfo.getIconUrl() + "\"," +
-                "\"download\":\"" + appInfo.getDownloadUrl() + "\"," +
-                "\"size\":" + appInfo.getFileSize() +
+        String json = "{\"taskId\":" + appInfo.getTaskId() + "," +
+                "\"fileSize\":\"" + appInfo.getFileSize() + "\"," +
+                "\"packageName\":\"" + appInfo.getPackageName() + "\"," +
+                "\"appName\":\"" + appInfo.getAppName() + "\"," +
+                "\"versionName\":\"" + appInfo.getVersionName() + "\"," +
+                "\"versionCode\":\"" + appInfo.getVersionCode() + "\"," +
+                "\"downloadUrl\":\"" + appInfo.getDownloadUrl() + "\"," +
+                "\"iconUrl\":\"" + appInfo.getIconUrl() + "\"," +
+                "\"describle\":\"" + appInfo.getDescrible() + "\"," +
+                "\"type\":\"" + appInfo.getType() + "\"," +
+                "\"company\":\"" + appInfo.getCompany() + "\"," +
+                "\"star\":" + appInfo.getStar() +
                 "}";
-        edit.putString(appInfo.getName(), json);
+        edit.putString(appInfo.getAppName(), json);
         edit.commit();
     }
 

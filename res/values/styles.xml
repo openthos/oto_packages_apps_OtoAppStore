@@ -15,4 +15,18 @@
         <item name="android:textSize">@dimen/big_text_size</item>
     </style>
 
+    <style name="customRatingBarStyleFalse">
+        <item name="indicator">false</item>
+        <item name="type">black</item>
+    </style>
+
+    <style name="customRatingBarStyleSmall">
+        <item name="indicator">false</item>
+        <item name="type">black</item>
+    </style>
+
+    <style name="customRatingBarStyleTrue">
+        <item name="indicator">true</item>
+        <item name="type">purple</item>
+    </style>
 </resources>

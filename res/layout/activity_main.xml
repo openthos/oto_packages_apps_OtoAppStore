@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/white"
-    tools:context="com.openthos.appstore.MainActivity">
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/white"
+              android:orientation="vertical"
+              tools:context="com.openthos.appstore.MainActivity">
 
     <include layout="@layout/activity_title"/>
 
@@ -14,6 +14,7 @@
         android:layout_height="match_parent"
         android:fillViewport="true"
         >
+
         <FrameLayout
             android:id="@+id/main_fragment_container"
             android:layout_width="match_parent"

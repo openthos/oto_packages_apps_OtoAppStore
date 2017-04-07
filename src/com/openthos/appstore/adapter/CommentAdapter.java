@@ -4,24 +4,22 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.openthos.appstore.R;
 import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.bean.CommentInfo;
+import com.openthos.appstore.view.CustomRatingBar;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by luojunhuan on 16-10-28.
- */
 public class CommentAdapter extends BasicAdapter {
+    private boolean mIsAll;
 
     public CommentAdapter(Context context, boolean isAll) {
-        super(context, isAll);
-        mDatas = new ArrayList<>();
+        super(context);
+        mIsAll = isAll;
     }
 
     @Override
@@ -48,23 +46,23 @@ public class CommentAdapter extends BasicAdapter {
             holder.time.setText(commentInfo.getTime());
             holder.author.setText(mContext.getString(R.string.author) +
                     mContext.getString(R.string.who));
-            holder.star.setProgress(commentInfo.getStar());
+            holder.star.setRating(commentInfo.getStar());
         }
 
         return convertView;
     }
 
-    class ViewHolder {
+    private class ViewHolder {
         private TextView content;
         private TextView author;
         private TextView time;
-        private RatingBar star;
+        private CustomRatingBar star;
 
         public ViewHolder(View view) {
             content = ((TextView) view.findViewById(R.id.item_comment_content));
             author = (TextView) view.findViewById(R.id.item_comment_author);
             time = (TextView) view.findViewById(R.id.item_comment_time);
-            star = ((RatingBar) view.findViewById(R.id.item_comment_star));
+            star = ((CustomRatingBar) view.findViewById(R.id.item_comment_star));
         }
     }
 

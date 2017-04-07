@@ -1,0 +1,11 @@
+<resources>
+    <declare-styleable name="ColoredRatingBar">
+        <attr name="indicator" format="boolean"/>
+        <attr name="rating" format="float"/>
+        <attr name="type" format="enum">
+            <enum name="black" value="0"/>
+            <enum name="purple" value="1"/>
+        </attr>
+        <attr name="customRatingBarStyle" format="reference"/><!-- Indicator RatingBar style. -->
+    </declare-styleable>
+</resources>

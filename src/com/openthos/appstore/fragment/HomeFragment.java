@@ -1,159 +1,71 @@
 package com.openthos.appstore.fragment;
 
-import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.openthos.appstore.R;
-import com.openthos.appstore.adapter.AppLayoutAdapter;
+import com.openthos.appstore.adapter.AppItemLayoutAdapter;
 import com.openthos.appstore.app.Constants;
-import com.openthos.appstore.bean.AppLayoutInfo;
-import com.openthos.appstore.bean.DataInfo;
-import com.openthos.appstore.fragment.item.HomeAppLayoutFragment;
-import com.openthos.appstore.utils.DataCache;
+import com.openthos.appstore.bean.AppLayout;
+import com.openthos.appstore.view.BannerView;
 import com.openthos.appstore.view.CustomListView;
-import com.openthos.appstore.view.Kanner;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class HomeFragment extends BaseFragment {
-
-    private ImageView mBack;
-    private ImageView mForward;
-    private Kanner mKanner;
-
-    private String mRecommend;
-    private String mPraise;
-    private String mWelcome;
-    private String mFrequent;
+    private BannerView mBannerView;
     private CustomListView mListView;
+    private AppItemLayoutAdapter mAdapter;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_home, container, false);
+    public int getLayoutId() {
+        return R.layout.fragment_home;
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        initView(view);
-
-        initData();
-
-        initListener();
+    public void setData(Object data) {
     }
 
     @Override
     public void refresh() {
-        super.refresh();
         initData();
     }
 
-    private void initData() {
-        new Thread(new GetData()).start();
+    public void initView(View view) {
+        mBannerView = (BannerView) view.findViewById(R.id.fragment_home_carousel);
+        mListView = (CustomListView) view.findViewById(R.id.fragment_home_list);
+        mAdapter = new AppItemLayoutAdapter(getActivity());
+        mListView.setAdapter(mAdapter);
     }
 
-    private void initFragment(String recommend, String praise, String welcome, String frequent) {
-        FragmentManager manager = getChildFragmentManager();
-        FragmentTransaction transaction = manager.beginTransaction();
-
-        HomeAppLayoutFragment homeAppLayoutFragment = new HomeAppLayoutFragment();
-        homeAppLayoutFragment.setAll(false);
-        homeAppLayoutFragment.setNumColumns(Constants.GRIDVIEW_NUM_COLUMS);
-        homeAppLayoutFragment.setDatas(recommend, praise, welcome);
-        transaction.replace(R.id.fragment_home_left, homeAppLayoutFragment);
-
-        transaction.commitAllowingStateLoss();
-
-        AppLayoutAdapter appLayoutAdapter = new AppLayoutAdapter(getActivity(), 1, true);
-        mListView.setAdapter(appLayoutAdapter);
-        try {
-            DataInfo dataInfo = new DataInfo(new JSONObject(frequent));
-            AppLayoutInfo appLayoutInfo = new AppLayoutInfo(dataInfo.getAppList());
-            appLayoutInfo.setType(getActivity().getString(R.string.frequent_used));
-            appLayoutAdapter.addItem(appLayoutInfo);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+    public void initData() {
+        mBannerView.setImageUrls(Constants.getString());
+        new Thread(new GetData("/data/home", HOME_DATA_BACK)).start();
     }
 
-    private void initView(View view) {
-        mListView = ((CustomListView) view.findViewById(R.id.fragment_home_listview));
-        mKanner = ((Kanner) view.findViewById(R.id.fragment_home_kanner));
-        mForward = (ImageView) view.findViewById(R.id.fragment_home_forward);
-        mBack = (ImageView) view.findViewById(R.id.fragment_home_back);
-        mBack.setVisibility(View.GONE);
-        mForward.setVisibility(View.GONE);
-    }
 
-    private void initListener() {
-        mKanner.setImagesUrl(Constants.getString());
-        mKanner.setOnItemClickListener(new Kanner.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-//                Toast.makeText(getActivity(), position + "", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        mBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int currentItem = mKanner.getCurrentItem();
-                if (currentItem > 1) {
-                    mKanner.setCurrentItem(currentItem - 1);
-                } else {
-                    mKanner.setCurrentItem(1);
-                }
-            }
-        });
-
-        mForward.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int currentItem = mKanner.getCurrentItem();
-                if (currentItem < mKanner.getImageViewsSize()) {
-                    mKanner.setCurrentItem(currentItem + 1);
-                } else {
-                    mKanner.setCurrentItem(mKanner.getImageViewsSize());
-                }
-            }
-        });
-    }
-
-    class GetData implements Runnable {
-        @Override
-        public void run() {
-            mRecommend = DataCache.loadData(getActivity(), "/list/recommend");
-            mPraise = DataCache.loadData(getActivity(), "/list/praise");
-            mWelcome = DataCache.loadData(getActivity(), "/list/welcome");
-            mFrequent = DataCache.loadData(getActivity(), "/home/frequent");
-            if (mRecommend != null &&
-                    mPraise != null && mWelcome != null && mFrequent != null) {
-                mHandler.sendEmptyMessage(0);
+    @Override
+    public void getHandlerMessage(Message message) {
+        if (message.what == HOME_DATA_BACK && message.obj != null) {
+            try {
+                AppLayout appLayout = new AppLayout(new JSONObject((String) message.obj));
+                mAdapter.addDatas(appLayout.getAppItemLayoutInfos(), false);
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         }
     }
 
-    private Handler mHandler = new Handler(new Handler.Callback() {
-        @Override
-        public boolean handleMessage(Message msg) {
-            switch (msg.what) {
-                case 0:
-                    initFragment(mRecommend, mPraise, mWelcome, mFrequent);
-                    break;
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (mBannerView != null) {
+            if (hidden) {
+                mBannerView.removeCallbacksAndMessages();
+            } else {
+                mBannerView.startPlay();
             }
-            return false;
         }
-    });
+    }
 }

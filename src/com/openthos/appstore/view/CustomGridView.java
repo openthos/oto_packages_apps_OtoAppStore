@@ -8,10 +8,6 @@ import android.widget.GridView;
 
 import com.openthos.appstore.app.Constants;
 
-/**
- * Created by luojunhuan on 16-10-31.
- */
-
 public class CustomGridView extends GridView {
 
     public CustomGridView(Context context) {

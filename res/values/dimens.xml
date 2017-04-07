@@ -9,8 +9,15 @@
     <dimen name="second_title_size">12sp</dimen>
     <dimen name="three_title_size">10sp</dimen>
     <dimen name="content_size">14sp</dimen>
+    <dimen name="app_item_name_size">15sp</dimen>
+    <dimen name="app_item_type_size">13sp</dimen>
 
-    <dimen name="activity_titile_height">72dp</dimen>
-    <dimen name="activity_titile_pic_word">8dp</dimen>
-    <dimen name="activity_titile_item">40dp</dimen>
+    <dimen name="titile_height">72dp</dimen>
+    <dimen name="titile_pic_word">8dp</dimen>
+    <dimen name="titile_item">40dp</dimen>
+    <dimen name="title_img_size">40dp</dimen>
+    <dimen name="title_img_back">25dp</dimen>
+    <dimen name="app_item_img">95dp</dimen>
+    <dimen name="vertical_spacing">15dp</dimen>
+    <dimen name="item_update_imageview_width">80dp</dimen>
 </resources>

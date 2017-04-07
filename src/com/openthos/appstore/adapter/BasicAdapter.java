@@ -1,48 +1,18 @@
 package com.openthos.appstore.adapter;
 
 import android.content.Context;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-
-import com.openthos.appstore.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by luojunhuan on 16-11-7.
- */
-public class BasicAdapter extends BaseAdapter {
+public abstract class BasicAdapter extends BaseAdapter {
     protected Context mContext;
-    protected boolean mIsAll;
     protected List mDatas;
 
     public BasicAdapter(Context context) {
         mDatas = new ArrayList();
         mContext = context;
-    }
-
-    public BasicAdapter(Context context, boolean isAll) {
-        this(context);
-        mIsAll = isAll;
-    }
-
-    public String getType(String str) {
-        if (str != null) {
-            switch (str) {
-                case "software":
-                    return mContext.getString(R.string.software);
-                case "game":
-                    return mContext.getString(R.string.game);
-                case "more":
-                    return mContext.getString(R.string.more);
-                default:
-                    return str;
-            }
-        } else {
-            return "";
-        }
     }
 
     @Override
@@ -58,10 +28,5 @@ public class BasicAdapter extends BaseAdapter {
     @Override
     public long getItemId(int position) {
         return 0;
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        return null;
     }
 }

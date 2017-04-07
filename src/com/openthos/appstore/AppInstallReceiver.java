@@ -7,7 +7,6 @@ import android.content.Intent;
 import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.utils.AppUtils;
 import com.openthos.appstore.utils.SPUtils;
-import com.openthos.appstore.utils.Tools;
 
 public class AppInstallReceiver extends BroadcastReceiver {
 
@@ -35,8 +34,7 @@ public class AppInstallReceiver extends BroadcastReceiver {
         try {
             MainActivity.mAppPackageInfo = AppUtils.getAppPackageInfo(context);
             if (MainActivity.mHandler != null) {
-                 MainActivity.mHandler.sendEmptyMessage(Constants.REFRESH);
-                 MainActivity.mHandler.sendEmptyMessage(Constants.UPDATE);
+                MainActivity.mHandler.sendEmptyMessage(Constants.REFRESH);
             }
         } catch (Exception e) {
             e.printStackTrace();

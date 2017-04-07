@@ -1,143 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/white"
-    android:orientation="vertical"
-    >
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/white"
+              android:orientation="vertical">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true"
-        >
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            >
+            android:orientation="vertical">
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="140dp"
-                android:layout_margin="10dp"
-                android:orientation="horizontal"
-                >
+                android:layout_height="wrap_content"
+                android:background="@color/red"
+                android:padding="10dp">
 
-                <LinearLayout
+                <ImageView
+                    android:id="@+id/fragment_detail_appIcon"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginRight="10dp"
+                    android:background="@color/gray"/>
+
+                <TextView
+                    android:id="@+id/fragment_detail_appName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@+id/fragment_detail_appIcon"
+                    android:layout_toRightOf="@+id/fragment_detail_appIcon"/>
+
+                <TextView
+                    android:id="@+id/fragment_detail_instruction"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@+id/layout_grade"
+                    android:layout_toRightOf="@+id/fragment_detail_appIcon"
+                    android:lines="2"/>
+
+                <FrameLayout
                     android:layout_width="100dp"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    >
+                    android:layout_height="35dp"
+                    android:layout_alignBottom="@+id/fragment_detail_appIcon"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="12dp"
+                    android:layout_toRightOf="@+id/fragment_detail_appIcon">
 
-                    <ImageView
-                        android:id="@+id/fragment_detail_icon"
+                    <ProgressBar
+                        android:id="@+id/fragment_detail_progressbar"
+                        style="?android:attr/progressBarStyleHorizontal"
                         android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:layout_gravity="center"
-                        android:scaleType="centerCrop"
-                        android:src="@mipmap/ic_launcher"/>
+                        android:layout_height="24dp"
+                        android:layout_gravity="center_vertical"
+                        android:max="100"
+                        android:progress="0"
+                        android:visibility="gone"/>
 
-                    <FrameLayout
+                    <Button
+                        android:id="@+id/fragment_detail_download"
                         android:layout_width="100dp"
                         android:layout_height="24dp"
                         android:layout_gravity="center"
-                        android:layout_marginTop="12dp"
-                        >
-
-                        <ProgressBar
-                            android:id="@+id/fragment_detail_progressbar"
-                            android:max="100"
-                            android:progress="0"
-                            style="?android:attr/progressBarStyleHorizontal"
-                            android:layout_width="100dp"
-                            android:layout_height="24dp"
-                            android:layout_gravity="center_vertical"
-                            android:visibility="gone"
-                            />
-
-                        <Button
-                            android:id="@+id/fragment_detail_download"
-                            android:layout_width="100dp"
-                            android:layout_height="24dp"
-                            android:layout_gravity="center"
-                            android:background="@null"
-                            android:text="@string/download"
-                            android:textColor="@color/button_cyan"
-                            android:textSize="@dimen/first_title_size"
-                            />
-                    </FrameLayout>
-                </LinearLayout>
+                        android:background="@null"
+                        android:text="@string/download"
+                        android:textColor="@color/button_cyan"
+                        android:textSize="@dimen/first_title_size"/>
+                </FrameLayout>
 
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    >
+                    android:id="@+id/layout_grade"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/fragment_detail_appName"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="24dp"
-                        android:gravity="center_vertical"
-                        android:text="@string/news"
-                        android:textColor="@color/text_black"
-                        android:textSize="@dimen/big_text_size"
-                        />
-
-                    <TextView
-                        android:id="@+id/fragment_detail_appCompany"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="24dp"
-                        android:layout_marginTop="8dp"
-                        android:gravity="center_vertical"
-                        android:text="@string/news"
-                        android:textColor="@color/item_type"
-                        android:textSize="@dimen/three_title_size"
-                        />
-
-                    <RatingBar
-                        android:id="@+id/fragment_detail_commentstar"
+                        android:id="@+id/fragment_detail_starNum"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="left"
-                        android:gravity="left"
+                        android:textColor="@color/activity_title"
+                        android:textSize="70sp"/>
+
+                    <com.openthos.appstore.view.CustomRatingBar
+                        android:id="@+id/fragment_detail_ratingBar"
+                        style="@style/customRatingBarStyleSmall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:isIndicator="true"
                         android:numStars="5"
-                        android:rating="5"
-                        android:scaleX="0.5"
-                        android:scaleY="0.5"
-                        android:stepSize="0.5"
-                        />
+                        android:rating="3"/>
 
-                    <TextView
-                        android:id="@+id/fragment_detail_content"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginLeft="24dp"
-                        android:lineSpacingExtra="8dp"
-                        android:maxLines="2"
-                        android:text="@string/news_content"
-                        android:textColor="@color/text_black"
-                        android:textSize="@dimen/second_title_size"
-                        />
                 </LinearLayout>
 
-            </LinearLayout>
+            </RelativeLayout>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
                 android:background="#eeeeee"/>
 
-            <com.openthos.appstore.view.Kanner
-                android:id="@+id/fragment_detail_kanner"
+            <com.openthos.appstore.view.BannerView
+                android:id="@+id/fragment_detail_carsousel"
                 android:layout_width="match_parent"
-                android:layout_height="290dp"/>
+                android:layout_height="291dp"/>
 
             <View
                 android:layout_width="match_parent"
@@ -148,28 +124,24 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="10dp"
-                android:orientation="horizontal"
-                >
+                android:orientation="horizontal">
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="5dp"
                     android:layout_weight="3"
-                    android:orientation="vertical"
-                    >
+                    android:orientation="vertical">
 
                     <FrameLayout
                         android:id="@+id/fragment_detail_comment"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        />
+                        android:layout_height="wrap_content"/>
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        >
+                        android:orientation="vertical">
 
                         <TextView
                             android:id="@+id/fragment_detail_otherinfo"
@@ -177,8 +149,7 @@
                             android:layout_height="wrap_content"
                             android:text="@string/other_information"
                             android:textColor="@color/item_title"
-                            android:textSize="@dimen/first_title_size"
-                            />
+                            android:textSize="@dimen/first_title_size"/>
 
                         <View
                             android:layout_width="match_parent"
@@ -193,8 +164,7 @@
                             android:layout_marginTop="5dp"
                             android:text="@string/promulgator"
                             android:textColor="@color/item_title"
-                            android:textSize="@dimen/second_title_size"
-                            />
+                            android:textSize="@dimen/second_title_size"/>
 
                         <TextView
                             android:id="@+id/fragment_detail_type"
@@ -202,8 +172,7 @@
                             android:layout_height="wrap_content"
                             android:text="@string/type"
                             android:textColor="@color/item_title"
-                            android:textSize="@dimen/second_title_size"
-                            />
+                            android:textSize="@dimen/second_title_size"/>
 
                         <TextView
                             android:id="@+id/fragment_detail_size"
@@ -211,8 +180,7 @@
                             android:layout_height="wrap_content"
                             android:text="@string/size"
                             android:textColor="@color/item_title"
-                            android:textSize="@dimen/second_title_size"
-                            />
+                            android:textSize="@dimen/second_title_size"/>
                     </LinearLayout>
                 </LinearLayout>
 
@@ -222,8 +190,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
                     android:layout_marginRight="10dp"
-                    android:layout_weight="1"
-                    />
+                    android:layout_weight="1"/>
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

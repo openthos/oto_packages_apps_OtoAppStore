@@ -7,25 +7,15 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.provider.Settings;
 
-import com.openthos.appstore.R;
 import com.openthos.appstore.app.Constants;
-import com.openthos.appstore.bean.SQLAppInstallInfo;
+import com.openthos.appstore.bean.AppInstallInfo;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by luojunhuan on 16-10-31.
- */
 public class AppUtils {
-
-    private AppUtils() {
-        /* cannot be instantiated */
-        throw new UnsupportedOperationException("cannot be instantiated");
-    }
-
     public static Drawable getAPKIcon(Context context, String absPath) {
         PackageManager pm = context.getPackageManager();
         PackageInfo packageInfo = pm.getPackageArchiveInfo(absPath, PackageManager.GET_ACTIVITIES);
@@ -39,30 +29,22 @@ public class AppUtils {
         return null;
     }
 
-    public static List<SQLAppInstallInfo> getAppPackageInfo(Context context) throws
-            PackageManager.NameNotFoundException {
-
-        List<SQLAppInstallInfo> datas = new ArrayList<>();
-        SQLAppInstallInfo appInfo = null;
+    public static List<AppInstallInfo> getAppPackageInfo(Context context){
+        List<AppInstallInfo> datas = new ArrayList<>();
+        AppInstallInfo appInfo = null;
 
         PackageManager packageManager = context.getPackageManager();
         List<PackageInfo> pinfo = packageManager.getInstalledPackages(0);
         for (int i = 0; i < pinfo.size(); i++) {
             PackageInfo packageInfo = pinfo.get(i);
-
-            String name = packageInfo.applicationInfo.loadLabel(packageManager).toString();
-            String packageName = packageInfo.packageName;
-            String versionName = packageInfo.versionName;
-            int versionCode = packageInfo.versionCode;
-            Drawable icon = packageInfo.applicationInfo.loadIcon(packageManager);
             if ((packageInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
-                appInfo = new SQLAppInstallInfo();
+                appInfo = new AppInstallInfo();
                 appInfo.setId(i);
-                appInfo.setIcon(icon);
-                appInfo.setName(name);
-                appInfo.setPackageName(packageName);
-                appInfo.setVersionCode(versionCode + "");
-                appInfo.setVersionName(versionName);
+                appInfo.setIcon(packageInfo.applicationInfo.loadIcon(packageManager));
+                appInfo.setName(packageInfo.applicationInfo.loadLabel(packageManager).toString());
+                appInfo.setPackageName(packageInfo.packageName);
+                appInfo.setVersionCode(packageInfo.versionCode);
+                appInfo.setVersionName(packageInfo.versionName);
                 appInfo.setState(Constants.APP_HAVE_INSTALLED);
                 datas.add(appInfo);
             }
@@ -70,17 +52,18 @@ public class AppUtils {
         return datas;
     }
 
-    public static String installApk(Context mContext, String saveFileName) {
-        File apkfile = new File(saveFileName);
-        if (!apkfile.exists() || apkfile.length() == 0) {
-            return mContext.getString(R.string.this_file_is_not_exist);
-        }
-        Intent intent = new Intent(Intent.ACTION_VIEW);
+    public static void uninstallApk(Context context, String packageName) {
+        Uri uri = Uri.parse("package:" + packageName);
+        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, uri);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-        intent.setDataAndType(Uri.parse("file://" + apkfile.toString()),
-                "application/vnd.android.package-archive");
-        mContext.startActivity(intent);
-        return "";
+        context.startActivity(intent);
+    }
+
+    public static void startApk(Context context, String appPackageName) {
+        Intent intent = context.getPackageManager().getLaunchIntentForPackage(appPackageName);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        context.startActivity(intent);
     }
 }

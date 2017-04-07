@@ -2,20 +2,20 @@ package com.openthos.appstore;
 
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.pm.PackageManager;
-import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.database.Cursor;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -25,55 +25,61 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.openthos.appstore.app.Constants;
-import com.openthos.appstore.bean.DataInfo;
-import com.openthos.appstore.bean.AppLayoutGridviewInfo;
-import com.openthos.appstore.bean.AppLayoutInfo;
-import com.openthos.appstore.bean.SQLAppInstallInfo;
+import com.openthos.appstore.app.StoreApplication;
+import com.openthos.appstore.bean.AppItemInfo;
+import com.openthos.appstore.bean.NetDataListInfo;
+import com.openthos.appstore.bean.AppInstallInfo;
+import com.openthos.appstore.download.DownloadService;
 import com.openthos.appstore.fragment.BaseFragment;
+import com.openthos.appstore.fragment.CommentFragment;
+import com.openthos.appstore.fragment.DetailFragment;
 import com.openthos.appstore.fragment.GameFragment;
 import com.openthos.appstore.fragment.HomeFragment;
 import com.openthos.appstore.fragment.ManagerFragment;
+import com.openthos.appstore.fragment.MoreFragment;
+import com.openthos.appstore.fragment.SearchFragment;
 import com.openthos.appstore.fragment.SoftwareFragment;
-import com.openthos.appstore.fragment.item.CommentFragment;
-import com.openthos.appstore.fragment.item.DetailFragment;
-import com.openthos.appstore.fragment.item.MoreFragment;
-import com.openthos.appstore.fragment.item.SearchFragment;
 import com.openthos.appstore.utils.AppUtils;
 import com.openthos.appstore.utils.NetUtils;
 import com.openthos.appstore.utils.SPUtils;
 import com.openthos.appstore.utils.Tools;
-import com.openthos.appstore.utils.download.DownLoadService;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class MainActivity extends FragmentActivity implements View.OnClickListener {
     public static Handler mHandler;
-    public static List<SQLAppInstallInfo> mAppPackageInfo;
-    public static DownLoadService.AppStoreBinder mBinder;
+    public static DownloadService.AppStoreBinder mDownloadService;
+    public static List<AppInstallInfo> mAppPackageInfo;
     private FragmentManager mManager;
-    private ArrayList<Integer> mPage;
-    private Map<Integer, BaseFragment> mFragments;
-    private Button currentButton;
-    private Button previousButton;
-    public boolean isFirstInit = true;
+    private FragmentTransaction mTransaction;
+    private Button mCurrentButton;
+    private Button mPreviousButton;
+    private Button mManagerButton;
+    private Button mSoftwareButton;
+    private Button mGameButton;
+    private Button mHomeButton;
+    private ImageView mBack;
+    private ImageView mForward;
+    private EditText mSearchText;
+    private ImageView mSearchImg;
+    private BaseFragment mCurrentFragment;
+    private List<Integer> mPages;
 
     private ServiceConnection conn = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             if (iBinder != null) {
-                mBinder = (DownLoadService.AppStoreBinder) iBinder;
+                mDownloadService = (DownloadService.AppStoreBinder) iBinder;
             }
         }
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
-
         }
     };
 
@@ -81,98 +87,29 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        init();
-
-        mHandler.sendEmptyMessage(Constants.HOME_FRAGMENT);
-
-        saveAllData();
-    }
-
-    private void init() {
-        bindService(new Intent(this, DownLoadService.class), conn, Context.BIND_AUTO_CREATE);
-
+//        initUrl();
         initView();
-
         initData();
-
         initListener();
     }
 
-    private void initData() {
-        mManager = getSupportFragmentManager();
-        mPage = new ArrayList<>();
-        mFragments = new HashMap<>();
-        try {
-            mAppPackageInfo = AppUtils.getAppPackageInfo(this);
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        initHandler();
-    }
-
-    private void initListener() {
-        ImageView back = (ImageView) findViewById(R.id.activity_title_back);
-        ImageView forward = (ImageView) findViewById(R.id.activity_title_forward);
-        forward.setVisibility(View.GONE);
-        final EditText content = (EditText) findViewById(R.id.activity_title_content);
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                checked();
-            }
-        });
-
-        forward.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-
-        content.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if (!TextUtils.isEmpty(editable.toString())) {
-                    Message message = mHandler.obtainMessage();
-                    message.what = Constants.SEARCH_FRAGMENT;
-                    message.obj = editable.toString();
-                    mHandler.sendMessage(message);
-                }
-            }
-        });
-    }
-
-    private void checked() {
-        if (mPage.size() > 1) {
-            mPage.remove(mPage.size() - 1);
-            Integer what = mPage.get(mPage.size() - 1);
-            if (what == Constants.SEARCH_FRAGMENT) {
-                checked();
-            } else {
-                mHandler.sendEmptyMessage(what);
-            }
-        }
-    }
-
     private void initView() {
-        int[] drawables = new int[] {
+        mBack = (ImageView) findViewById(R.id.activity_title_back);
+        mForward = (ImageView) findViewById(R.id.activity_title_forward);
+        mSearchImg = (ImageView) findViewById(R.id.activity_title_search);
+        mSearchText = (EditText) findViewById(R.id.activity_title_searchText);
+        mHomeButton = (Button) findViewById(R.id.rb_home);
+        mGameButton = (Button) findViewById(R.id.rb_game);
+        mSoftwareButton = (Button) findViewById(R.id.rb_software);
+        mManagerButton = (Button) findViewById(R.id.rb_manager);
+        mCurrentButton = mHomeButton;
+        int[] drawables = new int[]{
                 R.drawable.select_home_drawable,
                 R.drawable.select_software_drawable,
                 R.drawable.select_game_drawable,
                 R.drawable.select_manager_drawable
         };
-        int[] rids = new int[] {
+        int[] rids = new int[]{
                 R.id.rb_home,
                 R.id.rb_software,
                 R.id.rb_game,
@@ -181,65 +118,84 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         Resources res = getResources();
         for (int i = 0; i < rids.length; i++) {
             Button rb = (Button) findViewById(rids[i]);
-            rb.setOnClickListener(this);
+            rb.setOnClickListener(new HomeItemClick());
             Drawable drawable = res.getDrawable(drawables[i]);
             drawable.setBounds(0, 0, Constants.DRAWABLE_SIZE, Constants.DRAWABLE_SIZE);
             rb.setCompoundDrawablePadding(Constants.DRAWABLE_PADDING);
             rb.setCompoundDrawables(drawable, null, null, null);
         }
+    }
 
-        previousButton = (Button) findViewById(R.id.rb_home);
-        previousButton.setTextColor(getResources().getColor( R.color.blue));
+    private void initListener() {
+        mBack.setOnClickListener(this);
+        mForward.setOnClickListener(this);
+        mSearchImg.setOnClickListener(this);
+        mSearchText.addTextChangedListener(new SearchTextWatcher());
+    }
+
+    private void initData() {
+        bindService(new Intent(this, DownloadService.class), conn, Context.BIND_AUTO_CREATE);
+        mAppPackageInfo = AppUtils.getAppPackageInfo(this);
+        mManager = getSupportFragmentManager();
+        mPages = new ArrayList<>();
+        initHandler();
+        updateAllData();
+        mHomeButton.performClick();
+    }
+
+    private void updateAllData() {
+        new Thread() {
+            @Override
+            public void run() {
+                String allData = NetUtils.getNetStr("/all");
+                if (!TextUtils.isEmpty(allData)) {
+                    try {
+                        NetDataListInfo netDataInfos = new NetDataListInfo(new JSONObject(allData));
+                        if (netDataInfos != null && netDataInfos.getNetDataInfoList() != null) {
+                            List<AppItemInfo> appList = netDataInfos.getNetDataInfoList();
+                            for (int i = 0; i < appList.size(); i++) {
+                                AppItemInfo appInfo = appList.get(i);
+                                SPUtils.saveAllData(MainActivity.this, appInfo);
+                            }
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                mHandler.sendEmptyMessage(Constants.REFRESH);
+            }
+        }.start();
     }
 
     @Override
-    public void onClick(View v) {
-        FragmentTransaction transaction = mManager.beginTransaction();
-        transaction.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
-        BaseFragment fragment = null;
-        currentButton = (Button) v;
-        if (currentButton != previousButton) {
-            currentButton.setTextColor(getResources().getColor(R.color.blue));
-            previousButton.setTextColor(getResources().getColor( R.color.gray));
-            previousButton = currentButton;
-        }
-        switch (v.getId()) {
-            case R.id.rb_home:
-                fragment = mFragments.get(Constants.HOME_FRAGMENT);
-                if (fragment == null) {
-                    fragment = new HomeFragment();
-                    mFragments.put(Constants.HOME_FRAGMENT, fragment);
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.activity_title_back:
+                if (mPages.size() > 1) {
+                    mPages.remove(mPages.size() - 1);
+                    mHandler.sendEmptyMessage(mPages.get(mPages.size() - 1));
+                    mPages.remove(mPages.size() - 1);
                 }
-                addFragment(transaction, fragment, Constants.HOME_FRAGMENT);
-                break;
-            case R.id.rb_software:
-                fragment = mFragments.get(Constants.SOFTWARE_FRAGMENT);
-                if (fragment == null) {
-                    fragment = new SoftwareFragment();
-                    mFragments.put(Constants.SOFTWARE_FRAGMENT, fragment);
-                }
-                addFragment(transaction, fragment, Constants.SOFTWARE_FRAGMENT);
-                break;
-            case R.id.rb_game:
-                fragment = mFragments.get(Constants.GAME_FRAGMENT);
-                if (fragment == null) {
-                    fragment = new GameFragment();
-                    mFragments.put(Constants.GAME_FRAGMENT, fragment);
-                }
-                addFragment(transaction, fragment, Constants.GAME_FRAGMENT);
-                break;
-            case R.id.rb_manager:
-                fragment = mFragments.get(Constants.MANAGER_FRAGMENT);
-                if (fragment == null) {
-                    fragment = new ManagerFragment();
-                    mFragments.put(Constants.MANAGER_FRAGMENT, fragment);
-                }
-                addFragment(transaction, fragment, Constants.MANAGER_FRAGMENT);
                 break;
         }
-        transaction.commit();
-        mManager.executePendingTransactions();
-        fragment.refresh();
+    }
+
+    private Fragment getCurrentFragment() {
+        return mCurrentFragment;
+    }
+
+    private void initUrl() {
+        Uri uriQuery = Uri.parse("content://com.otosoft.tools.myprovider/upgradeUrl");
+        if (uriQuery != null) {
+            Cursor cursor = getContentResolver().query(uriQuery, null, null, null, null);
+            if (cursor != null && cursor.moveToNext()) {
+                StoreApplication.mBaseUrl =
+                        cursor.getString(cursor.getColumnIndex("upgradeUrl")) + "appstore";
+                cursor.close();
+            } else {
+                StoreApplication.mBaseUrl = "http://dev.openthos.org/openthos/appstore";
+            }
+        }
     }
 
     private void initHandler() {
@@ -247,199 +203,168 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
-                FragmentTransaction transaction = mManager.beginTransaction();
-                BaseFragment fragment = null;
                 switch (msg.what) {
-                    case Constants.HOME_FRAGMENT:
-                        fragment = mFragments.get(Constants.HOME_FRAGMENT);
-                        if (fragment == null) {
-                            fragment = new HomeFragment();
-                            mFragments.put(Constants.HOME_FRAGMENT, fragment);
-                        }
-                        addFragment(transaction, fragment, msg.what);
-                        break;
-                    case Constants.SOFTWARE_FRAGMENT:
-                        fragment = mFragments.get(Constants.SOFTWARE_FRAGMENT);
-                        if (fragment == null) {
-                            fragment = new SoftwareFragment();
-                            mFragments.put(Constants.SOFTWARE_FRAGMENT, fragment);
-                        }
-                        addFragment(transaction, fragment, msg.what);
-                        break;
-                    case Constants.GAME_FRAGMENT:
-                        fragment = mFragments.get(Constants.GAME_FRAGMENT);
-                        if (fragment == null) {
-                            fragment = new GameFragment();
-                            mFragments.put(Constants.GAME_FRAGMENT, fragment);
-                        }
-                        addFragment(transaction, fragment, msg.what);
-                        break;
-                    case Constants.MANAGER_FRAGMENT:
-                        fragment = mFragments.get(Constants.MANAGER_FRAGMENT);
-                        if (fragment == null) {
-                            fragment = new ManagerFragment();
-                            mFragments.put(Constants.MANAGER_FRAGMENT, fragment);
-                        }
-                        addFragment(transaction, fragment, msg.what);
-                        break;
-                    case Constants.DETAIL_FRAGMENT:
-                        fragment = mFragments.get(Constants.DETAIL_FRAGMENT);
-                        if (fragment == null) {
-                            fragment = new DetailFragment();
-                            mFragments.put(Constants.DETAIL_FRAGMENT, fragment);
-                        }
-                        addFragment(transaction, fragment, msg.what);
-                        if (getData(msg) != null) {
-                            ((DetailFragment) fragment).setDatas((String) getData(msg));
-                        }
-                        break;
-                    case Constants.MORE_FRAGMENT:
-                        fragment = mFragments.get(Constants.MORE_FRAGMENT);
-                        if (fragment == null) {
-                            fragment = new MoreFragment();
-                            mFragments.put(Constants.MORE_FRAGMENT, fragment);
-                        }
-                        addFragment(transaction, fragment, msg.what);
-
-                        if (getData(msg) != null) {
-                            ((MoreFragment) fragment).setData((AppLayoutInfo) getData(msg));
-                        }
-                        break;
-                    case Constants.COMMENT_FRAGMENT:
-                        fragment = mFragments.get(Constants.COMMENT_FRAGMENT);
-                        if (fragment == null) {
-                            fragment = new CommentFragment();
-                            mFragments.put(Constants.COMMENT_FRAGMENT, fragment);
-                        }
-                        addFragment(transaction, fragment, msg.what);
-
-                        ((CommentFragment) fragment).setDatas(Constants.getComment());
-                        ((CommentFragment) fragment).setAll(true);
-                        break;
-                    case Constants.SEARCH_FRAGMENT:
-                        fragment = mFragments.get(Constants.SEARCH_FRAGMENT);
-                        if (fragment == null) {
-                            fragment = new SearchFragment();
-                            mFragments.put(Constants.SEARCH_FRAGMENT, fragment);
-                        }
-                        addFragment(transaction, fragment, msg.what);
-                        if (getData(msg) != null) {
-                            ((SearchFragment) fragment).setDatas((String) getData(msg));
+                    case Constants.REFRESH:
+                        Fragment currentFragment = getCurrentFragment();
+                        if (currentFragment != null) {
+                            ((BaseFragment) currentFragment).refresh();
                         }
                         break;
                     case Constants.TOAST:
                         Tools.toast(MainActivity.this, (String) msg.obj);
                         break;
-                    case Constants.REFRESH:
-                        Fragment currentFragment = getCurrentFragment();
-                        if (currentFragment != null) {
-                            BaseFragment baseFragment = (BaseFragment) currentFragment;
-                            baseFragment.refresh();
-                        }
+                    case Constants.INSTALL_APK:
+                        installApk((String) msg.obj);
                         break;
-                    case Constants.UPDATE:
-                        saveAllData();
+                    default:
+                        showFragment(msg);
                         break;
-                }
-                if (msg.what != Constants.TOAST && msg.what != Constants.REFRESH
-                        && msg.what != Constants.UPDATE) {
-                    transaction.commit();
-                    mManager.executePendingTransactions();
-                    fragment.refresh();
                 }
             }
         };
     }
 
-    private void addFragment(FragmentTransaction transaction, Fragment fragment, int what) {
-        if (mPage.size() > 1) {
-            if (mPage.get(mPage.size() - 1) != what) {
-                mPage.add(what);
-            }
-        } else {
-            mPage.add(what);
+    private void showFragment(Message msg) {
+        mTransaction = mManager.beginTransaction();
+        BaseFragment fragment = getFragment(msg);
+        if (fragment != null && !fragment.isAdded()) {
+            mTransaction.add(R.id.main_fragment_container, fragment, String.valueOf(msg.what));
         }
-        Fragment currentFragment = getCurrentFragment();
-        if (!fragment.isAdded()) {
-            transaction.add(R.id.main_fragment_container, fragment, what + "");
+
+        if (mCurrentFragment == null) {
+            mTransaction.show(fragment);
+        } else if (mCurrentFragment != fragment) {
+            mTransaction.hide(mCurrentFragment).show(fragment);
         }
-        if (currentFragment != null) {
-            transaction.hide(currentFragment).show(fragment);
-        } else {
-            transaction.show(fragment);
-        }
+        mCurrentFragment = fragment;
+        mTransaction.commit();
+        mManager.executePendingTransactions();
+        mPages.add(msg.what);
+        fragment.refresh();
     }
 
-    private Fragment getCurrentFragment() {
-        List<Fragment> fragments = mManager.getFragments();
-        if (fragments != null && fragments.size() != 0) {
-            for (Fragment fragment : fragments) {
-                if (fragment != null && fragment.isVisible()) {
-                    return fragment;
-                }
-            }
-        }
-        return null;
-    }
-
-    private Object getData(Message msg) {
-        if (msg.obj != null) {
-            return msg.obj;
-        }
-        Bundle data = msg.getData();
-        if (data == null) {
-            return null;
-        }
+    private BaseFragment getFragment(Message msg) {
+        BaseFragment fragment = (BaseFragment) mManager.findFragmentByTag(String.valueOf(msg.what));
         switch (msg.what) {
+            case Constants.HOME_FRAGMENT:
+                checkButton(mHomeButton);
+                if (fragment == null) {
+                    fragment = new HomeFragment();
+                }
+                break;
+            case Constants.SOFTWARE_FRAGMENT:
+                checkButton(mSoftwareButton);
+                if (fragment == null) {
+                    fragment = new SoftwareFragment();
+                }
+                break;
+            case Constants.GAME_FRAGMENT:
+                checkButton(mGameButton);
+                if (fragment == null) {
+                    fragment = new GameFragment();
+                }
+                break;
+            case Constants.MANAGER_FRAGMENT:
+                checkButton(mManagerButton);
+                if (fragment == null) {
+                    fragment = new ManagerFragment();
+                }
+                break;
+            case Constants.DETAIL_FRAGMENT:
+                if (fragment == null) {
+                    fragment = new DetailFragment();
+                }
+                fragment.setData(msg.obj);
+                break;
             case Constants.MORE_FRAGMENT:
-                return (AppLayoutInfo) data.getSerializable(Constants.APP_LAYOUT_INFO);
+                if (fragment == null) {
+                    fragment = new MoreFragment();
+                }
+                fragment.setData(msg.obj);
+                break;
+            case Constants.COMMENT_FRAGMENT:
+                if (fragment == null) {
+                    fragment = new CommentFragment();
+                }
+                break;
+            case Constants.SEARCH_FRAGMENT:
+                if (fragment == null) {
+                    fragment = new SearchFragment();
+                }
+                fragment.setData(msg.obj);
+                break;
         }
-        return null;
+        return fragment;
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         unbindService(conn);
-        stopService(new Intent(this, DownLoadService.class));
+        stopService(new Intent(this, DownloadService.class));
         finish();
     }
 
-    private void saveAllData() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                String allData = NetUtils.getNetStr(MainActivity.this, "/all");
-                if (!TextUtils.isEmpty(allData)) {
-                    try {
-                        DataInfo dataInfo = new DataInfo(new JSONObject(allData));
-                        if (dataInfo != null && dataInfo.getAppList() != null) {
-                            List<AppLayoutGridviewInfo> appList = dataInfo.getAppList();
-                            for (int i = 0; i < appList.size(); i++) {
-                                AppLayoutGridviewInfo appInfo = appList.get(i);
-                                SPUtils.saveAllData(MainActivity.this, appInfo);
-                            }
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    Constants.BASEURL = "http://dev.openthos.org/openthos/appstore";
-                    allData = NetUtils.getNetStr(MainActivity.this, "/all");
-                    if (!TextUtils.isEmpty(allData)) {
-                        saveAllData();
-                    }
-                }
-                mHandler.sendEmptyMessage(Constants.REFRESH);
+    private void checkButton(Button button) {
+        mCurrentButton = button;
+        if (mCurrentButton != mPreviousButton) {
+            mCurrentButton.setTextColor(getResources().getColor(R.color.blue));
+            if (mPreviousButton != null) {
+                mPreviousButton.setTextColor(getResources().getColor(R.color.gray));
             }
-        }).start();
+            mPreviousButton = mCurrentButton;
+        }
     }
 
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        setContentView(R.layout.activity_main);
-        init();
-        mHandler.sendEmptyMessage(Constants.HOME_FRAGMENT);
+    class HomeItemClick implements View.OnClickListener {
+        @Override
+        public void onClick(View view) {
+            switch (view.getId()) {
+                case R.id.rb_home:
+                    mHandler.sendEmptyMessage(Constants.HOME_FRAGMENT);
+                    break;
+                case R.id.rb_software:
+                    mHandler.sendEmptyMessage(Constants.SOFTWARE_FRAGMENT);
+                    break;
+                case R.id.rb_game:
+                    mHandler.sendEmptyMessage(Constants.GAME_FRAGMENT);
+                    break;
+                case R.id.rb_manager:
+                    mHandler.sendEmptyMessage(Constants.MANAGER_FRAGMENT);
+                    break;
+            }
+        }
+    }
+
+    class SearchTextWatcher implements TextWatcher {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+            if (!TextUtils.isEmpty(editable.toString())) {
+                mHandler.sendMessage(
+                        mHandler.obtainMessage(Constants.SEARCH_FRAGMENT, editable.toString()));
+            }
+        }
+    }
+
+    public void installApk(String apkFilePath) {
+        File apkFile = new File(apkFilePath);
+        if (!apkFile.exists() || apkFile.length() == 0) {
+            Tools.toast(this, getString(R.string.this_file_is_not_exist));
+        } else {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+            intent.setDataAndType(Uri.parse("file://" + apkFile.toString()),
+                    "application/vnd.android.package-archive");
+            startActivity(intent);
+        }
     }
 }

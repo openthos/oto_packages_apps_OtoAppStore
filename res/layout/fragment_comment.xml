@@ -1,35 +1,37 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:layout_margin="10dp"
-    tools:context="com.openthos.appstore.fragment.item.CommentFragment">
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:layout_margin="10dp"
+              android:orientation="vertical"
+              tools:context=".fragment.CommentFragment">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         >
+
         <TextView
             android:id="@+id/fragment_commet_commenttitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/comment_and_commentscore"
-            android:textSize="@dimen/second_title_size"
+            android:layout_centerVertical="true"
             android:layout_marginLeft="10dp"
             android:gravity="center_vertical"
-            android:layout_centerVertical="true"
+            android:text="@string/comment_and_commentscore"
+            android:textSize="@dimen/second_title_size"
             />
+
         <TextView
             android:id="@+id/fragment_comment_whole"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/whole"
-            android:drawableRight="@mipmap/more"
-            android:textSize="@dimen/second_title_size"
             android:layout_alignParentRight="true"
-            android:gravity="center_vertical"
             android:layout_centerVertical="true"
+            android:drawableRight="@mipmap/more"
+            android:gravity="center_vertical"
+            android:text="@string/whole"
+            android:textSize="@dimen/second_title_size"
             />
     </RelativeLayout>
 
@@ -41,8 +43,8 @@
     <com.openthos.appstore.view.CustomListView
         android:id="@+id/fragment_comment_listview"
         android:layout_width="match_parent"
-        android:divider="@null"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:divider="@null"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -53,8 +55,8 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
             android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
             >
 
             <Button
@@ -62,23 +64,27 @@
                 android:layout_width="wrap_content"
                 android:layout_height="25dp"
                 android:layout_marginLeft="10dp"
-                android:text="@string/write_comment"
-                android:textSize="@dimen/three_title_size"
-                android:textColor="@color/button_cyan"
                 android:background="@drawable/shape_button_white_cyan"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:text="@string/write_comment"
+                android:textColor="@color/button_cyan"
+                android:textSize="@dimen/second_title_size"
                 />
 
             <Button
                 android:id="@+id/fragment_comment_cancel"
                 android:layout_width="wrap_content"
                 android:layout_height="25dp"
-                android:text="@string/cancel"
-                android:textSize="@dimen/three_title_size"
                 android:layout_marginLeft="10dp"
                 android:layout_toRightOf="@id/fragment_comment_submit"
-                android:visibility="gone"
-                android:textColor="@color/button_gray"
                 android:background="@drawable/shape_button_white_gray"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:text="@string/cancel"
+                android:textColor="@color/button_gray"
+                android:textSize="@dimen/second_title_size"
+                android:visibility="gone"
                 />
         </RelativeLayout>
 
@@ -86,59 +92,61 @@
             android:id="@+id/fragment_comment_commentlayout"
             android:layout_width="match_parent"
             android:layout_height="200dp"
+            android:layout_marginBottom="50dp"
             android:background="@mipmap/edit_input"
             android:orientation="vertical"
             android:visibility="gone"
-            android:layout_marginBottom="50dp"
             >
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:orientation="horizontal"
                 android:background="@color/qianhuise"
+                android:orientation="horizontal"
                 >
+
                 <TextView
                     android:id="@+id/fragment_comment_score"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:text="@string/comment_star"
                     android:gravity="center_vertical"
-                    android:textSize="@dimen/three_title_size"
                     android:paddingLeft="10dp"
+                    android:text="@string/comment_star"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/second_title_size"
                     />
 
-                <RatingBar
-                    android:layout_marginLeft="10dp"
+                <com.openthos.appstore.view.CustomRatingBar
                     android:id="@+id/fragment_comment_ratingbar"
+                    style="@style/customRatingBarStyleTrue"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:rating="0"
-                    android:scaleX="0.5"
-                    android:scaleY="0.5"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="10dp"
                     />
 
                 <TextView
-                    android:paddingLeft="10dp"
                     android:id="@+id/fragment_comment_touchcomment"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:text="@string/touch_star"
-                    android:textSize="@dimen/three_title_size"
                     android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:text="@string/touch_star"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/second_title_size"
                     />
             </LinearLayout>
 
 
             <EditText
                 android:id="@+id/fragment_comment_content"
-                android:padding="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:hint="@string/write_your_commeent"
                 android:background="@null"
                 android:gravity="top"
+                android:hint="@string/write_your_commeent"
+                android:padding="10dp"
                 android:textSize="@dimen/content_size"
                 />
         </LinearLayout>

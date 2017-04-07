@@ -3,9 +3,6 @@ package com.openthos.appstore.bean;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/**
- * Created by luojunhuan on 16-10-28.
- */
 public class CommentInfo {
     private long id;
     private String content;

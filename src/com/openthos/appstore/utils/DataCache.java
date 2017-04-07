@@ -5,10 +5,6 @@ import android.content.Context;
 import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.app.StoreApplication;
 
-/**
- * Created by root on 3/7/17.
- */
-
 public class DataCache {
     public static String loadData(Context context, String url) {
         String data = null;
@@ -27,7 +23,7 @@ public class DataCache {
             }
         }
         if (data == null) {
-            data = NetUtils.getNetStr(context, url);
+            data = NetUtils.getNetStr(url);
             SPUtils.saveData(context,
                     Constants.SP_CACHE_DATA, url + StoreApplication.DATE_FORMAT, data);
         }

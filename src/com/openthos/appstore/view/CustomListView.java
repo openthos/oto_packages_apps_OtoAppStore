@@ -3,15 +3,11 @@ package com.openthos.appstore.view;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
-import android.provider.SyncStateContract;
 import android.util.AttributeSet;
 import android.widget.ListView;
 
 import com.openthos.appstore.app.Constants;
 
-/**
- * Created by luojunhuan on 16-10-31.
- */
 public class CustomListView extends ListView {
     public CustomListView(Context context) {
         super(context);

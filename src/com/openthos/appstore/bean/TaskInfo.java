@@ -1,5 +1,7 @@
 package com.openthos.appstore.bean;
 
+import com.openthos.appstore.app.Constants;
+
 public class TaskInfo {
     private boolean isOnDownloading;
     private String packageName;
@@ -9,7 +11,8 @@ public class TaskInfo {
     private String iconUrl;
     private long fileSize = 0;
     private long downFileSize = 0;
-    private long speech;
+    private long speed;
+    private int downloadState;
 
     public boolean isOnDownloading() {
         return isOnDownloading;
@@ -66,12 +69,12 @@ public class TaskInfo {
         this.downFileSize = downFileSize;
     }
 
-    public long getSpeech() {
-        return speech;
+    public long getSpeed() {
+        return speed;
     }
 
-    public void setSpeech(long speech) {
-        this.speech = speech;
+    public void setSpeed(long speed) {
+        this.speed = speed;
     }
 
     public String getPackageName() {
@@ -96,5 +99,21 @@ public class TaskInfo {
 
     public void setFilePath(String filePath) {
         this.filePath = filePath;
+    }
+
+    public int getDownloadState() {
+        if (isOnDownloading) {
+            return Constants.APP_DOWNLOAD_CONTINUE;
+        } else {
+            if (fileSize != 0 && fileSize == downFileSize) {
+                return Constants.APP_DOWNLOAD_FINISHED;
+            } else {
+                return Constants.APP_DOWNLOAD_PAUSE;
+            }
+        }
+    }
+
+    public long getDownFileSize() {
+        return downFileSize;
     }
 }

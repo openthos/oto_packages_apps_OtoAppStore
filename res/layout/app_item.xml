@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="150dp"
+              android:layout_height="wrap_content"
+              android:layout_gravity="center"
+              android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/app_item_layout"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:padding="5dp"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/app_item_img"
+            android:layout_width="@dimen/app_item_img"
+            android:layout_height="@dimen/app_item_img"
+            android:layout_gravity="center_horizontal"
+            android:scaleType="fitXY"/>
+
+        <TextView
+            android:id="@+id/app_item_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="5dp"
+            android:singleLine="true"
+            android:textColor="@color/item_title"
+            android:textSize="@dimen/app_item_name_size"/>
+
+        <TextView
+            android:id="@+id/app_item_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="3dp"
+            android:singleLine="true"
+            android:textColor="@color/item_type"
+            android:textSize="@dimen/app_item_type_size"/>
+
+        <com.openthos.appstore.view.CustomRatingBar
+            android:id="@+id/app_item_ratingbar"
+            style="@style/customRatingBarStyleFalse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="5dp"/>
+    </LinearLayout>
+</LinearLayout>

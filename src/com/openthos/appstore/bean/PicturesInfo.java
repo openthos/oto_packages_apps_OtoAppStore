@@ -3,9 +3,6 @@ package com.openthos.appstore.bean;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/**
- * Created by ljh on 16-12-7.
- */
 public class PicturesInfo {
     private int id;
 

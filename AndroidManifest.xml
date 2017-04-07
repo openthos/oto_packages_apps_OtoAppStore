@@ -30,7 +30,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".utils.download.DownLoadService" />
+        <service android:name=".download.DownloadService" />
 
         <receiver android:name=".AppInstallReceiver">
             <intent-filter>

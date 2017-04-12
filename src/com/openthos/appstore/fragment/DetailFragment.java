@@ -183,7 +183,8 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
             mPromulgator.setText(getActivity().getString(
                     R.string.promulgator) + mAppItemInfo.getCompany());
             mType.setText(getActivity().getString(R.string.type) + mAppItemInfo.getType());
-            mSize.setText(getActivity().getString(R.string.size) + Tools.transFormFileSize(mAppItemInfo.getFileSize()));
+            mSize.setText(getActivity().getString(R.string.size) +
+                                        Tools.transformFileSize(mAppItemInfo.getFileSize()));
             initStateAndProgress();
             switch (mAppItemInfo.getState()) {
                 case Constants.APP_NOT_INSTALL:

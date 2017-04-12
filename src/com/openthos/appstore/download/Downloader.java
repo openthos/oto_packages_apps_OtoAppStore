@@ -32,8 +32,6 @@ public class Downloader {
     private static final int TASK_ERROR = 3;
     private static final int TASK_SUCCESS = 4;
 
-    private static final int HTTP_CONNECT_TIME_OUT = 5000;
-    private static final int HTTP_READ_TIME_OUT = 5000;
     private static final int BUFFER_READ_BYTE = 512 * 1024;
 
     private static final int MAX_DOWNLOAD_TIMES = 3;
@@ -159,8 +157,8 @@ public class Downloader {
                     }
                     url = new URL(mDownloadInfo.getUrl());
                     urlConn = (HttpURLConnection) url.openConnection();
-                    urlConn.setConnectTimeout(HTTP_CONNECT_TIME_OUT);
-                    urlConn.setReadTimeout(HTTP_READ_TIME_OUT);
+                    urlConn.setConnectTimeout(Constants.TIME_FIVE_SECONDS);
+                    urlConn.setReadTimeout(Constants.TIME_FIVE_SECONDS);
                     if (mFileSize < 1) {
                         openConnention();
                     } else {
@@ -260,7 +258,20 @@ public class Downloader {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    Tools.closeStream(bis, bos);
+                    try {
+                        if (bis != null) {
+                            bis.close();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        if (bos != null) {
+                            bos.close();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }

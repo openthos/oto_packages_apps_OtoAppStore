@@ -42,7 +42,7 @@
                 />
         </LinearLayout>
 
-        <LinearLayout
+        <RadioGroup
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="center"
@@ -51,7 +51,7 @@
             android:paddingLeft="10dp"
             android:paddingRight="10dp">
 
-            <Button
+            <RadioButton
                 android:id="@+id/rb_home"
                 style="@style/Main_Button"
                 android:layout_width="0dp"
@@ -60,7 +60,7 @@
                 android:text="@string/home"
                 />
 
-            <Button
+            <RadioButton
                 android:id="@+id/rb_software"
                 style="@style/Main_Button"
                 android:layout_width="0dp"
@@ -70,7 +70,7 @@
                 android:text="@string/software"
                 />
 
-            <Button
+            <RadioButton
                 android:id="@+id/rb_game"
                 style="@style/Main_Button"
                 android:layout_width="0dp"
@@ -80,7 +80,7 @@
                 android:text="@string/game"
                 />
 
-            <Button
+            <RadioButton
                 android:id="@+id/rb_manager"
                 style="@style/Main_Button"
                 android:layout_width="0dp"
@@ -90,7 +90,7 @@
                 android:text="@string/manager"
                 />
 
-        </LinearLayout>
+        </RadioGroup>
 
         <RelativeLayout
             android:layout_width="0dp"
@@ -112,7 +112,7 @@
                 >
 
                 <EditText
-                    android:id="@+id/activity_title_searchText"
+                    android:id="@+id/activity_title_search_text"
                     android:layout_width="match_parent"
                     android:layout_height="30dp"
                     android:layout_centerVertical="true"

@@ -14,7 +14,7 @@ import android.widget.LinearLayout;
 
 import com.openthos.appstore.R;
 import com.openthos.appstore.app.Constants;
-import com.openthos.appstore.bean.BannerInfo;
+import com.openthos.appstore.bean.BannerUrl;
 import com.openthos.appstore.utils.ImageCache;
 
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ public class BannerView extends FrameLayout {
     private int mCurrentItem;
     private Handler mHandler = new Handler();
     private List<ImageView> mImageDots;
-    private List<BannerInfo.BannerUrl> mImageUrls;
+    private List<BannerUrl> mImageUrls;
     private int mCount;
 
     public BannerView(Context context, AttributeSet attrs, int defStyle) {
@@ -48,7 +48,7 @@ public class BannerView extends FrameLayout {
         this(context, null);
     }
 
-    public void setImageUrls(List<BannerInfo.BannerUrl> imgUrls) {
+    public void setImageUrls(List<BannerUrl> imgUrls) {
         if (imgUrls != null) {
             mImageUrls = imgUrls;
             mCount = imgUrls.size();
@@ -63,7 +63,7 @@ public class BannerView extends FrameLayout {
     }
 
     private void initData() {
-        mPager.setAdapter(new bannerPagerAdapter());
+        mPager.setAdapter(new BannerPagerAdapter());
     }
 
     private void initView() {
@@ -83,7 +83,7 @@ public class BannerView extends FrameLayout {
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT);
-            params.leftMargin =  MARGIN_LENGTH;
+            params.leftMargin = MARGIN_LENGTH;
             params.rightMargin = MARGIN_LENGTH;
             imgDot.setImageResource(R.drawable.dot_blur);
             mDotLayout.addView(imgDot);
@@ -93,8 +93,9 @@ public class BannerView extends FrameLayout {
     }
 
     public void startPlay() {
+        removeCallbacksAndMessages();
         mIsAutoPlay = true;
-        mHandler.postDelayed(task, Constants.DELAY_TIME_2);
+        mHandler.postDelayed(task, Constants.TIME_TWO_SECONDS);
     }
 
     private final Runnable task = new Runnable() {
@@ -103,14 +104,14 @@ public class BannerView extends FrameLayout {
             if (mIsAutoPlay) {
                 mCurrentItem = (mCurrentItem + 1) % mCount + mCount;
                 mPager.setCurrentItem(mCurrentItem);
-                mHandler.postDelayed(task, Constants.DELAY_TIME_3);
+                mHandler.postDelayed(task, Constants.TIME_THREE_SECONDS);
             } else {
-                mHandler.postDelayed(task, Constants.DELAY_TIME_5);
+                mHandler.postDelayed(task, Constants.TIME_FIVE_SECONDS);
             }
         }
     };
 
-    class bannerPagerAdapter extends PagerAdapter {
+    class BannerPagerAdapter extends PagerAdapter {
         @Override
         public int getCount() {
             return mCount * COUNT_NUM_TIMES;

@@ -1,14 +1,11 @@
 package com.openthos.appstore.utils;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.openthos.appstore.app.Constants;
 
-import java.io.Closeable;
-import java.io.IOException;
 import java.text.DecimalFormat;
 
 public class Tools {
@@ -28,21 +25,7 @@ public class Tools {
         mToast.show();
     }
 
-    public static boolean closeStream(Closeable... stream) {
-        for (int i = 0; i < stream.length; i++) {
-            if (stream[i] != null) {
-                try {
-                    stream[i].close();
-                    return true;
-                } catch (IOException e) {
-                    return false;
-                }
-            }
-        }
-        return false;
-    }
-
-    public static String transFormFileSize(long fileSize) {
+    public static String transformFileSize(long fileSize) {
         float formatSize;
         String unit = "b";
         if ((formatSize = fileSize / ((float) Constants.MB)) >= 1) {
@@ -54,7 +37,7 @@ public class Tools {
         return format.format(formatSize) + unit;
     }
 
-    public static long tranLong(String num) {
+    public static long transformLong(String num){
         try {
             return Long.parseLong(num);
         } catch (NumberFormatException e) {

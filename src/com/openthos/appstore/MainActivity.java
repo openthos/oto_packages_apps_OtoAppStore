@@ -23,6 +23,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.app.StoreApplication;
@@ -57,12 +59,10 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     public static List<AppInstallInfo> mAppPackageInfo;
     private FragmentManager mManager;
     private FragmentTransaction mTransaction;
-    private Button mCurrentButton;
-    private Button mPreviousButton;
-    private Button mManagerButton;
-    private Button mSoftwareButton;
-    private Button mGameButton;
-    private Button mHomeButton;
+    private RadioButton mManagerButton;
+    private RadioButton mSoftwareButton;
+    private RadioButton mGameButton;
+    private RadioButton mHomeButton;
     private ImageView mBack;
     private ImageView mForward;
     private EditText mSearchText;
@@ -97,12 +97,11 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         mBack = (ImageView) findViewById(R.id.activity_title_back);
         mForward = (ImageView) findViewById(R.id.activity_title_forward);
         mSearchImg = (ImageView) findViewById(R.id.activity_title_search);
-        mSearchText = (EditText) findViewById(R.id.activity_title_searchText);
-        mHomeButton = (Button) findViewById(R.id.rb_home);
-        mGameButton = (Button) findViewById(R.id.rb_game);
-        mSoftwareButton = (Button) findViewById(R.id.rb_software);
-        mManagerButton = (Button) findViewById(R.id.rb_manager);
-        mCurrentButton = mHomeButton;
+        mSearchText = (EditText) findViewById(R.id.activity_title_search_text);
+        mHomeButton = (RadioButton) findViewById(R.id.rb_home);
+        mGameButton = (RadioButton) findViewById(R.id.rb_game);
+        mSoftwareButton = (RadioButton) findViewById(R.id.rb_software);
+        mManagerButton = (RadioButton) findViewById(R.id.rb_manager);
         int[] drawables = new int[]{
                 R.drawable.select_home_drawable,
                 R.drawable.select_software_drawable,
@@ -247,25 +246,25 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         BaseFragment fragment = (BaseFragment) mManager.findFragmentByTag(String.valueOf(msg.what));
         switch (msg.what) {
             case Constants.HOME_FRAGMENT:
-                checkButton(mHomeButton);
+                mHomeButton.setChecked(true);
                 if (fragment == null) {
                     fragment = new HomeFragment();
                 }
                 break;
             case Constants.SOFTWARE_FRAGMENT:
-                checkButton(mSoftwareButton);
+                mSoftwareButton.setChecked(true);
                 if (fragment == null) {
                     fragment = new SoftwareFragment();
                 }
                 break;
             case Constants.GAME_FRAGMENT:
-                checkButton(mGameButton);
+                mGameButton.setChecked(true);
                 if (fragment == null) {
                     fragment = new GameFragment();
                 }
                 break;
             case Constants.MANAGER_FRAGMENT:
-                checkButton(mManagerButton);
+                mManagerButton.setChecked(true);
                 if (fragment == null) {
                     fragment = new ManagerFragment();
                 }
@@ -303,17 +302,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         unbindService(conn);
         stopService(new Intent(this, DownloadService.class));
         finish();
-    }
-
-    private void checkButton(Button button) {
-        mCurrentButton = button;
-        if (mCurrentButton != mPreviousButton) {
-            mCurrentButton.setTextColor(getResources().getColor(R.color.blue));
-            if (mPreviousButton != null) {
-                mPreviousButton.setTextColor(getResources().getColor(R.color.gray));
-            }
-            mPreviousButton = mCurrentButton;
-        }
     }
 
     class HomeItemClick implements View.OnClickListener {

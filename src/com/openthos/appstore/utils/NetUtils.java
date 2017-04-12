@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.app.StoreApplication;
 
 import java.io.IOException;
@@ -35,7 +36,7 @@ public class NetUtils {
         try {
             URL url = new URL(StoreApplication.mBaseUrl + urlPath);
             conn = (HttpURLConnection) url.openConnection();
-            conn.setConnectTimeout(5 * 1000);
+            conn.setConnectTimeout(Constants.TIME_FIVE_SECONDS);
             conn.setRequestMethod("GET");
             conn.setDoInput(true);
             conn.setDoOutput(true);
@@ -45,7 +46,7 @@ public class NetUtils {
                 in = conn.getInputStream();
                 int len = -1;
                 StringBuffer buffer = new StringBuffer();
-                byte[] bytes = new byte[1024];
+                byte[] bytes = new byte[Constants.KB];
                 while ((len = in.read(bytes)) != -1) {
                     buffer.append(new String(bytes, 0, len));
                 }
@@ -60,9 +61,15 @@ public class NetUtils {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            Tools.closeStream(in);
             if (conn != null) {
                 conn.disconnect();
+            }
+            try {
+                if (in != null) {
+                    in.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
         return null;

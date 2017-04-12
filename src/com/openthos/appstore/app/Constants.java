@@ -2,7 +2,7 @@ package com.openthos.appstore.app;
 
 import android.os.Environment;
 
-import com.openthos.appstore.bean.BannerInfo;
+import com.openthos.appstore.bean.BannerUrl;
 import com.openthos.appstore.bean.CommentInfo;
 
 import java.util.ArrayList;
@@ -41,9 +41,9 @@ public class Constants {
     public static final int APP_NEED_UPDATE = 4;
     public static final int APP_DOWNLOAD_FINISHED = 5;
 
-    public static final int DELAY_TIME_2 = 2000;
-    public static final int DELAY_TIME_3 = 3000;
-    public static final int DELAY_TIME_5 = 5000;
+    public static final int TIME_TWO_SECONDS = 2000;
+    public static final int TIME_THREE_SECONDS = 3000;
+    public static final int TIME_FIVE_SECONDS = 5000;
 
     public static final int KB = 1024;
     public static final int MB = 1024 * KB;
@@ -52,13 +52,13 @@ public class Constants {
     public static final int DISK_CACHE_SIZE = 50 * 1020 * 1024;
     public static final int MEMORY_CACHE_SIZE = 2 * 1020 * 1024;
 
-    public static List<BannerInfo.BannerUrl> getString() {
-        List<BannerInfo.BannerUrl> data = new ArrayList<>();
-        data.add(new BannerInfo.BannerUrl(1,"carousel/1.jpg"));
-        data.add(new BannerInfo.BannerUrl(2,"carousel/2.jpg"));
-        data.add(new BannerInfo.BannerUrl(3,"carousel/3.jpg"));
-        data.add(new BannerInfo.BannerUrl(4,"carousel/4.jpg"));
-        data.add(new BannerInfo.BannerUrl(5,"carousel/5.jpg"));
+    public static List<BannerUrl> getString() {
+        List<BannerUrl> data = new ArrayList<>();
+        data.add(new BannerUrl(1,"carousel/1.jpg"));
+        data.add(new BannerUrl(2,"carousel/2.jpg"));
+        data.add(new BannerUrl(3,"carousel/3.jpg"));
+        data.add(new BannerUrl(4,"carousel/4.jpg"));
+        data.add(new BannerUrl(5,"carousel/5.jpg"));
         return data;
     }
 

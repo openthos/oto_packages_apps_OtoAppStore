@@ -13,6 +13,7 @@
         <item name="android:textColor">@drawable/select_radiobutton_color</item>
         <item name="android:gravity">center</item>
         <item name="android:textSize">@dimen/big_text_size</item>
+        <item name="android:button">@null</item>
     </style>
 
     <style name="customRatingBarStyleFalse">

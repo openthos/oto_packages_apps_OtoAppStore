@@ -13,7 +13,6 @@
     <dimen name="app_item_type_size">13sp</dimen>
 
     <dimen name="titile_height">72dp</dimen>
-    <dimen name="titile_pic_word">8dp</dimen>
     <dimen name="titile_item">40dp</dimen>
     <dimen name="title_img_size">40dp</dimen>
     <dimen name="title_img_back">25dp</dimen>

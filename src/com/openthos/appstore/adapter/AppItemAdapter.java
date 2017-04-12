@@ -26,7 +26,7 @@ public class AppItemAdapter extends BasicAdapter implements View.OnClickListener
 
     @Override
     public long getItemId(int position) {
-        return Tools.tranLong(((AppItemInfo) mDatas.get(position)).getTaskId());
+        return Tools.transformLong(((AppItemInfo) mDatas.get(position)).getTaskId());
     }
 
     @Override

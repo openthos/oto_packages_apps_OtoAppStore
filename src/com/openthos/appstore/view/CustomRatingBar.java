@@ -44,7 +44,7 @@ public class CustomRatingBar extends View {
 
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.ColoredRatingBar,
                 defStyle, 0);
-        mIndicator =  typedArray.getBoolean(R.styleable.ColoredRatingBar_indicator, false);
+        mIndicator = typedArray.getBoolean(R.styleable.ColoredRatingBar_indicator, false);
         mRating = typedArray.getFloat(R.styleable.ColoredRatingBar_rating, -1);
         mType = typedArray.getInt(R.styleable.ColoredRatingBar_type, 0);
         typedArray.recycle();
@@ -56,7 +56,7 @@ public class CustomRatingBar extends View {
     }
 
     public void setType(int type) {
-        this.mType = type;
+        mType = type;
     }
 
     private void init(Context context) {
@@ -64,14 +64,14 @@ public class CustomRatingBar extends View {
         Resources res = getResources();
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inSampleSize = 2;
-        switch (mType){
+        switch (mType) {
             case BLACK:
-                mDrawable = BitmapFactory.decodeResource(res,R.drawable.star_black_select,options);
-                mBackground = BitmapFactory.decodeResource(res, R.drawable.star_black,options);
+                mDrawable = BitmapFactory.decodeResource(res, R.drawable.star_black_select, options);
+                mBackground = BitmapFactory.decodeResource(res, R.drawable.star_black, options);
                 break;
             case PURPLE:
-                mDrawable = BitmapFactory.decodeResource(res,R.drawable.star_black_select,options);
-                mBackground = BitmapFactory.decodeResource(res, R.drawable.star_black,options);
+                mDrawable = BitmapFactory.decodeResource(res, R.drawable.star_black_select, options);
+                mBackground = BitmapFactory.decodeResource(res, R.drawable.star_black, options);
                 break;
         }
     }
@@ -122,7 +122,7 @@ public class CustomRatingBar extends View {
     }
 
     public void setNumStars(int numStars) {
-        this.mNumStars = numStars;
+        mNumStars = numStars;
     }
 
     public float getRating() {
@@ -134,10 +134,7 @@ public class CustomRatingBar extends View {
     }
 
     void setRating(float rating, boolean fromUser) {
-        if (rating > mNumStars) {
-            this.mRating = mNumStars;
-        }
-        this.mRating = rating;
+        mRating = Math.min(rating, mNumStars);
         invalidate();
         dispatchRatingChange(fromUser);
     }
@@ -147,7 +144,7 @@ public class CustomRatingBar extends View {
     }
 
     public void setIndicator(boolean indicator) {
-        this.mIndicator = indicator;
+        mIndicator = indicator;
     }
 
     @Override

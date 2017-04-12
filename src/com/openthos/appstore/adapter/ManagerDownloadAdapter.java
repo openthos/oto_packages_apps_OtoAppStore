@@ -26,10 +26,10 @@ import java.util.List;
 public class ManagerDownloadAdapter extends BasicAdapter implements View.OnClickListener {
     private DownloadManager mDownloadManager;
 
-    public ManagerDownloadAdapter(Context context, DownloadManager DownloadManager) {
+    public ManagerDownloadAdapter(Context context, DownloadManager downloadManager) {
         super(context);
-        if (DownloadManager != null) {
-            mDownloadManager = DownloadManager;
+        if (downloadManager != null) {
+            mDownloadManager = downloadManager;
             mDownloadManager.setAllTaskListener(new DownloadManagerListener());
         }
     }
@@ -58,12 +58,12 @@ public class ManagerDownloadAdapter extends BasicAdapter implements View.OnClick
                 case Constants.APP_DOWNLOAD_PAUSE:
                     holder.install.setText(R.string.continues);
                     holder.downloadState.setText(taskInfo.getProgress() + "%     " +
-                            Tools.transFormFileSize(taskInfo.getSpeed() * 1024) + "/s");
+                            Tools.transformFileSize(taskInfo.getSpeed() * 1024) + "/s");
                     break;
                 case Constants.APP_DOWNLOAD_CONTINUE:
                     holder.install.setText(R.string.pause);
                     holder.downloadState.setText(taskInfo.getProgress() + "%     " +
-                            Tools.transFormFileSize(taskInfo.getSpeed() * 1024) + "/s");
+                            Tools.transformFileSize(taskInfo.getSpeed() * 1024) + "/s");
                     break;
                 case Constants.APP_DOWNLOAD_FINISHED:
                     holder.install.setText(R.string.install);

@@ -22,6 +22,7 @@ import com.openthos.appstore.bean.TaskInfo;
 import com.openthos.appstore.download.DownloadListener;
 import com.openthos.appstore.download.DownloadManager;
 import com.openthos.appstore.download.DownloadService;
+import com.openthos.appstore.utils.AppUtils;
 import com.openthos.appstore.utils.FileHelper;
 import com.openthos.appstore.utils.ImageCache;
 import com.openthos.appstore.utils.SPUtils;
@@ -125,20 +126,14 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
             if (mBtText.equals(mContinues)) {
                 mProgressBar.setVisibility(View.VISIBLE);
                 mDownload.setText(mPause);
-                SPUtils.saveDownloadState(getActivity(),
-                        mAppItemInfo.getPackageName(), Constants.APP_DOWNLOAD_CONTINUE);
                 MainActivity.mDownloadService.startTask(mAppItemInfo.getTaskId() + "");
             } else if (mBtText.equals(mPause)) {
                 mProgressBar.setVisibility(View.VISIBLE);
                 mDownload.setText(mContinues);
-                SPUtils.saveDownloadState(getActivity(),
-                        mAppItemInfo.getPackageName(), Constants.APP_DOWNLOAD_PAUSE);
                 MainActivity.mDownloadService.stopTask(mAppItemInfo.getTaskId() + "");
             } else if (mBtText.equals(mInstalls)) {
                 mProgressBar.setVisibility(View.VISIBLE);
                 mDownload.setText(mPause);
-                SPUtils.saveDownloadState(getActivity(),
-                        mAppItemInfo.getPackageName(), Constants.APP_DOWNLOAD_CONTINUE);
                 MainActivity.mDownloadService.addTask(mAppItemInfo.getTaskId() + "",
                         StoreApplication.mBaseUrl + "/" + mAppItemInfo.getDownloadUrl(),
                         FileHelper.getNameFromUrl(mAppItemInfo.getDownloadUrl()),
@@ -147,8 +142,6 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
             } else if (mBtText.equals(mUpdate)) {
                 mProgressBar.setVisibility(View.VISIBLE);
                 mDownload.setText(mContinues);
-                SPUtils.saveDownloadState(getActivity(),
-                        mAppItemInfo.getPackageName(), Constants.APP_DOWNLOAD_CONTINUE);
                 MainActivity.mDownloadService.addTask(mAppItemInfo.getTaskId() + "",
                         StoreApplication.mBaseUrl + "/" + mAppItemInfo.getDownloadUrl(),
                         FileHelper.getNameFromUrl(mAppItemInfo.getDownloadUrl()),
@@ -159,8 +152,6 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
                 MainActivity.mHandler.sendMessage(MainActivity.mHandler.
                         obtainMessage(Constants.INSTALL_APK, file.getAbsolutePath()));
                 if (!file.exists() || file.length() == 0) {
-                    SPUtils.saveDownloadState(getActivity(),
-                            mAppItemInfo.getPackageName(), Constants.APP_NOT_INSTALL);
                     setContent(mDownload, R.string.install,
                             R.drawable.shape_button_white_cyan, R.color.button_cyan);
                 }
@@ -225,7 +216,7 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
 
     public void initStateAndProgress() {
         if (mAppItemInfo != null) {
-            List<AppInstallInfo> mAppPackageInfo = MainActivity.mAppPackageInfo;
+            List<AppInstallInfo> mAppPackageInfo = AppUtils.getAppPackageInfo(getActivity());
             for (int i = 0; i < mAppPackageInfo.size(); i++) {
                 AppInstallInfo appInstallInfo = mAppPackageInfo.get(i);
                 if (appInstallInfo.getPackageName().equals(mAppItemInfo.getPackageName())) {
@@ -234,7 +225,8 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
                     } else {
                         mAppItemInfo.setState(Constants.APP_HAVE_INSTALLED);
                     }
-                } else {
+                    break;
+                } else if (i + 1 == mAppPackageInfo.size()) {
                     mAppItemInfo.setState(Constants.APP_NOT_INSTALL);
                 }
             }

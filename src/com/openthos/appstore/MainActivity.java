@@ -1,8 +1,10 @@
 package com.openthos.appstore;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -56,7 +58,6 @@ import java.util.List;
 public class MainActivity extends FragmentActivity implements View.OnClickListener {
     public static Handler mHandler;
     public static DownloadService.AppStoreBinder mDownloadService;
-    public static List<AppInstallInfo> mAppPackageInfo;
     private FragmentManager mManager;
     private FragmentTransaction mTransaction;
     private RadioButton mManagerButton;
@@ -69,6 +70,13 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private ImageView mSearchImg;
     private BaseFragment mCurrentFragment;
     private List<Integer> mPages;
+
+    private BroadcastReceiver mAppInstallBroadCast = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            mHandler.sendEmptyMessage(Constants.REFRESH);
+        }
+    };
 
     private ServiceConnection conn = new ServiceConnection() {
         @Override
@@ -134,7 +142,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
     private void initData() {
         bindService(new Intent(this, DownloadService.class), conn, Context.BIND_AUTO_CREATE);
-        mAppPackageInfo = AppUtils.getAppPackageInfo(this);
+        registerBroadcastReceiver();
         mManager = getSupportFragmentManager();
         mPages = new ArrayList<>();
         initHandler();
@@ -301,7 +309,17 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         super.onDestroy();
         unbindService(conn);
         stopService(new Intent(this, DownloadService.class));
+        unregisterReceiver(mAppInstallBroadCast);
         finish();
+    }
+
+    private void registerBroadcastReceiver() {
+        IntentFilter myIntentFilter = new IntentFilter();
+        myIntentFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
+        myIntentFilter.addAction(Intent.ACTION_PACKAGE_REPLACED);
+        myIntentFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+        myIntentFilter.addDataScheme("package");
+        registerReceiver(mAppInstallBroadCast, myIntentFilter);
     }
 
     class HomeItemClick implements View.OnClickListener {
@@ -342,7 +360,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         }
     }
 
-    public void installApk(String apkFilePath) {
+    private void installApk(String apkFilePath) {
         File apkFile = new File(apkFilePath);
         if (!apkFile.exists() || apkFile.length() == 0) {
             Tools.toast(this, getString(R.string.this_file_is_not_exist));

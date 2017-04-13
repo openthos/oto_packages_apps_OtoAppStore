@@ -381,8 +381,6 @@ public class Downloader {
                 errorNotice((String) msg.obj);
             } else if (msg.what == TASK_SUCCESS) {
                 mDownloadInfo.setSpeed(0);
-                SPUtils.saveDownloadState(mContext,
-                        mDownloadInfo.getPackageName(), Constants.APP_DOWNLOAD_FINISHED);
                 successNotice();
                 saveDownloadInfo();
                 MainActivity.mHandler.sendMessage(MainActivity.mHandler.

@@ -24,18 +24,6 @@ public class SPUtils {
                 fileName, Context.MODE_PRIVATE).getString(key, null);
     }
 
-    public static void saveDownloadState(Context context, String key, int data) {
-        SharedPreferences.Editor edit = context.getSharedPreferences(
-                Constants.SP_DOWNLOAD_STATE, Context.MODE_PRIVATE).edit();
-        edit.putInt(key, data);
-        edit.commit();
-    }
-
-    public static int getDownloadState(Context context, String key) {
-        return context.getSharedPreferences(Constants.SP_DOWNLOAD_STATE,
-                Context.MODE_PRIVATE).getInt(key, Constants.APP_NOT_EXIST);
-    }
-
     public static void saveAllData(Context context, AppItemInfo appInfo) {
         SharedPreferences.Editor edit =
                 context.getSharedPreferences(Constants.SP_ALL_DATA, Context.MODE_PRIVATE).edit();

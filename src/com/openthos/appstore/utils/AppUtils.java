@@ -9,12 +9,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.Settings;
 
-import com.openthos.appstore.app.Constants;
-import com.openthos.appstore.bean.AppInstallInfo;
-
-import java.util.ArrayList;
-import java.util.List;
-
 public class AppUtils {
     public static Drawable getAPKIcon(Context context, String absPath) {
         PackageManager pm = context.getPackageManager();
@@ -27,29 +21,6 @@ public class AppUtils {
             return apkIcon;
         }
         return null;
-    }
-
-    public static List<AppInstallInfo> getAppPackageInfo(Context context){
-        List<AppInstallInfo> datas = new ArrayList<>();
-        AppInstallInfo appInfo = null;
-
-        PackageManager packageManager = context.getPackageManager();
-        List<PackageInfo> pinfo = packageManager.getInstalledPackages(0);
-        for (int i = 0; i < pinfo.size(); i++) {
-            PackageInfo packageInfo = pinfo.get(i);
-            if ((packageInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
-                appInfo = new AppInstallInfo();
-                appInfo.setId(i);
-                appInfo.setIcon(packageInfo.applicationInfo.loadIcon(packageManager));
-                appInfo.setName(packageInfo.applicationInfo.loadLabel(packageManager).toString());
-                appInfo.setPackageName(packageInfo.packageName);
-                appInfo.setVersionCode(packageInfo.versionCode);
-                appInfo.setVersionName(packageInfo.versionName);
-                appInfo.setState(Constants.APP_HAVE_INSTALLED);
-                datas.add(appInfo);
-            }
-        }
-        return datas;
     }
 
     public static void uninstallApk(Context context, String packageName) {

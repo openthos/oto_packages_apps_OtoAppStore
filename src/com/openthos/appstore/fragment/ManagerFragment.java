@@ -1,5 +1,6 @@
 package com.openthos.appstore.fragment;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Message;
 import android.view.View;
@@ -12,10 +13,14 @@ import com.openthos.appstore.bean.AppInstallInfo;
 import com.openthos.appstore.bean.TaskInfo;
 import com.openthos.appstore.download.DownloadManager;
 import com.openthos.appstore.download.DownloadService;
-import com.openthos.appstore.utils.AppUtils;
 import com.openthos.appstore.view.CustomListView;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+@SuppressLint("ValidFragment")
 public class ManagerFragment extends BaseFragment {
 
     private CustomListView mUpdateList;
@@ -28,6 +33,13 @@ public class ManagerFragment extends BaseFragment {
     private ManagerUpdateAdapter mUpdateAdapter;
     private DownloadManager mDownloadManager;
     private ManagerDownloadAdapter mDownloadAdapter;
+    private List<AppInstallInfo> mAppInstallInfos;
+    private HashMap<String, AppInstallInfo> mAppInstallMap;
+
+    @SuppressLint("ValidFragment")
+    public ManagerFragment(HashMap<String, AppInstallInfo> appInstallMap) {
+        mAppInstallMap = appInstallMap;
+    }
 
     @Override
     public int getLayoutId() {
@@ -53,15 +65,19 @@ public class ManagerFragment extends BaseFragment {
         mUpdateAll = (TextView) view.findViewById(R.id.fragment_manager_updateAll);
         mDownloadManager = DownloadService.getDownloadManager();
         mContext = getActivity();
+        mAppInstallInfos = new ArrayList<>();
     }
 
     @Override
     public void initData() {
-        List<AppInstallInfo> appInstallInfos = AppUtils.getAppPackageInfo(mContext);
-        mUpdateTitle.setText(getNumText(R.string.updates, appInstallInfos.size()));
+        mAppInstallInfos.clear();
+        for (Map.Entry<String, AppInstallInfo> entry : mAppInstallMap.entrySet()) {
+            mAppInstallInfos.add(entry.getValue());
+        }
+        mUpdateTitle.setText(getNumText(R.string.updates, mAppInstallInfos.size()));
         mUpdateAdapter = new ManagerUpdateAdapter(mContext);
         mUpdateList.setAdapter(mUpdateAdapter);
-        mUpdateAdapter.addDatas(appInstallInfos, true);
+        mUpdateAdapter.addDatas(mAppInstallInfos, true);
 
         List<TaskInfo> allTask = mDownloadManager.getAllTask();
         mDownloadTitle.setText(getNumText(R.string.downloads, allTask.size()));

@@ -2,6 +2,7 @@ package com.openthos.appstore.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.TextUtils;
 
 import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.bean.AppItemInfo;
@@ -9,7 +10,6 @@ import com.openthos.appstore.bean.AppItemInfo;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class SPUtils {
     public static void saveData(Context context, String fileName, String key, String data) {
@@ -48,14 +48,19 @@ public class SPUtils {
         List<String> list = new ArrayList<>();
         SharedPreferences sp =
                 context.getSharedPreferences(Constants.SP_ALL_DATA, Context.MODE_PRIVATE);
-        Map<String, ?> all = sp.getAll();
-        Set<? extends Map.Entry<String, ?>> entries = all.entrySet();
-        for (Map.Entry<String, ?> entry : entries) {
-            if (entry.getKey() != null && content != null &&
-                    entry.getKey().toLowerCase().contains(content.toLowerCase().trim())) {
+        Map<String, String> all = (Map<String, String>) sp.getAll();
+        if (!TextUtils.isEmpty(content)) {
+            for (Map.Entry<String, String> entry : all.entrySet()) {
+                if (entry.getKey().toLowerCase().contains(content.toLowerCase().trim())) {
+                    list.add(entry.getKey());
+                }
+            }
+        } else {
+            for (Map.Entry<String, String> entry : all.entrySet()) {
                 list.add(entry.getKey());
             }
         }
+
         return list;
     }
 

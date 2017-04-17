@@ -1,6 +1,6 @@
 package com.openthos.appstore.fragment;
 
-import android.content.Context;
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.v4.app.FragmentManager;
@@ -22,10 +22,8 @@ import com.openthos.appstore.bean.TaskInfo;
 import com.openthos.appstore.download.DownloadListener;
 import com.openthos.appstore.download.DownloadManager;
 import com.openthos.appstore.download.DownloadService;
-import com.openthos.appstore.utils.AppUtils;
 import com.openthos.appstore.utils.FileHelper;
 import com.openthos.appstore.utils.ImageCache;
-import com.openthos.appstore.utils.SPUtils;
 import com.openthos.appstore.utils.SQLOperator;
 import com.openthos.appstore.utils.Tools;
 import com.openthos.appstore.view.BannerView;
@@ -33,8 +31,9 @@ import com.openthos.appstore.view.CustomRatingBar;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
+@SuppressLint("ValidFragment")
 public class DetailFragment extends BaseFragment implements View.OnClickListener {
     private ImageView mIcon;
     private Button mDownload;
@@ -49,12 +48,18 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
     private TextView mStarNum;
     private AppItemInfo mAppItemInfo;
     private DownloadManager mManager;
+    private HashMap<String, AppInstallInfo> mAppInstallMap;
     private String mBtText;
     private String mContinues;
     private String mPause;
     private String mInstalls;
     private String mUpdate;
     private String mFinished;
+
+    @SuppressLint("ValidFragment")
+    public DetailFragment(HashMap<String, AppInstallInfo> appInstallMap) {
+        mAppInstallMap = appInstallMap;
+    }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -216,19 +221,15 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
 
     public void initStateAndProgress() {
         if (mAppItemInfo != null) {
-            List<AppInstallInfo> mAppPackageInfo = AppUtils.getAppPackageInfo(getActivity());
-            for (int i = 0; i < mAppPackageInfo.size(); i++) {
-                AppInstallInfo appInstallInfo = mAppPackageInfo.get(i);
-                if (appInstallInfo.getPackageName().equals(mAppItemInfo.getPackageName())) {
-                    if (appInstallInfo.getVersionCode() < mAppItemInfo.getVersionCode()) {
-                        mAppItemInfo.setState(Constants.APP_NEED_UPDATE);
-                    } else {
-                        mAppItemInfo.setState(Constants.APP_HAVE_INSTALLED);
-                    }
-                    break;
-                } else if (i + 1 == mAppPackageInfo.size()) {
-                    mAppItemInfo.setState(Constants.APP_NOT_INSTALL);
+            AppInstallInfo appInstallInfo = mAppInstallMap.get(mAppItemInfo.getPackageName());
+            if (appInstallInfo != null) {
+                if (appInstallInfo.getVersionCode() < mAppItemInfo.getVersionCode()) {
+                    mAppItemInfo.setState(Constants.APP_NEED_UPDATE);
+                } else {
+                    mAppItemInfo.setState(Constants.APP_HAVE_INSTALLED);
                 }
+            } else {
+                mAppItemInfo.setState(Constants.APP_NOT_INSTALL);
             }
 
             DownloadInfo downloadInfo = new SQLOperator(getActivity()).

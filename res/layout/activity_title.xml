@@ -22,20 +22,22 @@
 
             <ImageView
                 android:id="@+id/activity_title_back"
-                android:layout_width="@dimen/title_img_back"
-                android:layout_height="@dimen/title_img_back"
+                android:layout_width="@dimen/title_img_size"
+                android:layout_height="@dimen/title_img_size"
                 android:layout_marginLeft="15dp"
                 android:gravity="center"
+                android:padding="10dp"
                 android:scaleType="fitXY"
                 android:src="@mipmap/back"
                 />
 
             <ImageView
                 android:id="@+id/activity_title_forward"
-                android:layout_width="@dimen/title_img_back"
-                android:layout_height="@dimen/title_img_back"
+                android:layout_width="@dimen/title_img_size"
+                android:layout_height="@dimen/title_img_size"
                 android:adjustViewBounds="true"
                 android:gravity="center"
+                android:padding="10dp"
                 android:scaleType="fitXY"
                 android:src="@mipmap/back"
                 android:visibility="gone"

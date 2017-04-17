@@ -6,6 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
@@ -26,7 +29,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
+import android.widget.ScrollView;
 
 import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.app.StoreApplication;
@@ -43,7 +46,6 @@ import com.openthos.appstore.fragment.ManagerFragment;
 import com.openthos.appstore.fragment.MoreFragment;
 import com.openthos.appstore.fragment.SearchFragment;
 import com.openthos.appstore.fragment.SoftwareFragment;
-import com.openthos.appstore.utils.AppUtils;
 import com.openthos.appstore.utils.NetUtils;
 import com.openthos.appstore.utils.SPUtils;
 import com.openthos.appstore.utils.Tools;
@@ -53,11 +55,13 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class MainActivity extends FragmentActivity implements View.OnClickListener {
     public static Handler mHandler;
     public static DownloadService.AppStoreBinder mDownloadService;
+    public  HashMap<String, AppInstallInfo> mAppInstallMap;
     private FragmentManager mManager;
     private FragmentTransaction mTransaction;
     private RadioButton mManagerButton;
@@ -68,13 +72,18 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private ImageView mForward;
     private EditText mSearchText;
     private ImageView mSearchImg;
+    private ScrollView mScrollView;
     private BaseFragment mCurrentFragment;
     private List<Integer> mPages;
 
     private BroadcastReceiver mAppInstallBroadCast = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            mHandler.sendEmptyMessage(Constants.REFRESH);
+            if (mAppInstallMap != null) {
+                mAppInstallMap.clear();
+                loadAppPackageInfo();
+                mHandler.sendEmptyMessage(Constants.REFRESH);
+            }
         }
     };
 
@@ -102,6 +111,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     }
 
     private void initView() {
+        mScrollView = (ScrollView) findViewById(R.id.main_scrollview);
         mBack = (ImageView) findViewById(R.id.activity_title_back);
         mForward = (ImageView) findViewById(R.id.activity_title_forward);
         mSearchImg = (ImageView) findViewById(R.id.activity_title_search);
@@ -145,6 +155,8 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         registerBroadcastReceiver();
         mManager = getSupportFragmentManager();
         mPages = new ArrayList<>();
+        mAppInstallMap = new HashMap<>();
+        loadAppPackageInfo();
         initHandler();
         updateAllData();
         mHomeButton.performClick();
@@ -248,38 +260,43 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         mManager.executePendingTransactions();
         mPages.add(msg.what);
         fragment.refresh();
+        mScrollView.scrollTo(0, 0);
     }
 
     private BaseFragment getFragment(Message msg) {
         BaseFragment fragment = (BaseFragment) mManager.findFragmentByTag(String.valueOf(msg.what));
+        mBack.setVisibility(View.VISIBLE);
         switch (msg.what) {
             case Constants.HOME_FRAGMENT:
-                mHomeButton.setChecked(true);
+                mBack.setVisibility(View.GONE);
                 if (fragment == null) {
                     fragment = new HomeFragment();
                 }
                 break;
             case Constants.SOFTWARE_FRAGMENT:
+                mBack.setVisibility(View.GONE);
                 mSoftwareButton.setChecked(true);
                 if (fragment == null) {
                     fragment = new SoftwareFragment();
                 }
                 break;
             case Constants.GAME_FRAGMENT:
+                mBack.setVisibility(View.GONE);
                 mGameButton.setChecked(true);
                 if (fragment == null) {
                     fragment = new GameFragment();
                 }
                 break;
             case Constants.MANAGER_FRAGMENT:
+                mBack.setVisibility(View.GONE);
                 mManagerButton.setChecked(true);
                 if (fragment == null) {
-                    fragment = new ManagerFragment();
+                    fragment = new ManagerFragment(mAppInstallMap);
                 }
                 break;
             case Constants.DETAIL_FRAGMENT:
                 if (fragment == null) {
-                    fragment = new DetailFragment();
+                    fragment = new DetailFragment(mAppInstallMap);
                 }
                 fragment.setData(msg.obj);
                 break;
@@ -313,6 +330,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         finish();
     }
 
+
     private void registerBroadcastReceiver() {
         IntentFilter myIntentFilter = new IntentFilter();
         myIntentFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
@@ -320,6 +338,26 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         myIntentFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
         myIntentFilter.addDataScheme("package");
         registerReceiver(mAppInstallBroadCast, myIntentFilter);
+    }
+
+    private void loadAppPackageInfo() {
+        AppInstallInfo appInfo = null;
+        PackageManager packageManager = getPackageManager();
+        List<PackageInfo> pinfo = packageManager.getInstalledPackages(0);
+        for (int i = 0; i < pinfo.size(); i++) {
+            PackageInfo packageInfo = pinfo.get(i);
+            if ((packageInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
+                appInfo = new AppInstallInfo();
+                appInfo.setId(i);
+                appInfo.setIcon(packageInfo.applicationInfo.loadIcon(packageManager));
+                appInfo.setName(packageInfo.applicationInfo.loadLabel(packageManager).toString());
+                appInfo.setPackageName(packageInfo.packageName);
+                appInfo.setVersionCode(packageInfo.versionCode);
+                appInfo.setVersionName(packageInfo.versionName);
+                appInfo.setState(Constants.APP_HAVE_INSTALLED);
+                mAppInstallMap.put(packageInfo.packageName, appInfo);
+            }
+        }
     }
 
     class HomeItemClick implements View.OnClickListener {
@@ -353,10 +391,8 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
         @Override
         public void afterTextChanged(Editable editable) {
-            if (!TextUtils.isEmpty(editable.toString())) {
-                mHandler.sendMessage(
-                        mHandler.obtainMessage(Constants.SEARCH_FRAGMENT, editable.toString()));
-            }
+            mHandler.sendMessage(
+                    mHandler.obtainMessage(Constants.SEARCH_FRAGMENT, editable.toString()));
         }
     }
 

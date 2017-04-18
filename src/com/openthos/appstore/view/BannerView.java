@@ -22,7 +22,6 @@ import java.util.List;
 
 public class BannerView extends FrameLayout {
     private static final int MARGIN_LENGTH = 5;
-    private static final int COUNT_NUM_TIMES = 3;
     private Context mContext;
     private ViewPager mPager;
     private LinearLayout mDotLayout;
@@ -102,7 +101,7 @@ public class BannerView extends FrameLayout {
         @Override
         public void run() {
             if (mIsAutoPlay) {
-                mCurrentItem = (mCurrentItem + 1) % mCount + mCount;
+                mCurrentItem = mCurrentItem + 1;
                 mPager.setCurrentItem(mCurrentItem);
                 mHandler.postDelayed(task, Constants.TIME_THREE_SECONDS);
             } else {
@@ -114,7 +113,7 @@ public class BannerView extends FrameLayout {
     class BannerPagerAdapter extends PagerAdapter {
         @Override
         public int getCount() {
-            return mCount * COUNT_NUM_TIMES;
+            return Integer.MAX_VALUE;
         }
 
         @Override
@@ -180,9 +179,8 @@ public class BannerView extends FrameLayout {
 
         @Override
         public void onPageSelected(int position) {
-            mCurrentItem = position % mCount + mCount;
-            setSelectDot(mCurrentItem % mCount);
-            mPager.setCurrentItem(mCurrentItem);
+            mCurrentItem = position;
+            setSelectDot(position % mCount);
         }
 
         public void setSelectDot(int position) {

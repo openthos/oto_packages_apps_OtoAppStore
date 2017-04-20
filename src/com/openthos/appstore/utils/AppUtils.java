@@ -34,7 +34,6 @@ public class AppUtils {
     public static void startApk(Context context, String appPackageName) {
         Intent intent = context.getPackageManager().getLaunchIntentForPackage(appPackageName);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.setFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
         context.startActivity(intent);
     }
 }

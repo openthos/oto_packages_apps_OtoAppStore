@@ -26,12 +26,12 @@ import java.util.List;
 public class ManagerDownloadAdapter extends BasicAdapter implements View.OnClickListener {
     private DownloadManager mDownloadManager;
 
-    public ManagerDownloadAdapter(Context context, DownloadManager downloadManager) {
+    public ManagerDownloadAdapter(Context context,
+                                  DownloadManager downloadManager, List<TaskInfo> datas) {
         super(context);
-        if (downloadManager != null) {
-            mDownloadManager = downloadManager;
-            mDownloadManager.setAllTaskListener(new DownloadManagerListener());
-        }
+        mDatas = datas;
+        mDownloadManager = downloadManager;
+        mDownloadManager.setAllTaskListener(new DownloadManagerListener());
     }
 
     @Override
@@ -57,8 +57,7 @@ public class ManagerDownloadAdapter extends BasicAdapter implements View.OnClick
                     break;
                 case Constants.APP_DOWNLOAD_PAUSE:
                     holder.install.setText(R.string.continues);
-                    holder.downloadState.setText(taskInfo.getProgress() + "%     " +
-                            Tools.transformFileSize(taskInfo.getSpeed() * 1024) + "/s");
+                    holder.downloadState.setText(taskInfo.getProgress() + "%");
                     break;
                 case Constants.APP_DOWNLOAD_CONTINUE:
                     holder.install.setText(R.string.pause);
@@ -68,6 +67,7 @@ public class ManagerDownloadAdapter extends BasicAdapter implements View.OnClick
                 case Constants.APP_DOWNLOAD_FINISHED:
                     holder.install.setText(R.string.install);
                     holder.downloadState.setText(R.string.finished);
+                    holder.fileProgress.setVisibility(View.INVISIBLE);
                     break;
                 default:
                     break;
@@ -78,20 +78,6 @@ public class ManagerDownloadAdapter extends BasicAdapter implements View.OnClick
             holder.remove.setTag(position);
         }
         return convertView;
-    }
-
-    public void addData(List<TaskInfo> listdata, boolean isAll) {
-        mDatas.clear();
-        if (isAll) {
-            mDatas = listdata;
-        } else {
-            int len = listdata == null ? null : (listdata.size() > Constants.MANAGER_NUM_FALSE ?
-                    Constants.MANAGER_NUM_FALSE : listdata.size());
-            for (int i = 0; i < len; i++) {
-                mDatas.add(listdata.get(i));
-            }
-        }
-        notifyDataSetInvalidated();
     }
 
     @Override
@@ -123,6 +109,11 @@ public class ManagerDownloadAdapter extends BasicAdapter implements View.OnClick
                 break;
         }
         MainActivity.mHandler.sendEmptyMessage(Constants.REFRESH);
+    }
+
+    @Override
+    public void refreshLayout() {
+        notifyDataSetChanged();
     }
 
     private class ViewHolder {

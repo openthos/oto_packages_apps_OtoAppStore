@@ -9,13 +9,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.openthos.appstore.bean.AppInstallInfo;
 import com.openthos.appstore.utils.DataCache;
+
+import java.util.HashMap;
 
 public abstract class BaseFragment extends Fragment {
     public static final int GAME_SOFTWARE_BACK = 0;
     public static final int HOME_DATA_BACK = 1;
+    public HashMap<String, AppInstallInfo> mAppInstallMap;
 
-    public BaseFragment() {
+    public BaseFragment(HashMap<String, AppInstallInfo> appInstallMap) {
+        mAppInstallMap = appInstallMap;
     }
 
     @Override

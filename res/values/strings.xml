@@ -6,6 +6,7 @@
     <string name="game">game</string>
     <string name="manager">manager</string>
     <string name="download">download</string>
+    <string name="downloading">downloading</string>
     <string name="setting">setting</string>
     <string name="update">update</string>
     <string name="have_installed">installed</string>

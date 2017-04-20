@@ -11,14 +11,31 @@ import android.widget.TextView;
 import com.openthos.appstore.MainActivity;
 import com.openthos.appstore.R;
 import com.openthos.appstore.app.Constants;
+import com.openthos.appstore.bean.AppInstallInfo;
+import com.openthos.appstore.bean.AppItemInfo;
 import com.openthos.appstore.bean.AppItemLayoutInfo;
+import com.openthos.appstore.bean.DownloadInfo;
+import com.openthos.appstore.bean.TaskInfo;
+import com.openthos.appstore.download.DownloadListener;
+import com.openthos.appstore.download.DownloadManager;
+import com.openthos.appstore.download.DownloadService;
+import com.openthos.appstore.utils.SQLOperator;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class AppItemLayoutAdapter extends BasicAdapter implements View.OnClickListener {
+    private HashMap<String, AppInstallInfo> mAppInstallMap;
+    private DownloadManager mManager;
 
-    public AppItemLayoutAdapter(Context context) {
+    public AppItemLayoutAdapter(Context context, HashMap<String, AppInstallInfo> appInstallMap,
+                                List<AppItemLayoutInfo> datas) {
         super(context);
+        mDatas = datas;
+        mAppInstallMap = appInstallMap;
+        mManager = DownloadService.getDownloadManager();
+        mManager.setAllTaskListener(new LayoutDownloadListener());
     }
 
     @Override
@@ -35,24 +52,77 @@ public class AppItemLayoutAdapter extends BasicAdapter implements View.OnClickLi
             AppItemLayoutInfo appItemLayoutInfo = (AppItemLayoutInfo) mDatas.get(position);
             holder.type.setText(appItemLayoutInfo.getType());
             holder.whole.setText(appItemLayoutInfo.getWhole());
-            RecyclerItemAdapter recyclerItemAdapter = new RecyclerItemAdapter(mContext);
+            RecyclerItemAdapter recyclerItemAdapter = new RecyclerItemAdapter(mContext,
+                    appItemLayoutInfo.getAppItemInfoList());
             LinearLayoutManager layout = new LinearLayoutManager(mContext);
             layout.setOrientation(LinearLayoutManager.HORIZONTAL);
             holder.recyclerView.setLayoutManager(layout);
             holder.recyclerView.setHasFixedSize(true);
             holder.recyclerView.setAdapter(recyclerItemAdapter);
-            recyclerItemAdapter.addDatas(appItemLayoutInfo.getAppItemInfoList());
+            recyclerItemAdapter.refreshLayout();
             holder.whole.setOnClickListener(this);
             holder.whole.setTag(appItemLayoutInfo.getAppItemInfoList());
         }
         return convertView;
     }
 
-    public void addDatas(List<AppItemLayoutInfo> datas, boolean isAll) {
-        if (datas != null) {
-            mDatas.clear();
-            mDatas.addAll(datas);
-            notifyDataSetChanged();
+    @Override
+    public void refreshLayout() {
+        for (int i = 0; i < mDatas.size(); i++) {
+            AppItemLayoutInfo appItemLayoutInfo = (AppItemLayoutInfo) mDatas.get(i);
+            for (int j = 0; j < appItemLayoutInfo.getAppItemInfoList().size(); j++) {
+                initStateAndProgress(appItemLayoutInfo.getAppItemInfoList().get(j));
+            }
+        }
+        notifyDataSetChanged();
+    }
+
+    private void initStateAndProgress(AppItemInfo appItemInfo) {
+        if (appItemInfo != null) {
+            AppInstallInfo appInstallInfo = mAppInstallMap.get(appItemInfo.getPackageName());
+            if (appInstallInfo != null) {
+                if (appInstallInfo.getVersionCode() < appItemInfo.getVersionCode()) {
+                    appItemInfo.setState(Constants.APP_NEED_UPDATE);
+                } else {
+                    appItemInfo.setState(Constants.APP_HAVE_INSTALLED);
+                }
+            } else {
+                appItemInfo.setState(Constants.APP_NOT_INSTALL);
+            }
+
+            DownloadInfo downloadInfo = new SQLOperator(mContext).
+                    getDownloadInfoByPkgName(appItemInfo.getPackageName());
+            if (downloadInfo != null) {
+                long downloadSize = downloadInfo.getDownloadSize();
+                long fileSize = downloadInfo.getFileSize();
+                if (fileSize == 0) {
+                    appItemInfo.setProgress(0);
+                } else if (downloadSize < fileSize) {
+                    appItemInfo.setProgress(downloadInfo.getProgress());
+                    appItemInfo.setState(Constants.APP_DOWNLOAD_PAUSE);
+                } else if (downloadSize == fileSize) {
+                    switch (appItemInfo.getState()) {
+                        case Constants.APP_HAVE_INSTALLED:
+                        case Constants.APP_NEED_UPDATE:
+                            break;
+                        default:
+                            appItemInfo.setProgress(100);
+                            appItemInfo.setState(Constants.APP_DOWNLOAD_FINISHED);
+                            break;
+                    }
+                }
+            }
+
+            ArrayList<TaskInfo> allTask = mManager.getAllTask();
+            for (int i = 0; i < allTask.size(); i++) {
+                TaskInfo taskInfo = allTask.get(i);
+                if (appItemInfo.getTaskId().equals(taskInfo.getTaskID())) {
+                    if (taskInfo.isOnDownloading()) {
+                        appItemInfo.setState(Constants.APP_DOWNLOAD_CONTINUE);
+                        appItemInfo.setProgress(taskInfo.getProgress());
+                    }
+                }
+            }
         }
     }
 
@@ -71,6 +141,73 @@ public class AppItemLayoutAdapter extends BasicAdapter implements View.OnClickLi
             type = (TextView) view.findViewById(R.id.app_item_layout_type);
             whole = (TextView) view.findViewById(R.id.app_item_layout_whole);
             recyclerView = (RecyclerView) view.findViewById(R.id.app_item_layout_recycler);
+        }
+    }
+
+    private class LayoutDownloadListener implements DownloadListener {
+        @Override
+        public void onStart(DownloadInfo downloadInfo) {
+            for (int i = 0; i < mDatas.size(); i++) {
+                AppItemLayoutInfo appItemLayoutInfo = ((List<AppItemLayoutInfo>) mDatas).get(i);
+                for (int j = 0; j < appItemLayoutInfo.getAppItemInfoList().size(); j++) {
+                    AppItemInfo appItemInfo = appItemLayoutInfo.getAppItemInfoList().get(j);
+                    if (appItemInfo.getPackageName().equals(downloadInfo.getPackageName())) {
+                        appItemInfo.setState(Constants.APP_DOWNLOAD_CONTINUE);
+                        break;
+                    }
+                }
+            }
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public void onProgress(DownloadInfo downloadInfo, boolean isSupportFTP) {
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public void onStop(DownloadInfo downloadInfo, boolean isSupportFTP) {
+            for (int i = 0; i < mDatas.size(); i++) {
+                AppItemLayoutInfo appItemLayoutInfo = ((List<AppItemLayoutInfo>) mDatas).get(i);
+                for (int j = 0; j < appItemLayoutInfo.getAppItemInfoList().size(); j++) {
+                    AppItemInfo appItemInfo = appItemLayoutInfo.getAppItemInfoList().get(j);
+                    if (appItemInfo.getPackageName().equals(downloadInfo.getPackageName())) {
+                        appItemInfo.setState(Constants.APP_DOWNLOAD_PAUSE);
+                        break;
+                    }
+                }
+            }
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public void onError(DownloadInfo downloadInfo, String error) {
+            for (int i = 0; i < mDatas.size(); i++) {
+                AppItemLayoutInfo appItemLayoutInfo = ((List<AppItemLayoutInfo>) mDatas).get(i);
+                for (int j = 0; j < appItemLayoutInfo.getAppItemInfoList().size(); j++) {
+                    AppItemInfo appItemInfo = appItemLayoutInfo.getAppItemInfoList().get(j);
+                    if (appItemInfo.getPackageName().equals(downloadInfo.getPackageName())) {
+                        appItemInfo.setState(Constants.APP_DOWNLOAD_PAUSE);
+                        break;
+                    }
+                }
+            }
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public void onSuccess(DownloadInfo downloadInfo) {
+            for (int i = 0; i < mDatas.size(); i++) {
+                AppItemLayoutInfo appItemLayoutInfo = ((List<AppItemLayoutInfo>) mDatas).get(i);
+                for (int j = 0; j < appItemLayoutInfo.getAppItemInfoList().size(); j++) {
+                    AppItemInfo appItemInfo = appItemLayoutInfo.getAppItemInfoList().get(j);
+                    if (appItemInfo.getPackageName().equals(downloadInfo.getPackageName())) {
+                        appItemInfo.setState(Constants.APP_DOWNLOAD_FINISHED);
+                        break;
+                    }
+                }
+            }
+            notifyDataSetChanged();
         }
     }
 }

@@ -1,70 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="110dp"
-                android:background="@color/white"
-                android:paddingBottom="@dimen/vertical_spacing"
-                android:paddingTop="@dimen/vertical_spacing">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:gravity="center"
+              android:orientation="horizontal"
+              android:paddingBottom="@dimen/vertical_spacing"
+              android:paddingTop="@dimen/vertical_spacing">
 
     <ImageView
         android:id="@+id/item_update_appIcon"
         android:layout_width="@dimen/item_update_imageview_width"
         android:layout_height="@dimen/item_update_imageview_width"
         android:layout_marginRight="25dp"
-        android:scaleType="fitXY"/>
+        android:scaleType="fitXY"
+        android:src="@mipmap/ic_launcher"/>
 
-    <TextView
-        android:id="@+id/item_update_appName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/item_update_appIcon"
-        android:textColor="@color/black"
-        android:textSize="18sp"/>
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="120dp"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        >
 
-    <TextView
-        android:id="@+id/item_update_category"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/item_update_appName"
-        android:layout_marginTop="5dp"
-        android:layout_toRightOf="@+id/item_update_appIcon"/>
+        <TextView
+            android:id="@+id/item_update_appName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="@dimen/big_text_size"/>
 
-    <TextView
-        android:id="@+id/item_update_version"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/item_update_newFeature"
-        android:layout_marginBottom="5dp"
-        android:layout_toRightOf="@+id/item_update_appIcon"/>
+        <TextView
+            android:id="@+id/item_update_category"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:visibility="gone"
+            />
 
-    <TextView
-        android:id="@+id/item_update_newFeature"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@+id/item_update_appIcon"/>
+        <TextView
+            android:id="@+id/item_update_version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            />
+
+        <TextView
+            android:id="@+id/item_update_newFeature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+
+    </LinearLayout>
 
     <Button
         android:id="@+id/item_update_update"
-        android:layout_width="80dp"
-        android:layout_height="25dp"
-        android:layout_centerVertical="true"
-        android:layout_marginRight="20dp"
-        android:layout_toLeftOf="@+id/item_update_uninstall"
+        android:layout_width="@dimen/button_width"
+        android:layout_height="@dimen/button_height"
+        android:layout_marginLeft="@dimen/spacing_ten"
         android:background="@color/button_cyan"
         android:text="@string/update"
         android:textColor="@color/white"
-        android:textSize="15sp"/>
+        android:textSize="@dimen/second_title_size"/>
 
     <Button
         android:id="@+id/item_update_uninstall"
-        android:layout_width="80dp"
-        android:layout_height="25dp"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
+        android:layout_width="@dimen/button_width"
+        android:layout_height="@dimen/button_height"
+        android:layout_marginLeft="@dimen/spacing_ten"
         android:background="@drawable/shape_button_white_cyan"
         android:text="@string/uninstall"
         android:textColor="@color/button_cyan"
-        android:textSize="15sp"/>
+        android:textSize="@dimen/second_title_size"/>
 
-</RelativeLayout>
+</LinearLayout>

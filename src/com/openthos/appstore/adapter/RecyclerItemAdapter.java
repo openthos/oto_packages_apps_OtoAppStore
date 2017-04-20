@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -12,11 +13,12 @@ import android.widget.TextView;
 import com.openthos.appstore.MainActivity;
 import com.openthos.appstore.R;
 import com.openthos.appstore.app.Constants;
+import com.openthos.appstore.app.StoreApplication;
 import com.openthos.appstore.bean.AppItemInfo;
+import com.openthos.appstore.utils.FileHelper;
 import com.openthos.appstore.utils.ImageCache;
-import com.openthos.appstore.view.CustomRatingBar;
 
-import java.util.ArrayList;
+import java.io.File;
 import java.util.List;
 
 public class RecyclerItemAdapter extends RecyclerView.Adapter<RecyclerItemAdapter.HorViewHolder>
@@ -24,9 +26,9 @@ public class RecyclerItemAdapter extends RecyclerView.Adapter<RecyclerItemAdapte
     private List<AppItemInfo> mDatas;
     private Context mContext;
 
-    public RecyclerItemAdapter(Context context) {
+    public RecyclerItemAdapter(Context context, List<AppItemInfo> datas) {
         mContext = context;
-        mDatas = new ArrayList<>();
+        mDatas = datas;
     }
 
     @Override
@@ -42,9 +44,33 @@ public class RecyclerItemAdapter extends RecyclerView.Adapter<RecyclerItemAdapte
             ImageCache.loadImage(holder.icon, appItemInfo.getIconUrl());
             holder.appName.setText(appItemInfo.getAppName());
             holder.type.setText(appItemInfo.getType());
-            holder.ratingBar.setRating(appItemInfo.getStar());
+            holder.starNum.setText(String.valueOf(appItemInfo.getStar()));
             holder.layout.setOnClickListener(this);
+            holder.install.setOnClickListener(this);
             holder.layout.setTag(appItemInfo);
+            holder.install.setTag(appItemInfo);
+            switch (appItemInfo.getState()) {
+                case Constants.APP_NOT_INSTALL:
+                    holder.install.setText(mContext.getString(R.string.download));
+                    break;
+                case Constants.APP_HAVE_INSTALLED:
+                    holder.install.setText(mContext.getString(R.string.have_installed));
+                    break;
+                case Constants.APP_DOWNLOAD_CONTINUE:
+                    holder.install.setText(mContext.getString(R.string.downloading));
+                    break;
+                case Constants.APP_DOWNLOAD_PAUSE:
+                    holder.install.setText(mContext.getString(R.string.pause));
+                    break;
+                case Constants.APP_NEED_UPDATE:
+                    holder.install.setText(mContext.getString(R.string.update));
+                    break;
+                case Constants.APP_DOWNLOAD_FINISHED:
+                    holder.install.setText(mContext.getString(R.string.install));
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
@@ -53,25 +79,72 @@ public class RecyclerItemAdapter extends RecyclerView.Adapter<RecyclerItemAdapte
         return mDatas.size();
     }
 
-    public void addDatas(List<AppItemInfo> datas) {
-        if (datas != null) {
-            mDatas.clear();
-            mDatas.addAll(datas);
-            notifyDataSetChanged();
-        }
+    public void refreshLayout() {
+        notifyDataSetChanged();
     }
 
     @Override
     public void onClick(View view) {
-        MainActivity.mHandler.sendMessage(
-                MainActivity.mHandler.obtainMessage(Constants.DETAIL_FRAGMENT, view.getTag()));
+        switch (view.getId()) {
+            case R.id.app_item_layout:
+                MainActivity.mHandler.sendMessage(MainActivity.mHandler.
+                        obtainMessage(Constants.DETAIL_FRAGMENT, view.getTag()));
+                break;
+            case R.id.app_item_install:
+                installClick((Button) view, (AppItemInfo) view.getTag());
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void installClick(Button installBtn, AppItemInfo appItemInfo) {
+        if (appItemInfo != null) {
+            switch (appItemInfo.getState()) {
+                case Constants.APP_NOT_INSTALL:
+                    installBtn.setText(mContext.getString(R.string.downloading));
+                    MainActivity.mDownloadService.addTask(appItemInfo.getTaskId() + "",
+                            StoreApplication.mBaseUrl + "/" + appItemInfo.getDownloadUrl(),
+                            appItemInfo.getAppName(),
+                            appItemInfo.getPackageName(),
+                            appItemInfo.getIconUrl());
+                    break;
+                case Constants.APP_DOWNLOAD_CONTINUE:
+                    installBtn.setText(mContext.getString(R.string.pause));
+                    MainActivity.mDownloadService.stopTask(appItemInfo.getTaskId() + "");
+                    break;
+                case Constants.APP_DOWNLOAD_PAUSE:
+                    installBtn.setText(mContext.getString(R.string.downloading));
+                    MainActivity.mDownloadService.startTask(appItemInfo.getTaskId() + "");
+                    break;
+                case Constants.APP_NEED_UPDATE:
+                    installBtn.setText(mContext.getString(R.string.downloading));
+                    MainActivity.mDownloadService.addTask(appItemInfo.getTaskId() + "",
+                            StoreApplication.mBaseUrl + "/" + appItemInfo.getDownloadUrl(),
+                            appItemInfo.getAppName(),
+                            appItemInfo.getPackageName(),
+                            appItemInfo.getIconUrl());
+                    break;
+                case Constants.APP_DOWNLOAD_FINISHED:
+                    File file = FileHelper.getDownloadUrlFile(appItemInfo.getDownloadUrl());
+                    MainActivity.mHandler.sendMessage(MainActivity.mHandler.
+                            obtainMessage(Constants.INSTALL_APK, file.getAbsolutePath()));
+                    if (!file.exists() || file.length() == 0) {
+                        installBtn.setText(mContext.getString(R.string.download));
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     class HorViewHolder extends RecyclerView.ViewHolder {
         private ImageView icon;
         private TextView appName;
         private TextView type;
-        private CustomRatingBar ratingBar;
+        private TextView starNum;
+        private Button install;
         private LinearLayout layout;
 
         public HorViewHolder(View view) {
@@ -80,7 +153,8 @@ public class RecyclerItemAdapter extends RecyclerView.Adapter<RecyclerItemAdapte
             icon = (ImageView) view.findViewById(R.id.app_item_img);
             appName = (TextView) view.findViewById(R.id.app_item_name);
             type = (TextView) view.findViewById(R.id.app_item_type);
-            ratingBar = (CustomRatingBar) view.findViewById(R.id.app_item_ratingbar);
+            starNum = (TextView) view.findViewById(R.id.app_item_star_num);
+            install = (Button) view.findViewById(R.id.app_item_install);
         }
     }
 }

@@ -12,12 +12,15 @@ import com.openthos.appstore.MainActivity;
 import com.openthos.appstore.R;
 import com.openthos.appstore.adapter.CommentAdapter;
 import com.openthos.appstore.app.Constants;
+import com.openthos.appstore.bean.AppInstallInfo;
 import com.openthos.appstore.bean.CommentInfo;
 import com.openthos.appstore.utils.Tools;
 import com.openthos.appstore.view.CustomRatingBar;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+
 public class CommentFragment extends BaseFragment implements View.OnClickListener {
 
     private ListView mListView;
@@ -31,6 +34,10 @@ public class CommentFragment extends BaseFragment implements View.OnClickListene
     private LinearLayout mCommentLayout;
     private TextView mTouchComment;
     private List<CommentInfo> mDatas = new ArrayList<>();
+
+    public CommentFragment(HashMap<String, AppInstallInfo> appInstallMap) {
+        super(appInstallMap);
+    }
 
     public void setAll(boolean isAll) {
         mIsAll = isAll;
@@ -67,9 +74,9 @@ public class CommentFragment extends BaseFragment implements View.OnClickListene
 
     @Override
     public void initData() {
-        mAdapter = new CommentAdapter(getActivity(), mIsAll);
+        mAdapter = new CommentAdapter(getActivity(), mIsAll, mDatas);
         mListView.setAdapter(mAdapter);
-        mAdapter.addDatas(mDatas);
+        mAdapter.refreshLayout();
 
         mSubmit.setOnClickListener(this);
         mCancel.setOnClickListener(this);

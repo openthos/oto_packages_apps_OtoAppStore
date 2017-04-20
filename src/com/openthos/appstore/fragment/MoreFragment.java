@@ -2,17 +2,26 @@ package com.openthos.appstore.fragment;
 
 import android.os.Message;
 import android.view.View;
+
 import com.openthos.appstore.R;
 import com.openthos.appstore.adapter.AppItemAdapter;
+import com.openthos.appstore.bean.AppInstallInfo;
 import com.openthos.appstore.bean.AppItemInfo;
 import com.openthos.appstore.view.CustomGridView;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class MoreFragment extends BaseFragment {
     private List<AppItemInfo> mDatas;
     private CustomGridView mGridView;
     private AppItemAdapter mAppItemAdapter;
+
+    public MoreFragment(HashMap<String, AppInstallInfo> appInstallMap) {
+        super(appInstallMap);
+        mDatas = new ArrayList<>();
+    }
 
     @Override
     public int getLayoutId() {
@@ -27,15 +36,13 @@ public class MoreFragment extends BaseFragment {
     @Override
     public void initView(View view) {
         mGridView = (CustomGridView) view.findViewById(R.id.fragment_more_grid);
-        mAppItemAdapter = new AppItemAdapter(getActivity());
+        mAppItemAdapter = new AppItemAdapter(getActivity(), mAppInstallMap, mDatas);
         mGridView.setAdapter(mAppItemAdapter);
     }
 
     @Override
     public void initData() {
-        if (mDatas != null && mDatas.size() > 0) {
-            mAppItemAdapter.addDatas(mDatas);
-        }
+        mAppItemAdapter.refreshLayout();
     }
 
     @Override

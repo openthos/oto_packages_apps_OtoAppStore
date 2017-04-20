@@ -1,6 +1,5 @@
 package com.openthos.appstore.fragment;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.v4.app.FragmentManager;
@@ -33,7 +32,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-@SuppressLint("ValidFragment")
 public class DetailFragment extends BaseFragment implements View.OnClickListener {
     private ImageView mIcon;
     private Button mDownload;
@@ -48,17 +46,9 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
     private TextView mStarNum;
     private AppItemInfo mAppItemInfo;
     private DownloadManager mManager;
-    private HashMap<String, AppInstallInfo> mAppInstallMap;
-    private String mBtText;
-    private String mContinues;
-    private String mPause;
-    private String mInstalls;
-    private String mUpdate;
-    private String mFinished;
 
-    @SuppressLint("ValidFragment")
     public DetailFragment(HashMap<String, AppInstallInfo> appInstallMap) {
-        mAppInstallMap = appInstallMap;
+        super(appInstallMap);
     }
 
     @Override
@@ -76,7 +66,7 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
     private void initFragment() {
         FragmentManager manager = getChildFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
-        CommentFragment commentFragment = new CommentFragment();
+        CommentFragment commentFragment = new CommentFragment(mAppInstallMap);
         commentFragment.setDatas(Constants.getComment());
         commentFragment.setAll(false);
         transaction.replace(R.id.fragment_detail_comment, commentFragment);
@@ -85,12 +75,6 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
 
     @Override
     public void initData() {
-        mContinues = getActivity().getResources().getString(R.string.continues);
-        mPause = getActivity().getResources().getString(R.string.pause);
-        mInstalls = getActivity().getResources().getString(R.string.install);
-        mUpdate = getActivity().getResources().getString(R.string.update);
-        mFinished = getActivity().getResources().getString(R.string.finished);
-
         mBannerView.setImageUrls(Constants.getString());
         loadData();
         initFragment();
@@ -126,41 +110,46 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
 
     @Override
     public void onClick(View view) {
-        if (mAppItemInfo != null) {
-            mBtText = mDownload.getText().toString();
-            if (mBtText.equals(mContinues)) {
+        switch (mAppItemInfo.getState()) {
+            case Constants.APP_NOT_INSTALL:
                 mProgressBar.setVisibility(View.VISIBLE);
-                mDownload.setText(mPause);
-                MainActivity.mDownloadService.startTask(mAppItemInfo.getTaskId() + "");
-            } else if (mBtText.equals(mPause)) {
+                mDownload.setText(getString(R.string.pause));
+                MainActivity.mDownloadService.addTask(mAppItemInfo.getTaskId() + "",
+                        StoreApplication.mBaseUrl + "/" + mAppItemInfo.getDownloadUrl(),
+                        mAppItemInfo.getAppName(),
+                        mAppItemInfo.getPackageName(),
+                        mAppItemInfo.getIconUrl());
+                break;
+            case Constants.APP_DOWNLOAD_CONTINUE:
                 mProgressBar.setVisibility(View.VISIBLE);
-                mDownload.setText(mContinues);
+                mDownload.setText(getString(R.string.continues));
                 MainActivity.mDownloadService.stopTask(mAppItemInfo.getTaskId() + "");
-            } else if (mBtText.equals(mInstalls)) {
+                break;
+            case Constants.APP_DOWNLOAD_PAUSE:
                 mProgressBar.setVisibility(View.VISIBLE);
-                mDownload.setText(mPause);
+                mDownload.setText(getString(R.string.pause));
+                MainActivity.mDownloadService.startTask(mAppItemInfo.getTaskId() + "");
+                break;
+            case Constants.APP_NEED_UPDATE:
+                mProgressBar.setVisibility(View.VISIBLE);
+                mDownload.setText(getString(R.string.pause));
                 MainActivity.mDownloadService.addTask(mAppItemInfo.getTaskId() + "",
                         StoreApplication.mBaseUrl + "/" + mAppItemInfo.getDownloadUrl(),
-                        FileHelper.getNameFromUrl(mAppItemInfo.getDownloadUrl()),
+                        mAppItemInfo.getAppName(),
                         mAppItemInfo.getPackageName(),
                         mAppItemInfo.getIconUrl());
-            } else if (mBtText.equals(mUpdate)) {
-                mProgressBar.setVisibility(View.VISIBLE);
-                mDownload.setText(mContinues);
-                MainActivity.mDownloadService.addTask(mAppItemInfo.getTaskId() + "",
-                        StoreApplication.mBaseUrl + "/" + mAppItemInfo.getDownloadUrl(),
-                        FileHelper.getNameFromUrl(mAppItemInfo.getDownloadUrl()),
-                        mAppItemInfo.getPackageName(),
-                        mAppItemInfo.getIconUrl());
-            } else if (mBtText.equals(mFinished)) {
+                break;
+            case Constants.APP_DOWNLOAD_FINISHED:
                 File file = FileHelper.getDownloadUrlFile(mAppItemInfo.getDownloadUrl());
                 MainActivity.mHandler.sendMessage(MainActivity.mHandler.
                         obtainMessage(Constants.INSTALL_APK, file.getAbsolutePath()));
                 if (!file.exists() || file.length() == 0) {
-                    setContent(mDownload, R.string.install,
+                    setContent(mDownload, R.string.download,
                             R.drawable.shape_button_white_cyan, R.color.button_cyan);
                 }
-            }
+                break;
+            default:
+                break;
         }
     }
 
@@ -185,7 +174,7 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
             switch (mAppItemInfo.getState()) {
                 case Constants.APP_NOT_INSTALL:
                     mProgressBar.setVisibility(View.GONE);
-                    setContent(mDownload, R.string.install,
+                    setContent(mDownload, R.string.download,
                             R.drawable.shape_button_white_cyan, R.color.button_cyan);
                     break;
                 case Constants.APP_HAVE_INSTALLED:
@@ -196,12 +185,12 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
                 case Constants.APP_DOWNLOAD_CONTINUE:
                     mProgressBar.setVisibility(View.VISIBLE);
                     mProgressBar.setProgress(mAppItemInfo.getProgress());
-                    setContent(mDownload, R.string.pause, 0, R.color.button_cyan);
+                    setContent(mDownload, R.string.pause, 0, R.color.white);
                     break;
                 case Constants.APP_DOWNLOAD_PAUSE:
                     mProgressBar.setVisibility(View.VISIBLE);
                     mProgressBar.setProgress(mAppItemInfo.getProgress());
-                    setContent(mDownload, R.string.continues, 0, R.color.button_cyan);
+                    setContent(mDownload, R.string.continues, 0, R.color.white);
                     break;
                 case Constants.APP_NEED_UPDATE:
                     mProgressBar.setVisibility(View.GONE);
@@ -210,7 +199,7 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
                     break;
                 case Constants.APP_DOWNLOAD_FINISHED:
                     mProgressBar.setVisibility(View.GONE);
-                    setContent(mDownload, R.string.finished,
+                    setContent(mDownload, R.string.install,
                             R.drawable.shape_button_white_cyan, R.color.button_cyan);
                     break;
                 default:
@@ -284,7 +273,8 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
             if (mAppItemInfo.getTaskId().equals(downloadInfo.getTaskID())) {
                 mProgressBar.setVisibility(View.VISIBLE);
                 mProgressBar.setProgress(downloadInfo.getProgress());
-                setContent(mDownload, R.string.pause, 0, R.color.button_cyan);
+                mAppItemInfo.setState(Constants.APP_DOWNLOAD_CONTINUE);
+                setContent(mDownload, R.string.pause, 0, R.color.white);
             }
         }
 
@@ -293,7 +283,9 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
             if (mAppItemInfo.getTaskId().equals(downloadInfo.getTaskID())) {
                 mProgressBar.setVisibility(View.VISIBLE);
                 mProgressBar.setProgress(downloadInfo.getProgress());
-                setContent(mDownload, R.string.pause, 0, R.color.button_cyan);
+                mAppItemInfo.setState(Constants.APP_DOWNLOAD_CONTINUE);
+                mAppItemInfo.setProgress(downloadInfo.getProgress());
+                setContent(mDownload, R.string.pause, 0, R.color.white);
             }
         }
 
@@ -302,13 +294,15 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
             if (mAppItemInfo.getTaskId().equals(downloadInfo.getTaskID())) {
                 mProgressBar.setVisibility(View.VISIBLE);
                 mProgressBar.setProgress(downloadInfo.getProgress());
-                setContent(mDownload, R.string.continues, 0, R.color.button_cyan);
+                mAppItemInfo.setState(Constants.APP_DOWNLOAD_PAUSE);
+                setContent(mDownload, R.string.continues, 0, R.color.white);
             }
         }
 
         @Override
         public void onError(DownloadInfo downloadInfo, String error) {
             mProgressBar.setVisibility(View.GONE);
+            mAppItemInfo.setState(Constants.APP_DOWNLOAD_PAUSE);
         }
 
         @Override
@@ -317,6 +311,7 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
                 mProgressBar.setVisibility(View.GONE);
                 setContent(mDownload, R.string.finished,
                         R.drawable.shape_button_white_cyan, R.color.button_cyan);
+                mAppItemInfo.setState(Constants.APP_DOWNLOAD_FINISHED);
             }
         }
     }

@@ -8,9 +8,10 @@
     <LinearLayout
         android:id="@+id/app_item_layout"
         android:layout_width="130dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:padding="5dp"
+        android:layout_margin="@dimen/spacing_five"
+        android:background="@drawable/shape_background"
         android:orientation="vertical">
 
         <ImageView
@@ -18,6 +19,7 @@
             android:layout_width="@dimen/app_item_img"
             android:layout_height="@dimen/app_item_img"
             android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/spacing_five"
             android:scaleType="fitXY"/>
 
         <TextView
@@ -25,8 +27,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
-            android:layout_marginTop="5dp"
-            android:singleLine="true"
+            android:layout_marginTop="@dimen/spacing_five"
+            android:lines="2"
             android:textColor="@color/item_title"
             android:textSize="@dimen/app_item_name_size"/>
 
@@ -34,18 +36,50 @@
             android:id="@+id/app_item_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="@dimen/spacing_ten"
             android:layout_marginTop="3dp"
             android:singleLine="true"
             android:textColor="@color/item_type"
             android:textSize="@dimen/app_item_type_size"/>
 
-        <com.openthos.appstore.view.CustomRatingBar
-            android:id="@+id/app_item_ratingbar"
-            style="@style/customRatingBarStyleFalse"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
-            android:layout_marginTop="5dp"/>
+            android:layout_marginTop="3dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/app_item_star_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+
+            <ImageView
+                android:id="@+id/app_item_star"
+                android:layout_width="@dimen/item_img_size"
+                android:layout_height="@dimen/item_img_size"
+                android:layout_marginLeft="@dimen/spacing_five"
+                android:src="@drawable/star_black_select"
+                />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/app_item_install"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/spacing_ten"
+                android:background="@null"
+                android:padding="@dimen/spacing_five"
+                android:text="@string/install"
+                android:textSize="@dimen/second_title_size"
+                android:textColor="@color/item_download"
+                />
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>

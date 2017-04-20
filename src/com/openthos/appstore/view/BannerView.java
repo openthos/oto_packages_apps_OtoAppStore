@@ -94,7 +94,7 @@ public class BannerView extends FrameLayout {
     public void startPlay() {
         removeCallbacksAndMessages();
         mIsAutoPlay = true;
-        mHandler.postDelayed(task, Constants.TIME_TWO_SECONDS);
+        mHandler.postDelayed(task, Constants.TIME_TEN_SECONDS);
     }
 
     private final Runnable task = new Runnable() {
@@ -103,9 +103,9 @@ public class BannerView extends FrameLayout {
             if (mIsAutoPlay) {
                 mCurrentItem = mCurrentItem + 1;
                 mPager.setCurrentItem(mCurrentItem);
-                mHandler.postDelayed(task, Constants.TIME_THREE_SECONDS);
+                mHandler.postDelayed(task, Constants.TIME_TEN_SECONDS);
             } else {
-                mHandler.postDelayed(task, Constants.TIME_FIVE_SECONDS);
+                mHandler.postDelayed(task, Constants.TIME_THREE_SECONDS);
             }
         }
     };

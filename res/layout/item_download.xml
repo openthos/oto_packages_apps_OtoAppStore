@@ -1,81 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="110dp"
-                android:background="@color/white"
-                android:paddingBottom="@dimen/vertical_spacing"
-                android:paddingTop="@dimen/vertical_spacing">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:baselineAligned="false"
+              android:gravity="center"
+              android:orientation="horizontal"
+              android:paddingBottom="@dimen/vertical_spacing"
+              android:paddingTop="@dimen/vertical_spacing">
 
     <ImageView
         android:id="@+id/item_download_appIcon"
         android:layout_width="@dimen/item_update_imageview_width"
         android:layout_height="@dimen/item_update_imageview_width"
-        android:layout_alignParentLeft="true"
         android:layout_marginRight="25dp"
         />
 
-    <TextView
-        android:id="@+id/item_download_appName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/item_download_appIcon"
-        android:textColor="@color/black"
-        android:textSize="18sp"/>
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="120dp"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        >
 
-    <TextView
-        android:id="@+id/item_download_category"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/item_download_appName"
-        android:layout_marginTop="5dp"
-        android:layout_toRightOf="@+id/item_download_appIcon"
-        />
+        <TextView
+            android:id="@+id/item_download_appName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:textColor="@color/black"
+            android:textSize="@dimen/big_text_size"
+            />
 
-    <ProgressBar
-        android:id="@+id/item_download_progressBar"
-        android:layout_width="match_parent"
-        android:layout_height="10dp"
-        android:layout_above="@+id/item_download_downloadState"
-        android:layout_marginBottom="15dp"
-        android:layout_marginRight="10dp"
-        android:layout_toLeftOf="@+id/item_download_install"
-        android:layout_toRightOf="@+id/item_download_appIcon"
-        android:max="100"
-        android:progressBackgroundTint="@color/gray"
-        android:progressTint="@color/button_cyan"/>
+        <TextView
+            android:id="@+id/item_download_category"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:visibility="gone"
+            />
 
-    <TextView
-        android:id="@+id/item_download_downloadState"
-        android:layout_width="wrap_content"
-        android:layout_height="16dp"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="2dp"
-        android:layout_toRightOf="@+id/item_download_appIcon"
-        android:textColor="@color/button_cyan"/>
+        <ProgressBar
+            android:id="@+id/item_download_progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:layout_marginBottom="15dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginTop="10dp"
+            android:max="100"
+            android:progressBackgroundTint="@color/gray"
+            android:progressTint="@color/button_cyan"/>
+
+        <TextView
+            android:id="@+id/item_download_downloadState"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="2dp"
+            android:textColor="@color/button_cyan"
+            />
+    </LinearLayout>
+
 
     <Button
         android:id="@+id/item_download_install"
-        android:layout_width="80dp"
-        android:layout_height="25dp"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="15dp"
-        android:layout_marginRight="20dp"
-        android:layout_toLeftOf="@+id/item_download_remove"
+        android:layout_width="@dimen/button_width"
+        android:layout_height="@dimen/button_height"
+        android:layout_marginLeft="@dimen/spacing_ten"
         android:background="@color/button_cyan"
         android:text="@string/uninstall"
         android:textColor="@color/white"
-        android:textSize="15sp"/>
+        android:textSize="@dimen/second_title_size"/>
 
     <Button
         android:id="@+id/item_download_remove"
-        android:layout_width="80dp"
-        android:layout_height="25dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginBottom="15dp"
+        android:layout_width="@dimen/button_width"
+        android:layout_height="@dimen/button_height"
+        android:layout_marginLeft="@dimen/spacing_ten"
         android:background="@drawable/shape_button_white_cyan"
         android:text="@string/remove"
         android:textColor="@color/button_cyan"
-        android:textSize="15sp"/>
+        android:textSize="@dimen/second_title_size"/>
 
-</RelativeLayout>
+</LinearLayout>

@@ -6,6 +6,7 @@
     <string name="game">游戏</string>
     <string name="manager">管理</string>
     <string name="download">下载</string>
+    <string name="downloading">下载中</string>
     <string name="setting">设置</string>
     <string name="update">更新</string>
     <string name="have_installed">已安装</string>

@@ -108,7 +108,7 @@ public class Downloader {
             mDownloadThread = null;
         }
         mDatakeeper.deleteDownloadInfo(mUserID, mDownloadInfo.getTaskID());
-        File downloadFile = FileHelper.getDownloadFile(mDownloadInfo.getFilePath());
+        File downloadFile = FileHelper.getDownloadTempFile(mDownloadInfo.getFilePath());
         if (downloadFile.exists()) {
             downloadFile.delete();
         }

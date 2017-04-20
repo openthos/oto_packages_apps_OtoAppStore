@@ -17,15 +17,21 @@ import java.util.List;
 public class CommentAdapter extends BasicAdapter {
     private boolean mIsAll;
 
-    public CommentAdapter(Context context, boolean isAll) {
+    public CommentAdapter(Context context, boolean isAll, List<CommentInfo> datas) {
         super(context);
         mIsAll = isAll;
+        mDatas = datas;
     }
 
     @Override
     public long getItemId(int position) {
         return mDatas == null ? -1 :
                 ((CommentInfo) mDatas.get(position)).getId();
+    }
+
+    @Override
+    public void refreshLayout() {
+        notifyDataSetChanged();
     }
 
     @Override
@@ -64,19 +70,5 @@ public class CommentAdapter extends BasicAdapter {
             time = (TextView) view.findViewById(R.id.item_comment_time);
             star = ((CustomRatingBar) view.findViewById(R.id.item_comment_star));
         }
-    }
-
-    public void addDatas(List<CommentInfo> datas) {
-        mDatas.clear();
-        if (mIsAll) {
-            mDatas.addAll(datas);
-        } else {
-            int len = datas == null ? 0 : (datas.size() >
-                    Constants.COMMENT_NUM_FALSE ? Constants.COMMENT_NUM_FALSE : datas.size());
-            for (int i = 0; i < len; i++) {
-                mDatas.add(datas.get(i));
-            }
-        }
-        notifyDataSetChanged();
     }
 }

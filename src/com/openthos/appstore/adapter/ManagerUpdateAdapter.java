@@ -17,8 +17,9 @@ import java.util.List;
 
 public class ManagerUpdateAdapter extends BasicAdapter implements View.OnClickListener {
 
-    public ManagerUpdateAdapter(Context context) {
+    public ManagerUpdateAdapter(Context context, List<AppInstallInfo> datas) {
         super(context);
+        mDatas = datas;
     }
 
     @Override
@@ -62,6 +63,11 @@ public class ManagerUpdateAdapter extends BasicAdapter implements View.OnClickLi
         }
     }
 
+    @Override
+    public void refreshLayout() {
+        notifyDataSetChanged();
+    }
+
     private class ViewHolder {
         private ImageView appIcon;
         private TextView appName;
@@ -80,21 +86,5 @@ public class ManagerUpdateAdapter extends BasicAdapter implements View.OnClickLi
             update = ((Button) view.findViewById(R.id.item_update_update));
             uninstall = ((Button) view.findViewById(R.id.item_update_uninstall));
         }
-    }
-
-    public void addDatas(List<AppInstallInfo> datas, boolean isAll) {
-        if (datas != null) {
-            mDatas.clear();
-            if (isAll) {
-                mDatas.addAll(datas);
-            } else {
-                int len = datas == null ? 0 : (datas.size() > Constants.MANAGER_NUM_FALSE ?
-                        Constants.MANAGER_NUM_FALSE : datas.size());
-                for (int i = 0; i < len; i++) {
-                    mDatas.add(datas.get(i));
-                }
-            }
-        }
-        notifyDataSetChanged();
     }
 }

@@ -1,7 +1,8 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
-             android:layout_height="match_parent">
+             android:layout_height="match_parent"
+             android:background="@color/main_background">
 
     <com.openthos.appstore.view.CustomGridView
         android:id="@+id/fragment_more_grid"
@@ -9,10 +10,8 @@
         android:layout_height="match_parent"
         android:layout_marginBottom="15dp"
         android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
         android:layout_marginTop="15dp"
-        android:columnWidth="200dp"
-        android:horizontalSpacing="30dp"
+        android:columnWidth="150dp"
         android:numColumns="auto_fit"
         android:stretchMode="columnWidth"
         android:verticalSpacing="20dp"/>

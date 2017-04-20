@@ -5,15 +5,27 @@ import android.view.View;
 
 import com.openthos.appstore.R;
 import com.openthos.appstore.adapter.AppItemLayoutAdapter;
+import com.openthos.appstore.bean.AppInstallInfo;
+import com.openthos.appstore.bean.AppItemLayoutInfo;
 import com.openthos.appstore.bean.AppLayout;
 import com.openthos.appstore.view.CustomListView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 public abstract class BaseClassifyFragment extends BaseFragment {
     private CustomListView mListView;
     private AppItemLayoutAdapter mAdapter;
+    private List<AppItemLayoutInfo> mDatas;
+
+    public BaseClassifyFragment(HashMap<String, AppInstallInfo> appInstallMap) {
+        super(appInstallMap);
+        mDatas = new ArrayList<>();
+    }
 
     @Override
     public int getLayoutId() {
@@ -28,7 +40,7 @@ public abstract class BaseClassifyFragment extends BaseFragment {
     @Override
     public void initView(View view) {
         mListView = (CustomListView) view.findViewById(R.id.fragment_classify_listview);
-        mAdapter = new AppItemLayoutAdapter(getActivity());
+        mAdapter = new AppItemLayoutAdapter(getActivity(), mAppInstallMap, mDatas);
         mListView.setAdapter(mAdapter);
     }
 
@@ -36,8 +48,10 @@ public abstract class BaseClassifyFragment extends BaseFragment {
     public void getHandlerMessage(Message message) {
         if (message.what == GAME_SOFTWARE_BACK && message.obj != null) {
             try {
-                AppLayout appLayout = new AppLayout(new JSONObject((String) message.obj));
-                mAdapter.addDatas(appLayout.getAppItemLayoutInfos(), false);
+                mDatas.clear();
+                mDatas.addAll(
+                        new AppLayout(new JSONObject((String) message.obj)).getAppItemLayoutInfos());
+                mAdapter.refreshLayout();
             } catch (JSONException e) {
                 e.printStackTrace();
             }

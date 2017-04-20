@@ -2,194 +2,188 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:background="@color/white"
+              android:background="@color/main_background"
               android:orientation="vertical">
 
-    <ScrollView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+
+        <ImageView
+            android:id="@+id/fragment_detail_appIcon"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_alignParentLeft="true"
+            android:layout_marginRight="10dp"
+            android:src="@mipmap/ic_launcher"/>
+
+        <TextView
+            android:id="@+id/fragment_detail_appName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="@dimen/big_text_size"
+            android:layout_alignTop="@+id/fragment_detail_appIcon"
+            android:layout_toRightOf="@+id/fragment_detail_appIcon"/>
+
+        <TextView
+            android:id="@+id/fragment_detail_instruction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/layout_grade"
+            android:textSize="@dimen/second_title_size"
+            android:layout_toRightOf="@+id/fragment_detail_appIcon"
+            android:lines="2"/>
+
+        <FrameLayout
+            android:layout_width="@dimen/button_width"
+            android:layout_height="@dimen/button_height"
+            android:layout_alignBottom="@+id/fragment_detail_appIcon"
+            android:layout_gravity="center"
+            android:layout_marginTop="12dp"
+            android:layout_toRightOf="@+id/fragment_detail_appIcon">
+
+            <ProgressBar
+                android:id="@+id/fragment_detail_progressbar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:max="100"
+                android:progress="0"
+                android:progressBackgroundTint="@color/gray"
+                android:progressTint="@color/button_cyan"
+                android:visibility="gone"/>
+
+            <Button
+                android:id="@+id/fragment_detail_download"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:background="@null"
+                android:text="@string/download"
+                android:textColor="@color/button_cyan"
+                android:textSize="@dimen/second_title_size"/>
+        </FrameLayout>
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:id="@+id/layout_grade"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:gravity="center_horizontal"
             android:orientation="vertical">
 
-            <RelativeLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/fragment_detail_starNum"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="10dp">
+                android:textColor="@color/activity_title"
+                android:textSize="70sp"/>
 
-                <ImageView
-                    android:id="@+id/fragment_detail_appIcon"
-                    android:layout_width="150dp"
-                    android:layout_height="150dp"
-                    android:layout_alignParentLeft="true"
-                    android:layout_marginRight="10dp"/>
+            <com.openthos.appstore.view.CustomRatingBar
+                android:id="@+id/fragment_detail_ratingBar"
+                style="@style/customRatingBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:isIndicator="true"
+                android:numStars="5"
+                android:rating="3"/>
 
-                <TextView
-                    android:id="@+id/fragment_detail_appName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignTop="@+id/fragment_detail_appIcon"
-                    android:layout_toRightOf="@+id/fragment_detail_appIcon"/>
+        </LinearLayout>
 
-                <TextView
-                    android:id="@+id/fragment_detail_instruction"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_toLeftOf="@+id/layout_grade"
-                    android:layout_toRightOf="@+id/fragment_detail_appIcon"
-                    android:lines="2"/>
+    </RelativeLayout>
 
-                <FrameLayout
-                    android:layout_width="100dp"
-                    android:layout_height="35dp"
-                    android:layout_alignBottom="@+id/fragment_detail_appIcon"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="12dp"
-                    android:layout_toRightOf="@+id/fragment_detail_appIcon">
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#eeeeee"/>
 
-                    <ProgressBar
-                        android:id="@+id/fragment_detail_progressbar"
-                        style="?android:attr/progressBarStyleHorizontal"
-                        android:layout_width="100dp"
-                        android:layout_height="24dp"
-                        android:layout_gravity="center_vertical"
-                        android:max="100"
-                        android:progress="0"
-                        android:visibility="gone"/>
+    <com.openthos.appstore.view.BannerView
+        android:id="@+id/fragment_detail_carsousel"
+        android:layout_width="match_parent"
+        android:layout_height="291dp"/>
 
-                    <Button
-                        android:id="@+id/fragment_detail_download"
-                        android:layout_width="100dp"
-                        android:layout_height="24dp"
-                        android:layout_gravity="center"
-                        android:background="@null"
-                        android:text="@string/download"
-                        android:textColor="@color/button_cyan"
-                        android:textSize="@dimen/first_title_size"/>
-                </FrameLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#eeeeee"/>
 
-                <LinearLayout
-                    android:id="@+id/layout_grade"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:gravity="center_horizontal"
-                    android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="10dp"
+        android:orientation="horizontal">
 
-                    <TextView
-                        android:id="@+id/fragment_detail_starNum"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/activity_title"
-                        android:textSize="70sp"/>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:layout_weight="3"
+            android:orientation="vertical">
 
-                    <com.openthos.appstore.view.CustomRatingBar
-                        android:id="@+id/fragment_detail_ratingBar"
-                        style="@style/customRatingBarStyleSmall"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:isIndicator="true"
-                        android:numStars="5"
-                        android:rating="3"/>
-
-                </LinearLayout>
-
-            </RelativeLayout>
-
-            <View
+            <FrameLayout
+                android:id="@+id/fragment_detail_comment"
                 android:layout_width="match_parent"
-                android:layout_height="0.5dp"
-                android:background="#eeeeee"/>
-
-            <com.openthos.appstore.view.BannerView
-                android:id="@+id/fragment_detail_carsousel"
-                android:layout_width="match_parent"
-                android:layout_height="291dp"/>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0.5dp"
-                android:background="#eeeeee"/>
+                android:layout_height="wrap_content"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="10dp"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-                <LinearLayout
-                    android:layout_width="0dp"
+                <TextView
+                    android:id="@+id/fragment_detail_otherinfo"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="5dp"
-                    android:layout_weight="3"
-                    android:orientation="vertical">
+                    android:text="@string/other_information"
+                    android:textColor="@color/item_title"
+                    android:textSize="@dimen/first_title_size"/>
 
-                    <FrameLayout
-                        android:id="@+id/fragment_detail_comment"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_marginRight="15dp"
+                    android:background="@color/gray"/>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/fragment_detail_otherinfo"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/other_information"
-                            android:textColor="@color/item_title"
-                            android:textSize="@dimen/first_title_size"/>
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="2dp"
-                            android:layout_marginRight="15dp"
-                            android:background="@color/gray"/>
-
-                        <TextView
-                            android:id="@+id/fragment_detail_promulgator"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:text="@string/promulgator"
-                            android:textColor="@color/item_title"
-                            android:textSize="@dimen/second_title_size"/>
-
-                        <TextView
-                            android:id="@+id/fragment_detail_type"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/type"
-                            android:textColor="@color/item_title"
-                            android:textSize="@dimen/second_title_size"/>
-
-                        <TextView
-                            android:id="@+id/fragment_detail_size"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/size"
-                            android:textColor="@color/item_title"
-                            android:textSize="@dimen/second_title_size"/>
-                    </LinearLayout>
-                </LinearLayout>
-
-                <FrameLayout
-                    android:id="@+id/fragment_detail_morelove"
-                    android:layout_width="0dp"
+                <TextView
+                    android:id="@+id/fragment_detail_promulgator"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_weight="1"/>
+                    android:layout_marginTop="5dp"
+                    android:text="@string/promulgator"
+                    android:textColor="@color/item_title"
+                    android:textSize="@dimen/second_title_size"/>
+
+                <TextView
+                    android:id="@+id/fragment_detail_type"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/type"
+                    android:textColor="@color/item_title"
+                    android:textSize="@dimen/second_title_size"/>
+
+                <TextView
+                    android:id="@+id/fragment_detail_size"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/size"
+                    android:textColor="@color/item_title"
+                    android:textSize="@dimen/second_title_size"/>
             </LinearLayout>
         </LinearLayout>
-    </ScrollView>
+
+        <FrameLayout
+            android:id="@+id/fragment_detail_morelove"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"/>
+    </LinearLayout>
 </LinearLayout>

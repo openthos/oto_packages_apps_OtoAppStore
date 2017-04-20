@@ -41,16 +41,12 @@ public class FileHelper {
         return Constants.BASE_FILEPATH + "/app";
     }
 
-    public static String getDownloadPath(String fileName) {
-        return getDownloadDir() + "/" + fileName;
-    }
-
-    public static File getDownloadFile(String fileName) {
-        return getFile(getDownloadPath(fileName));
+    public static String getDownloadUrlPath(String downloadUrl) {
+        return getDownloadDir() + "/" + getNameFromUrl(downloadUrl);
     }
 
     public static File getDownloadUrlFile(String downloadUrl) {
-        return getFile(getDownloadPath(getNameFromUrl(downloadUrl)));
+        return getFile(getDownloadUrlPath(downloadUrl));
     }
 
     public static String getDownloadTempPath(String fileName) {

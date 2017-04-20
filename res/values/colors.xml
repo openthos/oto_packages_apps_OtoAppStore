@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="main_background">#ededed</color>
+    <color name="item_background">#fafafa</color>
+    <color name="item_download">#57b584</color>
     <color name="item_title">#4a4a4a</color>
     <color name="item_type">#9b9b9b</color>
     <color name="item_more">#5b41a2</color>
@@ -39,7 +42,6 @@
     <color name="color_hei_8">#00000000</color>
     <color name="left_itembg_pressed_exit">#303030</color>
     <color name="yellow_low">#fdfdc7</color>
-    <drawable name="trans">@color/color_hei_8</drawable>
     <color name="green">#59BBFF</color>
     <color name="green_press">#61bedd</color>
     <color name="textcolor">#888888</color>
@@ -60,7 +62,6 @@
     <color name="middle_gray">#7E7E7E</color>
     <color name="trade_red">#FB819E</color>
     <color name="trade_orange">#65D0B7</color>
-    <color name="all_background">#EFEFF4</color>
     <color name="skyblue">#009ffa</color>
     <color name="gray1">#ebebeb</color>
     <color name="linecolor">#30808080</color>

@@ -61,7 +61,7 @@ import java.util.List;
 public class MainActivity extends FragmentActivity implements View.OnClickListener {
     public static Handler mHandler;
     public static DownloadService.AppStoreBinder mDownloadService;
-    public  HashMap<String, AppInstallInfo> mAppInstallMap;
+    public HashMap<String, AppInstallInfo> mAppInstallMap;
     private FragmentManager mManager;
     private FragmentTransaction mTransaction;
     private RadioButton mManagerButton;
@@ -270,21 +270,21 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             case Constants.HOME_FRAGMENT:
                 mBack.setVisibility(View.GONE);
                 if (fragment == null) {
-                    fragment = new HomeFragment();
+                    fragment = new HomeFragment(mAppInstallMap);
                 }
                 break;
             case Constants.SOFTWARE_FRAGMENT:
                 mBack.setVisibility(View.GONE);
                 mSoftwareButton.setChecked(true);
                 if (fragment == null) {
-                    fragment = new SoftwareFragment();
+                    fragment = new SoftwareFragment(mAppInstallMap);
                 }
                 break;
             case Constants.GAME_FRAGMENT:
                 mBack.setVisibility(View.GONE);
                 mGameButton.setChecked(true);
                 if (fragment == null) {
-                    fragment = new GameFragment();
+                    fragment = new GameFragment(mAppInstallMap);
                 }
                 break;
             case Constants.MANAGER_FRAGMENT:
@@ -302,18 +302,18 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 break;
             case Constants.MORE_FRAGMENT:
                 if (fragment == null) {
-                    fragment = new MoreFragment();
+                    fragment = new MoreFragment(mAppInstallMap);
                 }
                 fragment.setData(msg.obj);
                 break;
             case Constants.COMMENT_FRAGMENT:
                 if (fragment == null) {
-                    fragment = new CommentFragment();
+                    fragment = new CommentFragment(mAppInstallMap);
                 }
                 break;
             case Constants.SEARCH_FRAGMENT:
                 if (fragment == null) {
-                    fragment = new SearchFragment();
+                    fragment = new SearchFragment(mAppInstallMap);
                 }
                 fragment.setData(msg.obj);
                 break;

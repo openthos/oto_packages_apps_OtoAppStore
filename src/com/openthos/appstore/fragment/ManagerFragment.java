@@ -1,6 +1,5 @@
 package com.openthos.appstore.fragment;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Message;
 import android.view.View;
@@ -20,7 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@SuppressLint("ValidFragment")
 public class ManagerFragment extends BaseFragment {
 
     private CustomListView mUpdateList;
@@ -34,11 +32,9 @@ public class ManagerFragment extends BaseFragment {
     private DownloadManager mDownloadManager;
     private ManagerDownloadAdapter mDownloadAdapter;
     private List<AppInstallInfo> mAppInstallInfos;
-    private HashMap<String, AppInstallInfo> mAppInstallMap;
 
-    @SuppressLint("ValidFragment")
     public ManagerFragment(HashMap<String, AppInstallInfo> appInstallMap) {
-        mAppInstallMap = appInstallMap;
+        super(appInstallMap);
     }
 
     @Override
@@ -75,15 +71,15 @@ public class ManagerFragment extends BaseFragment {
             mAppInstallInfos.add(entry.getValue());
         }
         mUpdateTitle.setText(getNumText(R.string.updates, mAppInstallInfos.size()));
-        mUpdateAdapter = new ManagerUpdateAdapter(mContext);
+        mUpdateAdapter = new ManagerUpdateAdapter(mContext, mAppInstallInfos);
         mUpdateList.setAdapter(mUpdateAdapter);
-        mUpdateAdapter.addDatas(mAppInstallInfos, true);
+        mUpdateAdapter.refreshLayout();
 
         List<TaskInfo> allTask = mDownloadManager.getAllTask();
         mDownloadTitle.setText(getNumText(R.string.downloads, allTask.size()));
-        mDownloadAdapter = new ManagerDownloadAdapter(mContext, mDownloadManager);
+        mDownloadAdapter = new ManagerDownloadAdapter(mContext, mDownloadManager, allTask);
         mDownloadList.setAdapter(mDownloadAdapter);
-        mDownloadAdapter.addData(allTask, true);
+        mDownloadAdapter.refreshLayout();
     }
 
     @Override

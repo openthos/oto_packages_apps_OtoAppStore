@@ -29,4 +29,6 @@ public abstract class BasicAdapter extends BaseAdapter {
     public long getItemId(int position) {
         return 0;
     }
+
+    public abstract void refreshLayout();
 }

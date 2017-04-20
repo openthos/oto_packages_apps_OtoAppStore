@@ -97,7 +97,7 @@ public class DownloadManager {
         downloadinfo.setPackageName(packageName);
         downloadinfo.setIconUrl(iconUrl);
         if (filepath == null) {
-            downloadinfo.setFilePath(FileHelper.getDownloadPath(fileName));
+            downloadinfo.setFilePath(FileHelper.getDownloadUrlPath(url));
         } else {
             downloadinfo.setFilePath(filepath);
         }

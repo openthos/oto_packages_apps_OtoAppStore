@@ -41,9 +41,9 @@ public class Constants {
     public static final int APP_NEED_UPDATE = 4;
     public static final int APP_DOWNLOAD_FINISHED = 5;
 
-    public static final int TIME_TWO_SECONDS = 2000;
     public static final int TIME_THREE_SECONDS = 3000;
     public static final int TIME_FIVE_SECONDS = 5000;
+    public static final int TIME_TEN_SECONDS = 10000;
 
     public static final int KB = 1024;
     public static final int MB = 1024 * KB;

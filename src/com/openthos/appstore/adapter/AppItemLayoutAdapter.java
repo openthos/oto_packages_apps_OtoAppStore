@@ -20,6 +20,7 @@ import com.openthos.appstore.download.DownloadListener;
 import com.openthos.appstore.download.DownloadManager;
 import com.openthos.appstore.download.DownloadService;
 import com.openthos.appstore.utils.SQLOperator;
+import com.openthos.appstore.view.CustomLayoutManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,8 +55,8 @@ public class AppItemLayoutAdapter extends BasicAdapter implements View.OnClickLi
             holder.whole.setText(appItemLayoutInfo.getWhole());
             RecyclerItemAdapter recyclerItemAdapter = new RecyclerItemAdapter(mContext,
                     appItemLayoutInfo.getAppItemInfoList());
-            LinearLayoutManager layout = new LinearLayoutManager(mContext);
-            layout.setOrientation(LinearLayoutManager.HORIZONTAL);
+            CustomLayoutManager layout = new CustomLayoutManager(mContext);
+            layout.setOrientation(CustomLayoutManager.HORIZONTAL);
             holder.recyclerView.setLayoutManager(layout);
             holder.recyclerView.setHasFixedSize(true);
             holder.recyclerView.setAdapter(recyclerItemAdapter);

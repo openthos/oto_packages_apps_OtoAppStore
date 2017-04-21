@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="150dp"
+              android:layout_width="@dimen/item_cloumns"
               android:layout_height="wrap_content"
               android:layout_gravity="center"
-              android:orientation="vertical">
+              android:orientation="vertical"
+              android:paddingLeft="@dimen/spacing_ten"
+              android:paddingRight="@dimen/spacing_ten">
 
     <LinearLayout
         android:id="@+id/app_item_layout"
-        android:layout_width="130dp"
-        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_margin="@dimen/spacing_five"
         android:background="@drawable/shape_background"
+        android:gravity="center_vertical"
         android:orientation="vertical">
 
         <ImageView
@@ -26,7 +29,7 @@
             android:id="@+id/app_item_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="@dimen/spacing_ten"
             android:layout_marginTop="@dimen/spacing_five"
             android:lines="2"
             android:textColor="@color/item_title"
@@ -37,7 +40,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/spacing_ten"
-            android:layout_marginTop="3dp"
+            android:layout_marginTop="@dimen/spacing_five"
             android:singleLine="true"
             android:textColor="@color/item_type"
             android:textSize="@dimen/app_item_type_size"/>
@@ -45,8 +48,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="3dp"
+            android:layout_marginLeft="@dimen/spacing_ten"
+            android:layout_marginTop="@dimen/spacing_five"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -61,7 +64,7 @@
                 android:layout_width="@dimen/item_img_size"
                 android:layout_height="@dimen/item_img_size"
                 android:layout_marginLeft="@dimen/spacing_five"
-                android:src="@drawable/star_black_select"
+                android:src="@drawable/star_gray"
                 />
 
             <View
@@ -77,8 +80,8 @@
                 android:background="@null"
                 android:padding="@dimen/spacing_five"
                 android:text="@string/install"
-                android:textSize="@dimen/second_title_size"
                 android:textColor="@color/item_download"
+                android:textSize="@dimen/second_title_size"
                 />
         </LinearLayout>
     </LinearLayout>

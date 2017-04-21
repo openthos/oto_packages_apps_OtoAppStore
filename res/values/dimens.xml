@@ -17,11 +17,13 @@
     <dimen name="title_img_size">40dp</dimen>
     <dimen name="item_img_size">12dp</dimen>
     <dimen name="title_img_back">25dp</dimen>
+    <dimen name="item_cloumns">150dp</dimen>
     <dimen name="app_item_img">95dp</dimen>
     <dimen name="vertical_spacing">15dp</dimen>
     <dimen name="button_height">30dp</dimen>
     <dimen name="button_width">100dp</dimen>
     <dimen name="spacing_ten">10dp</dimen>
     <dimen name="spacing_five">5dp</dimen>
+    <dimen name="spacing_thirty">30dp</dimen>
     <dimen name="item_update_imageview_width">80dp</dimen>
 </resources>

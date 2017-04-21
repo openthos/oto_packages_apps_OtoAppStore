@@ -41,6 +41,7 @@ public class SearchFragment extends BaseFragment {
 
     @Override
     public void initData() {
+        mDatas.clear();
         List<String> searchData = SPUtils.getSearchData(getActivity(), mContent);
         if (searchData != null) {
             for (int i = 0; i < searchData.size(); i++) {

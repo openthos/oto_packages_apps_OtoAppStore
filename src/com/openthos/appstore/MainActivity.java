@@ -75,6 +75,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private ScrollView mScrollView;
     private BaseFragment mCurrentFragment;
     private List<Integer> mPages;
+    private boolean mIsSearch;
 
     private BroadcastReceiver mAppInstallBroadCast = new BroadcastReceiver() {
         @Override
@@ -156,6 +157,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         mManager = getSupportFragmentManager();
         mPages = new ArrayList<>();
         mAppInstallMap = new HashMap<>();
+        mIsSearch = true;
         loadAppPackageInfo();
         initHandler();
         updateAllData();
@@ -188,14 +190,15 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.activity_title_back:
-                if (mPages.size() > 1) {
-                    mPages.remove(mPages.size() - 1);
-                    mHandler.sendEmptyMessage(mPages.get(mPages.size() - 1));
-                    mPages.remove(mPages.size() - 1);
-                }
-                break;
+        if (view.getId() == R.id.activity_title_back && mPages.size() > 1) {
+            mPages.remove(mPages.size() - 1);
+            mHandler.sendEmptyMessage(mPages.get(mPages.size() - 1));
+            mPages.remove(mPages.size() - 1);
+        }
+        if (!TextUtils.isEmpty(mSearchText.getText())) {
+            mIsSearch = false;
+            mSearchText.clearFocus();
+            mSearchText.setText("");
         }
     }
 
@@ -258,7 +261,9 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         mCurrentFragment = fragment;
         mTransaction.commit();
         mManager.executePendingTransactions();
-        mPages.add(msg.what);
+        if (mPages.size() < 1 || mPages.get(mPages.size() - 1) != msg.what) {
+            mPages.add(msg.what);
+        }
         fragment.refresh();
         mScrollView.scrollTo(0, 0);
     }
@@ -377,6 +382,11 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                     mHandler.sendEmptyMessage(Constants.MANAGER_FRAGMENT);
                     break;
             }
+            if (!TextUtils.isEmpty(mSearchText.getText())) {
+                mIsSearch = false;
+                mSearchText.clearFocus();
+                mSearchText.setText("");
+            }
         }
     }
 
@@ -391,8 +401,11 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
         @Override
         public void afterTextChanged(Editable editable) {
-            mHandler.sendMessage(
-                    mHandler.obtainMessage(Constants.SEARCH_FRAGMENT, editable.toString()));
+            if (mIsSearch) {
+                mHandler.sendMessage(
+                        mHandler.obtainMessage(Constants.SEARCH_FRAGMENT, editable.toString()));
+            }
+            mIsSearch = true;
         }
     }
 

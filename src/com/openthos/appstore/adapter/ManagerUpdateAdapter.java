@@ -58,7 +58,7 @@ public class ManagerUpdateAdapter extends BasicAdapter implements View.OnClickLi
                 AppUtils.uninstallApk(mContext, pkgName);
                 break;
             default:
-                AppUtils.startApk(mContext, pkgName);
+                AppUtils.openApp(mContext, pkgName);
                 break;
         }
     }

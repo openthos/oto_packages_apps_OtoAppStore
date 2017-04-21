@@ -21,6 +21,7 @@ import com.openthos.appstore.bean.TaskInfo;
 import com.openthos.appstore.download.DownloadListener;
 import com.openthos.appstore.download.DownloadManager;
 import com.openthos.appstore.download.DownloadService;
+import com.openthos.appstore.utils.AppUtils;
 import com.openthos.appstore.utils.FileHelper;
 import com.openthos.appstore.utils.ImageCache;
 import com.openthos.appstore.utils.SQLOperator;
@@ -148,6 +149,9 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
                             R.drawable.shape_button_white_cyan, R.color.button_cyan);
                 }
                 break;
+            case Constants.APP_HAVE_INSTALLED:
+                AppUtils.openApp(getActivity(), mAppItemInfo.getPackageName());
+                break;
             default:
                 break;
         }
@@ -179,8 +183,8 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
                     break;
                 case Constants.APP_HAVE_INSTALLED:
                     mProgressBar.setVisibility(View.GONE);
-                    setContent(mDownload, R.string.have_installed,
-                            R.drawable.shape_button_white_gray, R.color.button_gray);
+                    setContent(mDownload, R.string.open,
+                            R.drawable.shape_button_white_cyan, R.color.button_cyan);
                     break;
                 case Constants.APP_DOWNLOAD_CONTINUE:
                     mProgressBar.setVisibility(View.VISIBLE);

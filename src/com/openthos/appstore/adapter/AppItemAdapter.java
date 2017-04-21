@@ -20,6 +20,7 @@ import com.openthos.appstore.bean.TaskInfo;
 import com.openthos.appstore.download.DownloadListener;
 import com.openthos.appstore.download.DownloadManager;
 import com.openthos.appstore.download.DownloadService;
+import com.openthos.appstore.utils.AppUtils;
 import com.openthos.appstore.utils.FileHelper;
 import com.openthos.appstore.utils.ImageCache;
 import com.openthos.appstore.utils.SQLOperator;
@@ -79,7 +80,7 @@ public class AppItemAdapter extends BasicAdapter implements View.OnClickListener
                     holder.install.setText(mContext.getString(R.string.download));
                     break;
                 case Constants.APP_HAVE_INSTALLED:
-                    holder.install.setText(mContext.getString(R.string.have_installed));
+                    holder.install.setText(mContext.getString(R.string.open));
                     break;
                 case Constants.APP_DOWNLOAD_CONTINUE:
                     holder.install.setText(mContext.getString(R.string.downloading));
@@ -205,6 +206,9 @@ public class AppItemAdapter extends BasicAdapter implements View.OnClickListener
                     if (!file.exists() || file.length() == 0) {
                         installBtn.setText(mContext.getString(R.string.download));
                     }
+                    break;
+                case Constants.APP_HAVE_INSTALLED:
+                    AppUtils.openApp(mContext, appItemInfo.getPackageName());
                     break;
                 default:
                     break;

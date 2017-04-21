@@ -15,6 +15,7 @@ import com.openthos.appstore.R;
 import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.app.StoreApplication;
 import com.openthos.appstore.bean.AppItemInfo;
+import com.openthos.appstore.utils.AppUtils;
 import com.openthos.appstore.utils.FileHelper;
 import com.openthos.appstore.utils.ImageCache;
 
@@ -54,7 +55,7 @@ public class RecyclerItemAdapter extends RecyclerView.Adapter<RecyclerItemAdapte
                     holder.install.setText(mContext.getString(R.string.download));
                     break;
                 case Constants.APP_HAVE_INSTALLED:
-                    holder.install.setText(mContext.getString(R.string.have_installed));
+                    holder.install.setText(mContext.getString(R.string.open));
                     break;
                 case Constants.APP_DOWNLOAD_CONTINUE:
                     holder.install.setText(mContext.getString(R.string.downloading));
@@ -132,6 +133,9 @@ public class RecyclerItemAdapter extends RecyclerView.Adapter<RecyclerItemAdapte
                     if (!file.exists() || file.length() == 0) {
                         installBtn.setText(mContext.getString(R.string.download));
                     }
+                    break;
+                case Constants.APP_HAVE_INSTALLED:
+                    AppUtils.openApp(mContext, appItemInfo.getPackageName());
                     break;
                 default:
                     break;

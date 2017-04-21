@@ -31,7 +31,7 @@ public class AppUtils {
         context.startActivity(intent);
     }
 
-    public static void startApk(Context context, String appPackageName) {
+    public static void openApp(Context context, String appPackageName) {
         Intent intent = context.getPackageManager().getLaunchIntentForPackage(appPackageName);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);

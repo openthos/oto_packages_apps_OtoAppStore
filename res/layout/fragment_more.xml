@@ -8,12 +8,12 @@
         android:id="@+id/fragment_more_grid"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="15dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginTop="15dp"
-        android:columnWidth="150dp"
+        android:layout_marginBottom="@dimen/spacing_thirty"
+        android:layout_marginLeft="@dimen/spacing_thirty"
+        android:layout_marginTop="@dimen/spacing_ten"
+        android:columnWidth="@dimen/item_cloumns"
         android:numColumns="auto_fit"
         android:stretchMode="columnWidth"
-        android:verticalSpacing="20dp"/>
+        android:verticalSpacing="@dimen/vertical_spacing"/>
 
 </FrameLayout>

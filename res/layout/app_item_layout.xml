@@ -4,15 +4,15 @@
               android:layout_height="match_parent"
               android:background="@color/main_background"
               android:orientation="vertical"
-              android:paddingLeft="30dp"
-              android:paddingRight="30dp">
+              android:paddingLeft="@dimen/spacing_thirty"
+              android:paddingRight="@dimen/spacing_thirty">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginLeft="@dimen/spacing_ten"
+        android:layout_marginRight="@dimen/spacing_ten"
+        android:layout_marginTop="@dimen/spacing_ten"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         >
@@ -44,13 +44,13 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginBottom="5dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginBottom="@dimen/spacing_five"
+        android:layout_marginTop="@dimen/spacing_five"
         android:background="@color/view_line"
         />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/app_item_layout_recycler"
         android:layout_width="match_parent"
-        android:layout_height="230dp"/>
+        android:layout_height="wrap_content"/>
 </LinearLayout>

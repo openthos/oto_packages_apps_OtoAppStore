@@ -88,7 +88,7 @@ public class ManagerDownloadAdapter extends BasicAdapter implements View.OnClick
             case R.id.item_download_install:
                 String s = ((Button) view).getText().toString();
                 if (s.equals(mContext.getResources().getString(R.string.open))) {
-                    AppUtils.startApk(mContext, taskInfo.getPackageName());
+                    AppUtils.openApp(mContext, taskInfo.getPackageName());
                 } else if (s.equals(mContext.getResources().getString(R.string.continues))) {
                     MainActivity.mDownloadService.startTask(taskInfo.getTaskID());
                     taskInfo.setOnDownloading(true);

@@ -128,6 +128,7 @@ public class SQLOperator {
                 downloadinfo.setUrl(cursor.getString(cursor.getColumnIndex("url")));
                 downloadinfo.setTaskID(cursor.getString(cursor.getColumnIndex("taskID")));
                 downloadinfo.setPackageName(cursor.getString(cursor.getColumnIndex("packageName")));
+                downloadinfo.setUserID(cursor.getString(cursor.getColumnIndex("userID")));
                 downloadinfo.setIsSuccess("true".
                         equals(cursor.getString(cursor.getColumnIndex("isSuccess"))));
                 downloadinfo.setIconUrl(cursor.getString(cursor.getColumnIndex("iconUrl")));

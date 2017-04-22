@@ -12,6 +12,7 @@ import com.openthos.appstore.bean.AppInstallInfo;
 import com.openthos.appstore.bean.TaskInfo;
 import com.openthos.appstore.download.DownloadManager;
 import com.openthos.appstore.download.DownloadService;
+import com.openthos.appstore.utils.Tools;
 import com.openthos.appstore.view.CustomListView;
 
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ManagerFragment extends BaseFragment {
+public class ManagerFragment extends BaseFragment implements View.OnClickListener {
 
     private CustomListView mUpdateList;
     private CustomListView mDownloadList;
@@ -62,6 +63,8 @@ public class ManagerFragment extends BaseFragment {
         mDownloadManager = DownloadService.getDownloadManager();
         mContext = getActivity();
         mAppInstallInfos = new ArrayList<>();
+        mStartAll.setOnClickListener(this);
+        mUpdateAll.setOnClickListener(this);
     }
 
     @Override
@@ -88,5 +91,24 @@ public class ManagerFragment extends BaseFragment {
 
     private String getNumText(int text, int size) {
         return String.format(getResources().getString(text), size);
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.fragment_manager_startAll:
+                TextView btn = (TextView) view;
+                if (btn.getText().equals(getString(R.string.startAll))) {
+                    btn.setText(getString(R.string.stopAll));
+                    mDownloadManager.startAllTask();
+                } else {
+                    btn.setText(getString(R.string.startAll));
+                    mDownloadManager.stopAllTask();
+                }
+                break;
+            case R.id.fragment_manager_updateAll:
+                Tools.toast(getActivity(), getString(R.string.no_data_need_update));
+                break;
+        }
     }
 }

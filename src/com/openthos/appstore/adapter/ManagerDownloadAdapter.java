@@ -139,7 +139,13 @@ public class ManagerDownloadAdapter extends BasicAdapter implements View.OnClick
         @Override
         public void onStart(DownloadInfo downloadInfo) {
             Tools.toast(mContext, mContext.getResources().getString(R.string.start_download));
-
+            for (TaskInfo info : (List<TaskInfo>) mDatas) {
+                if (downloadInfo.getTaskID().equals(info.getTaskID())) {
+                    info.setOnDownloading(true);
+                    notifyDataSetChanged();
+                    break;
+                }
+            }
         }
 
         @Override

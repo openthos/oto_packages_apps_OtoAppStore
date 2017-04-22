@@ -8,8 +8,6 @@ import com.openthos.appstore.MainActivity;
 import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.bean.DownloadInfo;
 import com.openthos.appstore.utils.FileHelper;
-import com.openthos.appstore.utils.SPUtils;
-import com.openthos.appstore.utils.Tools;
 import com.openthos.appstore.utils.SQLOperator;
 
 import java.io.BufferedInputStream;
@@ -39,6 +37,7 @@ public class Downloader {
     private static Map<String, DownloadListener> mListenerMap = new HashMap<>();
     private boolean mIsSupportFTP = false;
     private boolean mOndownload;
+    private boolean mIsDelete;
     private int mDownloadtimes;
     private long mFileSize;
     private long mDownFileSize;
@@ -60,6 +59,7 @@ public class Downloader {
         mDatakeeper = new SQLOperator(context);
         mDownloadInfo = sqlFileInfo;
         mOndownload = false;
+        mIsDelete = false;
         if (isNewTask) {
             saveDownloadInfo();
         }
@@ -103,11 +103,13 @@ public class Downloader {
     }
 
     public void destroy() {
+        mIsDelete = true;
         if (mDownloadThread != null) {
             mDownloadThread.stopDownload();
             mDownloadThread = null;
+        } else {
+            mDatakeeper.deleteDownloadInfo(mUserID, mDownloadInfo.getTaskID());
         }
-        mDatakeeper.deleteDownloadInfo(mUserID, mDownloadInfo.getTaskID());
         File downloadFile = FileHelper.getDownloadTempFile(mDownloadInfo.getFilePath());
         if (downloadFile.exists()) {
             downloadFile.delete();
@@ -169,10 +171,10 @@ public class Downloader {
                         } else {
                             mFileSize = 0;
                             mDownFileSize = 0;
-                            saveDownloadInfo();
                             openConnention();
                         }
                     }
+                    saveDownloadInfo();
                     inputStream = urlConn.getInputStream();
                     bis = new BufferedInputStream(inputStream);
 
@@ -229,14 +231,13 @@ public class Downloader {
                                 mDownloadThread = null;
                                 mOndownload = false;
                                 mHandler.sendMessage(
-                                        mHandler.obtainMessage(TASK_ERROR,e.toString()));
+                                        mHandler.obtainMessage(TASK_ERROR, e.toString()));
                             }
                         } else {
-                            mDownFileSize = 0;
                             mDownloadtimes = MAX_DOWNLOAD_TIMES;
                             mOndownload = false;
                             mDownloadThread = null;
-                            mHandler.sendMessage(mHandler.obtainMessage(TASK_ERROR,e.toString()));
+                            mHandler.sendMessage(mHandler.obtainMessage(TASK_ERROR, e.toString()));
                         }
 
                     } else {
@@ -364,7 +365,7 @@ public class Downloader {
         }
     }
 
-   private Handler mHandler = new Handler() {
+    private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             if (msg.what == TASK_START) {
@@ -372,9 +373,15 @@ public class Downloader {
                 startNotice();
             } else if (msg.what == TASK_STOP) {
                 mDownloadInfo.setSpeed(0);
-                saveDownloadInfo();
+                if (mIsDelete) {
+                    mDatakeeper.deleteDownloadInfo(mUserID, mDownloadInfo.getTaskID());
+                } else {
+                    saveDownloadInfo();
+                }
+                mIsDelete = false;
                 stopNotice();
             } else if (msg.what == TASK_PROGESS) {
+                saveDownloadInfo();
                 onProgressNotice();
             } else if (msg.what == TASK_ERROR) {
                 mDownloadInfo.setSpeed(0);

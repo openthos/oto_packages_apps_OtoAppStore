@@ -49,10 +49,10 @@ public class HomeFragment extends BaseFragment {
         mListView = (CustomListView) view.findViewById(R.id.fragment_home_list);
         mAdapter = new AppItemLayoutAdapter(getActivity(), mAppInstallMap, mDatas);
         mListView.setAdapter(mAdapter);
+        mBannerView.setImageUrls(Constants.getString());
     }
 
     public void initData() {
-        mBannerView.setImageUrls(Constants.getString());
         new Thread(new GetData("/data/home", HOME_DATA_BACK)).start();
     }
 

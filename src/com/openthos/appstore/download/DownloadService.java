@@ -58,10 +58,6 @@ public class DownloadService extends Service {
             mDownloadManager.addTask(task, url, fileName, packageName, iconUrl);
         }
 
-        public void addTask(String task, String url, String fileName, String packageName) {
-            mDownloadManager.addTask(task, url, fileName, packageName);
-        }
-
         public void startAllTask() {
             mDownloadManager.startAllTask();
         }

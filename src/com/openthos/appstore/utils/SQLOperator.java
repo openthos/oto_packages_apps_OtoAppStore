@@ -63,11 +63,12 @@ public class SQLOperator {
     }
 
     public DownloadInfo getDownloadInfoByPkgName(String packageName) {
-        DownloadInfo downloadinfo = new DownloadInfo();
+        DownloadInfo downloadinfo = null;
         mDb = mDbhelper.getReadableDatabase();
         Cursor cursor = mDb.rawQuery("SELECT * FROM " + SQLiteHelper.DOWNLOAD_INFO
                         + " WHERE packageName=\"" + packageName + "\"", null);
         while (cursor.moveToNext()) {
+            downloadinfo = new DownloadInfo();
             downloadinfo.setDownloadSize(cursor.getLong(cursor.getColumnIndex("downLoadSize")));
             downloadinfo.setFileName(cursor.getString(cursor.getColumnIndex("fileName")));
             downloadinfo.setFilePath(cursor.getString(cursor.getColumnIndex("filePath")));
@@ -113,8 +114,8 @@ public class SQLOperator {
     public ArrayList<DownloadInfo> getUserDownloadInfo(String userID) {
         ArrayList<DownloadInfo> downloadinfoList = new ArrayList<DownloadInfo>();
         mDb = mDbhelper.getWritableDatabase();
+        Cursor cursor = null;
         try {
-            Cursor cursor = null;
             cursor = mDb.rawQuery(
                     "SELECT * from " + SQLiteHelper.DOWNLOAD_INFO + " WHERE userID = '" +
                                                                           userID + "'", null);
@@ -134,10 +135,10 @@ public class SQLOperator {
                 downloadinfo.setIconUrl(cursor.getString(cursor.getColumnIndex("iconUrl")));
                 downloadinfoList.add(downloadinfo);
             }
-            cursor.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
+        cursor.close();
         mDb.close();
         return downloadinfoList;
     }

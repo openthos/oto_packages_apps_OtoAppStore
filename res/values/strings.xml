@@ -69,4 +69,8 @@
     <string name="comment_content">very good</string>
     <string name="who">Li Xiaohua</string>
     <string name="this_task_have_been_download">this task have been download</string>
+    <string name="network_is_available">Network is available</string>
+    <string name="file_not_found">File not found</string>
+    <string name="connect_timeout">Connect timeout</string>
+    <string name="updating">updating</string>
 </resources>

@@ -24,6 +24,7 @@ import com.openthos.appstore.download.DownloadService;
 import com.openthos.appstore.utils.AppUtils;
 import com.openthos.appstore.utils.FileHelper;
 import com.openthos.appstore.utils.ImageCache;
+import com.openthos.appstore.utils.NetUtils;
 import com.openthos.appstore.utils.SQLOperator;
 import com.openthos.appstore.utils.Tools;
 import com.openthos.appstore.view.BannerView;
@@ -111,49 +112,49 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
 
     @Override
     public void onClick(View view) {
-        switch (mAppItemInfo.getState()) {
-            case Constants.APP_NOT_INSTALL:
-                mProgressBar.setVisibility(View.VISIBLE);
-                mDownload.setText(getString(R.string.pause));
-                MainActivity.mDownloadService.addTask(mAppItemInfo.getTaskId() + "",
-                        StoreApplication.mBaseUrl + "/" + mAppItemInfo.getDownloadUrl(),
-                        mAppItemInfo.getAppName(),
-                        mAppItemInfo.getPackageName(),
-                        mAppItemInfo.getIconUrl());
-                break;
-            case Constants.APP_DOWNLOAD_CONTINUE:
-                mProgressBar.setVisibility(View.VISIBLE);
-                mDownload.setText(getString(R.string.continues));
-                MainActivity.mDownloadService.stopTask(mAppItemInfo.getTaskId() + "");
-                break;
-            case Constants.APP_DOWNLOAD_PAUSE:
-                mProgressBar.setVisibility(View.VISIBLE);
-                mDownload.setText(getString(R.string.pause));
-                MainActivity.mDownloadService.startTask(mAppItemInfo.getTaskId() + "");
-                break;
-            case Constants.APP_NEED_UPDATE:
-                mProgressBar.setVisibility(View.VISIBLE);
-                mDownload.setText(getString(R.string.pause));
-                MainActivity.mDownloadService.addTask(mAppItemInfo.getTaskId() + "",
-                        StoreApplication.mBaseUrl + "/" + mAppItemInfo.getDownloadUrl(),
-                        mAppItemInfo.getAppName(),
-                        mAppItemInfo.getPackageName(),
-                        mAppItemInfo.getIconUrl());
-                break;
-            case Constants.APP_DOWNLOAD_FINISHED:
-                File file = FileHelper.getDownloadUrlFile(mAppItemInfo.getDownloadUrl());
-                MainActivity.mHandler.sendMessage(MainActivity.mHandler.
-                        obtainMessage(Constants.INSTALL_APK, file.getAbsolutePath()));
-                if (!file.exists() || file.length() == 0) {
-                    setContent(mDownload, R.string.download,
-                            R.drawable.shape_button_white_cyan, R.color.button_cyan);
-                }
-                break;
-            case Constants.APP_HAVE_INSTALLED:
-                AppUtils.openApp(getActivity(), mAppItemInfo.getPackageName());
-                break;
-            default:
-                break;
+        if (mAppItemInfo.getState() == Constants.APP_DOWNLOAD_FINISHED) {
+            File file = FileHelper.getDownloadUrlFile(mAppItemInfo.getDownloadUrl());
+            MainActivity.mHandler.sendMessage(MainActivity.mHandler.
+                    obtainMessage(Constants.INSTALL_APK, file.getAbsolutePath()));
+            if (!file.exists() || file.length() == 0) {
+                setContent(mDownload, R.string.download,
+                        R.drawable.shape_button_white_cyan, R.color.button_cyan);
+            }
+        } else if (mAppItemInfo.getState() == Constants.APP_HAVE_INSTALLED) {
+            AppUtils.openApp(getActivity(), mAppItemInfo.getPackageName());
+        } else if (NetUtils.isConnected(getActivity())) {
+            switch (mAppItemInfo.getState()) {
+                case Constants.APP_NOT_INSTALL:
+                    mProgressBar.setVisibility(View.VISIBLE);
+                    mDownload.setText(getString(R.string.pause));
+                    MainActivity.mDownloadService.addTask(mAppItemInfo.getTaskId() + "",
+                            StoreApplication.mBaseUrl + "/" + mAppItemInfo.getDownloadUrl(),
+                            mAppItemInfo.getAppName(),
+                            mAppItemInfo.getPackageName(),
+                            mAppItemInfo.getIconUrl());
+                    break;
+                case Constants.APP_DOWNLOAD_CONTINUE:
+                    mProgressBar.setVisibility(View.VISIBLE);
+                    mDownload.setText(getString(R.string.continues));
+                    MainActivity.mDownloadService.stopTask(mAppItemInfo.getTaskId() + "");
+                    break;
+                case Constants.APP_DOWNLOAD_PAUSE:
+                    mProgressBar.setVisibility(View.VISIBLE);
+                    mDownload.setText(getString(R.string.pause));
+                    MainActivity.mDownloadService.startTask(mAppItemInfo.getTaskId() + "");
+                    break;
+                case Constants.APP_NEED_UPDATE:
+                    mProgressBar.setVisibility(View.VISIBLE);
+                    mDownload.setText(getString(R.string.pause));
+                    MainActivity.mDownloadService.addTask(mAppItemInfo.getTaskId() + "",
+                            StoreApplication.mBaseUrl + "/" + mAppItemInfo.getDownloadUrl(),
+                            mAppItemInfo.getAppName(),
+                            mAppItemInfo.getPackageName(),
+                            mAppItemInfo.getIconUrl());
+                    break;
+            }
+        } else {
+            Tools.toast(getActivity(), getString(R.string.check_net_state));
         }
     }
 
@@ -238,7 +239,6 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
                 } else if (downloadSize == fileSize) {
                     switch (mAppItemInfo.getState()) {
                         case Constants.APP_HAVE_INSTALLED:
-                        case Constants.APP_NEED_UPDATE:
                             break;
                         default:
                             mAppItemInfo.setProgress(100);

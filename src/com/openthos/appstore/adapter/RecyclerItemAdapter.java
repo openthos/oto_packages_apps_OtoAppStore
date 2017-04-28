@@ -18,6 +18,8 @@ import com.openthos.appstore.bean.AppItemInfo;
 import com.openthos.appstore.utils.AppUtils;
 import com.openthos.appstore.utils.FileHelper;
 import com.openthos.appstore.utils.ImageCache;
+import com.openthos.appstore.utils.NetUtils;
+import com.openthos.appstore.utils.Tools;
 
 import java.io.File;
 import java.util.List;
@@ -101,44 +103,45 @@ public class RecyclerItemAdapter extends RecyclerView.Adapter<RecyclerItemAdapte
 
     private void installClick(Button installBtn, AppItemInfo appItemInfo) {
         if (appItemInfo != null) {
-            switch (appItemInfo.getState()) {
-                case Constants.APP_NOT_INSTALL:
-                    installBtn.setText(mContext.getString(R.string.downloading));
-                    MainActivity.mDownloadService.addTask(appItemInfo.getTaskId() + "",
-                            StoreApplication.mBaseUrl + "/" + appItemInfo.getDownloadUrl(),
-                            appItemInfo.getAppName(),
-                            appItemInfo.getPackageName(),
-                            appItemInfo.getIconUrl());
-                    break;
-                case Constants.APP_DOWNLOAD_CONTINUE:
-                    installBtn.setText(mContext.getString(R.string.pause));
-                    MainActivity.mDownloadService.stopTask(appItemInfo.getTaskId() + "");
-                    break;
-                case Constants.APP_DOWNLOAD_PAUSE:
-                    installBtn.setText(mContext.getString(R.string.downloading));
-                    MainActivity.mDownloadService.startTask(appItemInfo.getTaskId() + "");
-                    break;
-                case Constants.APP_NEED_UPDATE:
-                    installBtn.setText(mContext.getString(R.string.downloading));
-                    MainActivity.mDownloadService.addTask(appItemInfo.getTaskId() + "",
-                            StoreApplication.mBaseUrl + "/" + appItemInfo.getDownloadUrl(),
-                            appItemInfo.getAppName(),
-                            appItemInfo.getPackageName(),
-                            appItemInfo.getIconUrl());
-                    break;
-                case Constants.APP_DOWNLOAD_FINISHED:
-                    File file = FileHelper.getDownloadUrlFile(appItemInfo.getDownloadUrl());
-                    MainActivity.mHandler.sendMessage(MainActivity.mHandler.
-                            obtainMessage(Constants.INSTALL_APK, file.getAbsolutePath()));
-                    if (!file.exists() || file.length() == 0) {
-                        installBtn.setText(mContext.getString(R.string.download));
-                    }
-                    break;
-                case Constants.APP_HAVE_INSTALLED:
-                    AppUtils.openApp(mContext, appItemInfo.getPackageName());
-                    break;
-                default:
-                    break;
+            int state = appItemInfo.getState();
+            if (state == Constants.APP_DOWNLOAD_FINISHED) {
+                File file = FileHelper.getDownloadUrlFile(appItemInfo.getDownloadUrl());
+                MainActivity.mHandler.sendMessage(MainActivity.mHandler.
+                        obtainMessage(Constants.INSTALL_APK, file.getAbsolutePath()));
+                if (!file.exists() || file.length() == 0) {
+                    installBtn.setText(mContext.getString(R.string.download));
+                }
+            } else if (state == Constants.APP_HAVE_INSTALLED) {
+                AppUtils.openApp(mContext, appItemInfo.getPackageName());
+            } else if (NetUtils.isConnected(mContext)) {
+                switch (state) {
+                    case Constants.APP_NOT_INSTALL:
+                        installBtn.setText(mContext.getString(R.string.downloading));
+                        MainActivity.mDownloadService.addTask(appItemInfo.getTaskId() + "",
+                                StoreApplication.mBaseUrl + "/" + appItemInfo.getDownloadUrl(),
+                                appItemInfo.getAppName(),
+                                appItemInfo.getPackageName(),
+                                appItemInfo.getIconUrl());
+                        break;
+                    case Constants.APP_DOWNLOAD_CONTINUE:
+                        installBtn.setText(mContext.getString(R.string.pause));
+                        MainActivity.mDownloadService.stopTask(appItemInfo.getTaskId() + "");
+                        break;
+                    case Constants.APP_DOWNLOAD_PAUSE:
+                        installBtn.setText(mContext.getString(R.string.downloading));
+                        MainActivity.mDownloadService.startTask(appItemInfo.getTaskId() + "");
+                        break;
+                    case Constants.APP_NEED_UPDATE:
+                        installBtn.setText(mContext.getString(R.string.downloading));
+                        MainActivity.mDownloadService.addTask(appItemInfo.getTaskId() + "",
+                                StoreApplication.mBaseUrl + "/" + appItemInfo.getDownloadUrl(),
+                                appItemInfo.getAppName(),
+                                appItemInfo.getPackageName(),
+                                appItemInfo.getIconUrl());
+                        break;
+                }
+            } else {
+                Tools.toast(mContext, mContext.getString(R.string.check_net_state));
             }
         }
     }

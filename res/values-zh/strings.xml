@@ -67,4 +67,8 @@
     <string name="comment_content">用着很不错，赞</string>
     <string name="who">李晓华</string>
     <string name="this_task_have_been_download">当前任务已经下载完成</string>
+    <string name="network_is_available">请检查网络是否可用</string>
+    <string name="file_not_found">文件未找到</string>
+    <string name="connect_timeout">连接超时</string>
+    <string name="updating">更新中</string>
 </resources>

@@ -44,6 +44,10 @@ public class SPUtils {
         edit.commit();
     }
 
+    public static List<String> getAllData(Context context) {
+        return getSearchData(context, null);
+    }
+
     public static List<String> getSearchData(Context context, String content) {
         List<String> list = new ArrayList<>();
         SharedPreferences sp =
@@ -52,12 +56,12 @@ public class SPUtils {
         if (!TextUtils.isEmpty(content)) {
             for (Map.Entry<String, String> entry : all.entrySet()) {
                 if (entry.getKey().toLowerCase().contains(content.toLowerCase().trim())) {
-                    list.add(entry.getKey());
+                    list.add(entry.getValue());
                 }
             }
         } else {
             for (Map.Entry<String, String> entry : all.entrySet()) {
-                list.add(entry.getKey());
+                list.add(entry.getValue());
             }
         }
 

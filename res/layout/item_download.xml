@@ -32,14 +32,6 @@
             android:textSize="@dimen/big_text_size"
             />
 
-        <TextView
-            android:id="@+id/item_download_category"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:visibility="gone"
-            />
-
         <ProgressBar
             android:id="@+id/item_download_progressBar"
             style="?android:attr/progressBarStyleHorizontal"

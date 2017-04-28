@@ -104,7 +104,6 @@ public class AppItemLayoutAdapter extends BasicAdapter implements View.OnClickLi
                 } else if (downloadSize == fileSize) {
                     switch (appItemInfo.getState()) {
                         case Constants.APP_HAVE_INSTALLED:
-                        case Constants.APP_NEED_UPDATE:
                             break;
                         default:
                             appItemInfo.setProgress(100);

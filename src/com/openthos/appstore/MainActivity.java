@@ -174,6 +174,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                         NetDataListInfo netDataInfos = new NetDataListInfo(new JSONObject(allData));
                         if (netDataInfos != null && netDataInfos.getNetDataInfoList() != null) {
                             List<AppItemInfo> appList = netDataInfos.getNetDataInfoList();
+                            SPUtils.clearData(MainActivity.this, Constants.SP_ALL_DATA);
                             for (int i = 0; i < appList.size(); i++) {
                                 AppItemInfo appInfo = appList.get(i);
                                 SPUtils.saveAllData(MainActivity.this, appInfo);

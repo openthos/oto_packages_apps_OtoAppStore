@@ -12,6 +12,7 @@ public class AppInstallInfo {
     private String comment;
     private String downloadUrl;
     private String taskId;
+    private String iconUrl;
 
     public long getId() {
         return _id;
@@ -91,6 +92,14 @@ public class AppInstallInfo {
 
     public void setTaskId(String taskId) {
         this.taskId = taskId;
+    }
+
+    public String getIconUrl() {
+        return iconUrl;
+    }
+
+    public void setIconUrl(String iconUrl) {
+        this.iconUrl = iconUrl;
     }
 
     @Override

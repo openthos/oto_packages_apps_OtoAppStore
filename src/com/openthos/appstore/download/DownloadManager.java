@@ -27,6 +27,7 @@ public class DownloadManager {
     private ArrayList<Downloader> mTaskList;
     private SharedPreferences mSharedPreferences;
     private DownloadListener mAlltasklistener;
+    private SQLOperator mSQLOperator;
 
     public DownloadManager(Context context) {
         mContext = context;
@@ -42,12 +43,12 @@ public class DownloadManager {
     private void recoverData(Context context, String userID) {
         stopAllTask();
         mTaskList = new ArrayList<>();
-        SQLOperator datakeeper = new SQLOperator(context);
+        mSQLOperator = new SQLOperator(context);
         ArrayList<DownloadInfo> downloadInfoList = null;
         if (userID == null) {
-            downloadInfoList = datakeeper.getAllDownloadInfo();
+            downloadInfoList = mSQLOperator.getAllDownloadInfo();
         } else {
-            downloadInfoList = datakeeper.getUserDownloadInfo(userID);
+            downloadInfoList = mSQLOperator.getUserDownloadInfo(userID);
         }
         if (downloadInfoList.size() > 0) {
             int listSize = downloadInfoList.size();
@@ -72,19 +73,16 @@ public class DownloadManager {
         mIsSupportFTP = isSupportFTP;
     }
 
-    public void addTask(String taskID, String url, String fileName, String packageName) {
-        addTask(taskID, url, fileName, packageName, null);
-    }
-
-    public void addTask(String taskID, String url, String fileName, String packageName,
-                        String iconUrl) {
-        addTask(taskID, url, fileName, packageName, null, iconUrl);
-    }
-
     public void addTask(String taskID, String url,
-                        String fileName, String packageName, String filepath, String iconUrl) {
+                        String fileName, String packageName, String iconUrl) {
         if (taskID == null) {
             taskID = fileName;
+        }
+
+        DownloadInfo downloadInfoByPkgName = mSQLOperator.getDownloadInfoByPkgName(packageName);
+        if (downloadInfoByPkgName != null) {
+            mSQLOperator.deleteDownloadInfo(mUserID, taskID);
+            deleteTask(taskID);
         }
 
         DownloadInfo downloadinfo = new DownloadInfo();
@@ -96,11 +94,8 @@ public class DownloadManager {
         downloadinfo.setUrl(url);
         downloadinfo.setPackageName(packageName);
         downloadinfo.setIconUrl(iconUrl);
-        if (filepath == null) {
-            downloadinfo.setFilePath(FileHelper.getDownloadUrlPath(url));
-        } else {
-            downloadinfo.setFilePath(filepath);
-        }
+        downloadinfo.setFilePath(FileHelper.getDownloadUrlPath(url));
+
         Downloader taskDownloader = new Downloader(
                 mContext, downloadinfo, mPool, mUserID, mIsSupportFTP, true);
         if (mIsSupportFTP) {

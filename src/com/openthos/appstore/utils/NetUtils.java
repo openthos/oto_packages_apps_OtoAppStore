@@ -22,8 +22,8 @@ public class NetUtils {
                     .getSystemService(Context.CONNECTIVITY_SERVICE);
             if (mConnectivityManager != null) {
                 NetworkInfo mNetworkInfo = mConnectivityManager.getActiveNetworkInfo();
-                if (mNetworkInfo != null) {
-                    return mNetworkInfo.isAvailable();
+                if (mNetworkInfo != null && mNetworkInfo.isAvailable()) {
+                    return mNetworkInfo.isConnected();
                 }
             }
         }

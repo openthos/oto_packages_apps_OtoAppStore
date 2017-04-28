@@ -3,8 +3,10 @@ package com.openthos.appstore.download;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
 import com.openthos.appstore.MainActivity;
+import com.openthos.appstore.R;
 import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.bean.DownloadInfo;
 import com.openthos.appstore.utils.FileHelper;
@@ -13,9 +15,12 @@ import com.openthos.appstore.utils.SQLOperator;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
@@ -32,13 +37,13 @@ public class Downloader {
 
     private static final int BUFFER_READ_BYTE = 512 * 1024;
 
-    private static final int MAX_DOWNLOAD_TIMES = 3;
+    private static final int MAX_NUMBER_OF_DOWNLOAD = 3;
 
     private static Map<String, DownloadListener> mListenerMap = new HashMap<>();
     private boolean mIsSupportFTP = false;
     private boolean mOndownload;
     private boolean mIsDelete;
-    private int mDownloadtimes;
+    private int mNumberOfDownload;
     private long mFileSize;
     private long mDownFileSize;
     private String mUserID;
@@ -71,7 +76,7 @@ public class Downloader {
 
     public void start() {
         if (mDownloadThread == null) {
-            mDownloadtimes = 0;
+            mNumberOfDownload = 0;
             mOndownload = true;
             mHandler.sendEmptyMessage(TASK_START);
             mDownloadThread = new DownloadThread();
@@ -146,14 +151,14 @@ public class Downloader {
 
         @Override
         public void run() {
-            while (mDownloadtimes < MAX_DOWNLOAD_TIMES) {
+            while (mNumberOfDownload < MAX_NUMBER_OF_DOWNLOAD) {
 
                 try {
                     if (mDownFileSize == mFileSize
                             && mFileSize > 0) {
                         mOndownload = false;
                         mHandler.sendEmptyMessage(TASK_SUCCESS);
-                        mDownloadtimes = MAX_DOWNLOAD_TIMES;
+                        mNumberOfDownload = MAX_NUMBER_OF_DOWNLOAD;
                         mDownloadThread = null;
                         return;
                     }
@@ -175,75 +180,72 @@ public class Downloader {
                         }
                     }
                     saveDownloadInfo();
-                    inputStream = urlConn.getInputStream();
-                    bis = new BufferedInputStream(inputStream);
+                    int responseCode = urlConn.getResponseCode();
+                    if (responseCode == HttpURLConnection.HTTP_OK ||
+                            responseCode == HttpURLConnection.HTTP_PARTIAL) {
+                        inputStream = urlConn.getInputStream();
+                        bis = new BufferedInputStream(inputStream);
 
-                    bos = new BufferedOutputStream(new FileOutputStream(tempFile, true));
-                    byte[] buffer = new byte[BUFFER_READ_BYTE];
-                    int length = -1;
-                    long timeMillis = System.currentTimeMillis();
-                    long downloadSize = mDownFileSize;
-                    mFileSize = urlConn.getContentLength() + downloadSize;
-                    mDownloadInfo.setFileSize(mFileSize);
-                    saveDownloadInfo();
+                        bos = new BufferedOutputStream(new FileOutputStream(tempFile, true));
+                        byte[] buffer = new byte[BUFFER_READ_BYTE];
+                        int length = -1;
+                        long timeMillis = System.currentTimeMillis();
+                        long downloadSize = mDownFileSize;
+                        mFileSize = urlConn.getContentLength() + downloadSize;
+                        mDownloadInfo.setFileSize(mFileSize);
+                        saveDownloadInfo();
 
-                    while ((length = bis.read(buffer)) != -1 && isdownloading) {
-                        bos.write(buffer, 0, length);
-                        bos.flush();
-                        mDownFileSize += length;
-                        long currentTimeMillis = System.currentTimeMillis();
-                        int nowProgress = (int) ((100 * mDownFileSize) / mFileSize);
-                        if (nowProgress > progress && currentTimeMillis - timeMillis > 1000) {
-                            progress = nowProgress;
-                            long speed = (mDownFileSize - downloadSize) /
-                                    (currentTimeMillis - timeMillis);
-                            downloadSize = mDownFileSize;
-                            mDownloadInfo.setSpeed(speed);
-                            mDownloadInfo.setDownloadSize(downloadSize);
-                            timeMillis = currentTimeMillis;
-                            mHandler.sendEmptyMessage(TASK_PROGESS);
-                        }
-                    }
-                    if (mDownFileSize == mFileSize) {
-                        boolean renameResult = RenameFile();
-                        if (renameResult) {
-                            mDownloadInfo.setDownloadSize(mFileSize);
-                            saveDownloadInfo();
-                            mHandler.sendEmptyMessage(TASK_SUCCESS);
-                        } else {
-                            FileHelper.deleteFile(tempFile);
-                            mHandler.sendEmptyMessage(TASK_ERROR);
-                        }
-
-                        mDownloadThread = null;
-                        mOndownload = false;
-                    }
-                    mDownloadtimes = MAX_DOWNLOAD_TIMES;
-                } catch (Exception e) {
-                    if (isdownloading) {
-                        if (mIsSupportFTP) {
-                            mDownloadtimes++;
-                            if (mDownloadtimes >= MAX_DOWNLOAD_TIMES) {
-                                if (mFileSize > 0) {
-                                    saveDownloadInfo();
-                                }
-                                mPool.remove(mDownloadThread);
-                                mDownloadThread = null;
-                                mOndownload = false;
-                                mHandler.sendMessage(
-                                        mHandler.obtainMessage(TASK_ERROR, e.toString()));
+                        while ((length = bis.read(buffer)) != -1 && isdownloading) {
+                            bos.write(buffer, 0, length);
+                            bos.flush();
+                            mDownFileSize += length;
+                            long currentTimeMillis = System.currentTimeMillis();
+                            int nowProgress = (int) ((100 * mDownFileSize) / mFileSize);
+                            if (nowProgress > progress && currentTimeMillis - timeMillis > 1000) {
+                                progress = nowProgress;
+                                long speed = (mDownFileSize - downloadSize) /
+                                        (currentTimeMillis - timeMillis);
+                                downloadSize = mDownFileSize;
+                                mDownloadInfo.setSpeed(speed);
+                                mDownloadInfo.setDownloadSize(downloadSize);
+                                timeMillis = currentTimeMillis;
+                                mHandler.sendEmptyMessage(TASK_PROGESS);
                             }
-                        } else {
-                            mDownloadtimes = MAX_DOWNLOAD_TIMES;
-                            mOndownload = false;
-                            mDownloadThread = null;
-                            mHandler.sendMessage(mHandler.obtainMessage(TASK_ERROR, e.toString()));
                         }
+                        if (mDownFileSize == mFileSize) {
+                            boolean renameResult = RenameFile();
+                            if (renameResult) {
+                                mDownloadInfo.setDownloadSize(mFileSize);
+                                saveDownloadInfo();
+                                mHandler.sendEmptyMessage(TASK_SUCCESS);
+                            } else {
+                                FileHelper.deleteFile(tempFile);
+                                mHandler.sendEmptyMessage(TASK_ERROR);
+                            }
 
-                    } else {
-                        mDownloadtimes = MAX_DOWNLOAD_TIMES;
+                            mDownloadThread = null;
+                            mOndownload = false;
+                        }
+                        mNumberOfDownload = MAX_NUMBER_OF_DOWNLOAD;
+                    } else if (responseCode == HttpURLConnection.HTTP_CLIENT_TIMEOUT) {
+                        MainActivity.mHandler.sendMessage(
+                                MainActivity.mHandler.obtainMessage(Constants.TOAST,
+                                        mContext.getString(R.string.connect_timeout)));
                     }
-                    e.printStackTrace();
+                } catch (FileNotFoundException e) {
+                    MainActivity.mHandler.sendMessage(
+                            MainActivity.mHandler.obtainMessage(Constants.TOAST,
+                                    mContext.getString(R.string.file_not_found)));
+                    exceptionDeal(e);
+                } catch (MalformedURLException e) {
+                    exceptionDeal(e);
+                } catch (IOException e) {
+                    if (e.toString().contains("java.net.UnknownHostException")) {
+                        MainActivity.mHandler.sendMessage(
+                                MainActivity.mHandler.obtainMessage(Constants.TOAST,
+                                        mContext.getString(R.string.network_is_available)));
+                    }
+                    exceptionDeal(e);
                 } finally {
                     try {
                         if (urlConn != null) {
@@ -277,16 +279,43 @@ public class Downloader {
             }
         }
 
-        public void stopDownload() {
+        private void exceptionDeal(Exception e) {
+            if (isdownloading) {
+                if (mIsSupportFTP) {
+                    mNumberOfDownload++;
+                    if (mNumberOfDownload >= MAX_NUMBER_OF_DOWNLOAD) {
+                        if (mFileSize > 0) {
+                            saveDownloadInfo();
+                        }
+                        mPool.remove(mDownloadThread);
+                        mDownloadThread = null;
+                        mOndownload = false;
+                        mHandler.sendMessage(
+                                mHandler.obtainMessage(TASK_ERROR, e.toString()));
+                    }
+                } else {
+                    mNumberOfDownload = MAX_NUMBER_OF_DOWNLOAD;
+                    mOndownload = false;
+                    mDownloadThread = null;
+                    mHandler.sendMessage(mHandler.obtainMessage(TASK_ERROR, e.toString()));
+                }
+
+            } else {
+                mNumberOfDownload = MAX_NUMBER_OF_DOWNLOAD;
+            }
+            e.printStackTrace();
+        }
+
+        private void stopDownload() {
             isdownloading = false;
-            mDownloadtimes = MAX_DOWNLOAD_TIMES;
+            mNumberOfDownload = MAX_NUMBER_OF_DOWNLOAD;
             if (mFileSize > 0) {
                 saveDownloadInfo();
             }
             mHandler.sendEmptyMessage(TASK_STOP);
         }
 
-        private void openConnention() throws Exception {
+        private void openConnention() throws IOException {
             long urlfilesize = urlConn.getContentLength();
             if (urlfilesize > 0) {
                 FileHelper.creatFile(tempFile);

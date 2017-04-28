@@ -19,6 +19,7 @@ import com.openthos.appstore.download.DownloadManager;
 import com.openthos.appstore.utils.AppUtils;
 import com.openthos.appstore.utils.FileHelper;
 import com.openthos.appstore.utils.ImageCache;
+import com.openthos.appstore.utils.NetUtils;
 import com.openthos.appstore.utils.Tools;
 
 import java.util.List;
@@ -51,15 +52,13 @@ public class ManagerDownloadAdapter extends BasicAdapter implements View.OnClick
             holder.appName.setText(taskInfo.getFileName());
             holder.fileProgress.setProgress(taskInfo.getProgress());
             switch (taskInfo.getDownloadState()) {
-                case Constants.APP_HAVE_INSTALLED:
-                    holder.install.setText(R.string.open);
-                    holder.downloadState.setText(R.string.finished);
-                    break;
                 case Constants.APP_DOWNLOAD_PAUSE:
+                    holder.fileProgress.setVisibility(View.VISIBLE);
                     holder.install.setText(R.string.continues);
                     holder.downloadState.setText(taskInfo.getProgress() + "%");
                     break;
                 case Constants.APP_DOWNLOAD_CONTINUE:
+                    holder.fileProgress.setVisibility(View.VISIBLE);
                     holder.install.setText(R.string.pause);
                     holder.downloadState.setText(taskInfo.getProgress() + "%     " +
                             Tools.transformFileSize(taskInfo.getSpeed() * 1024) + "/s");
@@ -67,7 +66,7 @@ public class ManagerDownloadAdapter extends BasicAdapter implements View.OnClick
                 case Constants.APP_DOWNLOAD_FINISHED:
                     holder.install.setText(R.string.install);
                     holder.downloadState.setText(R.string.finished);
-                    holder.fileProgress.setVisibility(View.INVISIBLE);
+                    holder.fileProgress.setVisibility(View.GONE);
                     break;
                 default:
                     break;
@@ -86,19 +85,7 @@ public class ManagerDownloadAdapter extends BasicAdapter implements View.OnClick
         TaskInfo taskInfo = (TaskInfo) mDatas.get(position);
         switch (view.getId()) {
             case R.id.item_download_install:
-                String s = ((Button) view).getText().toString();
-                if (s.equals(mContext.getResources().getString(R.string.open))) {
-                    AppUtils.openApp(mContext, taskInfo.getPackageName());
-                } else if (s.equals(mContext.getResources().getString(R.string.continues))) {
-                    MainActivity.mDownloadService.startTask(taskInfo.getTaskID());
-                    taskInfo.setOnDownloading(true);
-                } else if (s.equals(mContext.getResources().getString(R.string.pause))) {
-                    MainActivity.mDownloadService.stopTask(taskInfo.getTaskID());
-                    taskInfo.setOnDownloading(false);
-                } else if (s.equals(mContext.getResources().getString(R.string.install))) {
-                    MainActivity.mHandler.sendMessage(MainActivity.mHandler.
-                            obtainMessage(Constants.INSTALL_APK, taskInfo.getFilePath()));
-                }
+                installClick(taskInfo);
                 break;
             case R.id.item_download_remove:
                 MainActivity.mDownloadService.stopTask(taskInfo.getTaskID());
@@ -109,6 +96,26 @@ public class ManagerDownloadAdapter extends BasicAdapter implements View.OnClick
                 break;
         }
         MainActivity.mHandler.sendEmptyMessage(Constants.REFRESH);
+    }
+
+    private void installClick(TaskInfo taskInfo) {
+        if (taskInfo.getDownloadState() == Constants.APP_DOWNLOAD_FINISHED) {
+            MainActivity.mHandler.sendMessage(MainActivity.mHandler.
+                    obtainMessage(Constants.INSTALL_APK, taskInfo.getFilePath()));
+        } else if (NetUtils.isConnected(mContext)) {
+            switch (taskInfo.getDownloadState()) {
+                case Constants.APP_DOWNLOAD_PAUSE:
+                    MainActivity.mDownloadService.startTask(taskInfo.getTaskID());
+                    taskInfo.setOnDownloading(true);
+                    break;
+                case Constants.APP_DOWNLOAD_CONTINUE:
+                    MainActivity.mDownloadService.stopTask(taskInfo.getTaskID());
+                    taskInfo.setOnDownloading(false);
+                    break;
+            }
+        } else {
+            Tools.toast(mContext, mContext.getString(R.string.check_net_state));
+        }
     }
 
     @Override

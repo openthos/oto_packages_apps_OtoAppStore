@@ -2,6 +2,8 @@ package com.openthos.appstore.utils;
 
 import android.content.Context;
 
+import com.openthos.appstore.MainActivity;
+import com.openthos.appstore.R;
 import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.app.StoreApplication;
 
@@ -10,6 +12,8 @@ public class DataCache {
         String data = null;
         String saveData = SPUtils.getData(context, Constants.SP_CACHE_DATA, "saveData");
         if (!NetUtils.isConnected(context)) {
+            MainActivity.mHandler.sendMessage(MainActivity.mHandler.obtainMessage(
+                    Constants.TOAST, context.getString(R.string.check_net_state)));
             data = SPUtils.getData(context,
                     Constants.SP_CACHE_DATA, url + StoreApplication.DATE_FORMAT);
         } else {
@@ -17,7 +21,6 @@ public class DataCache {
                 data = SPUtils.getData(context,
                         Constants.SP_CACHE_DATA, url + StoreApplication.DATE_FORMAT);
             } else {
-                SPUtils.clearData(context, Constants.SP_CACHE_DATA);
                 SPUtils.saveData(context,
                         Constants.SP_CACHE_DATA, "saveData", StoreApplication.DATE_FORMAT);
             }

@@ -9,7 +9,7 @@ import java.util.Date;
 
 public class StoreApplication extends Application {
     public static final String DATE_FORMAT =
-            new SimpleDateFormat("yyyyMMdd").format(new Date(System.currentTimeMillis()));
+            new SimpleDateFormat("yyyyMMddHH").format(new Date(System.currentTimeMillis()));
     public static String mBaseUrl = "http://dev.openthos.org/openthos/appstores";
     public static String mUserId = "admin";
 

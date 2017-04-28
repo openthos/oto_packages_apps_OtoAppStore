@@ -64,6 +64,16 @@
         android:textSize="@dimen/second_title_size"/>
 
     <Button
+        android:id="@+id/item_update_open"
+        android:layout_width="@dimen/button_width"
+        android:layout_height="@dimen/button_height"
+        android:layout_marginLeft="@dimen/spacing_ten"
+        android:background="@color/button_cyan"
+        android:text="@string/open"
+        android:textColor="@color/white"
+        android:textSize="@dimen/second_title_size"/>
+
+    <Button
         android:id="@+id/item_update_uninstall"
         android:layout_width="@dimen/button_width"
         android:layout_height="@dimen/button_height"

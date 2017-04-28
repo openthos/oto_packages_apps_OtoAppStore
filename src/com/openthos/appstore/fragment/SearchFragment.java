@@ -45,11 +45,9 @@ public class SearchFragment extends BaseFragment {
         List<String> searchData = SPUtils.getSearchData(getActivity(), mContent);
         if (searchData != null) {
             for (int i = 0; i < searchData.size(); i++) {
-                String data = SPUtils.getData(getActivity(),
-                        Constants.SP_ALL_DATA, searchData.get(i));
                 try {
                     AppItemInfo appItemInfo =
-                            new AppItemInfo(new JSONObject(data));
+                            new AppItemInfo(new JSONObject(searchData.get(i)));
                     mDatas.add(appItemInfo);
                 } catch (JSONException e) {
                     e.printStackTrace();

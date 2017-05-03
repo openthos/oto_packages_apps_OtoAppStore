@@ -121,7 +121,7 @@ public class ManagerUpdateAdapter extends BasicAdapter implements View.OnClickLi
                     }
                 }
                 if (appInstallInfo.getState() != Constants.APP_HAVE_INSTALLED
-                        && appInstallInfo.getState() != Constants.APP_HAVE_INSTALLED) {
+                        && appInstallInfo.getState() != Constants.APP_NEED_UPDATE) {
                     appInstallInfo.setState(Constants.APP_NOT_EXIST);
                     continue;
                 }

@@ -19,8 +19,8 @@ import java.util.List;
 
 public abstract class BaseClassifyFragment extends BaseFragment {
     private CustomListView mListView;
-    private AppItemLayoutAdapter mAdapter;
-    private List<AppItemLayoutInfo> mDatas;
+    public AppItemLayoutAdapter mAdapter;
+    public List<AppItemLayoutInfo> mDatas;
 
     public BaseClassifyFragment(HashMap<String, AppInstallInfo> appInstallMap) {
         super(appInstallMap);

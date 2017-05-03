@@ -1,6 +1,8 @@
 package com.openthos.appstore.fragment;
 
 import android.os.Message;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 
 import com.openthos.appstore.R;
@@ -9,6 +11,7 @@ import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.bean.AppInstallInfo;
 import com.openthos.appstore.bean.AppItemLayoutInfo;
 import com.openthos.appstore.bean.AppLayout;
+import com.openthos.appstore.utils.DataCache;
 import com.openthos.appstore.view.BannerView;
 import com.openthos.appstore.view.CustomListView;
 
@@ -53,6 +56,17 @@ public class HomeFragment extends BaseFragment {
     }
 
     public void initData() {
+        localData = DataCache.loadLocalData(getActivity(), "/data/home");
+        if (!TextUtils.isEmpty(localData)) {
+            mDatas.clear();
+            try {
+                mDatas.addAll(
+                        new AppLayout(new JSONObject(localData)).getAppItemLayoutInfos());
+                mAdapter.refreshLayout();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
         new Thread(new GetData("/data/home", HOME_DATA_BACK)).start();
     }
 

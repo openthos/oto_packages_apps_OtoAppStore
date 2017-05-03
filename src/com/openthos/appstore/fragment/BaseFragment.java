@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ public abstract class BaseFragment extends Fragment {
     public static final int GAME_SOFTWARE_BACK = 0;
     public static final int HOME_DATA_BACK = 1;
     public HashMap<String, AppInstallInfo> mAppInstallMap;
+    public String localData;
 
     public BaseFragment(HashMap<String, AppInstallInfo> appInstallMap) {
         mAppInstallMap = appInstallMap;
@@ -55,8 +57,10 @@ public abstract class BaseFragment extends Fragment {
 
         @Override
         public void run() {
-            String data = DataCache.loadData(getActivity(), url);
-            mHandler.sendMessage(mHandler.obtainMessage(type, data));
+            String data = DataCache.loadNetData(getActivity(), url);
+            if (TextUtils.isEmpty(localData) || !localData.equals(data)) {
+                mHandler.sendMessage(mHandler.obtainMessage(type, data));
+            }
         }
     }
 

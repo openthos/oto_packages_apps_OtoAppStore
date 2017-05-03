@@ -8,28 +8,24 @@ import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.app.StoreApplication;
 
 public class DataCache {
-    public static String loadData(Context context, String url) {
+    public static String loadNetData(Context context, String url) {
         String data = null;
-        String saveData = SPUtils.getData(context, Constants.SP_CACHE_DATA, "saveData");
         if (!NetUtils.isConnected(context)) {
             MainActivity.mHandler.sendMessage(MainActivity.mHandler.obtainMessage(
                     Constants.TOAST, context.getString(R.string.check_net_state)));
-            data = SPUtils.getData(context,
-                    Constants.SP_CACHE_DATA, url + StoreApplication.DATE_FORMAT);
+            data = loadLocalData(context, url);
         } else {
-            if (saveData != null && saveData.equals(StoreApplication.DATE_FORMAT)) {
-                data = SPUtils.getData(context,
-                        Constants.SP_CACHE_DATA, url + StoreApplication.DATE_FORMAT);
+            data = NetUtils.getNetStr(url);
+            if (data != null) {
+                SPUtils.saveData(context, Constants.SP_CACHE_DATA, url, data);
             } else {
-                SPUtils.saveData(context,
-                        Constants.SP_CACHE_DATA, "saveData", StoreApplication.DATE_FORMAT);
+                data = loadLocalData(context, url);
             }
         }
-        if (data == null) {
-            data = NetUtils.getNetStr(url);
-            SPUtils.saveData(context,
-                    Constants.SP_CACHE_DATA, url + StoreApplication.DATE_FORMAT, data);
-        }
         return data;
+    }
+
+    public static String loadLocalData(Context context, String key) {
+        return SPUtils.getData(context, Constants.SP_CACHE_DATA, key);
     }
 }

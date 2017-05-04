@@ -5,9 +5,12 @@ import android.os.Message;
 import android.view.View;
 import android.widget.TextView;
 
+import com.openthos.appstore.MainActivity;
 import com.openthos.appstore.R;
 import com.openthos.appstore.adapter.ManagerDownloadAdapter;
 import com.openthos.appstore.adapter.ManagerUpdateAdapter;
+import com.openthos.appstore.app.Constants;
+import com.openthos.appstore.app.StoreApplication;
 import com.openthos.appstore.bean.AppInstallInfo;
 import com.openthos.appstore.bean.TaskInfo;
 import com.openthos.appstore.download.DownloadManager;
@@ -95,9 +98,9 @@ public class ManagerFragment extends BaseFragment implements View.OnClickListene
 
     @Override
     public void onClick(View view) {
+        TextView btn = (TextView) view;
         switch (view.getId()) {
             case R.id.fragment_manager_startAll:
-                TextView btn = (TextView) view;
                 if (btn.getText().equals(getString(R.string.startAll))) {
                     btn.setText(getString(R.string.stopAll));
                     mDownloadManager.startAllTask();
@@ -107,8 +110,39 @@ public class ManagerFragment extends BaseFragment implements View.OnClickListene
                 }
                 break;
             case R.id.fragment_manager_updateAll:
-                Tools.toast(getActivity(), getString(R.string.no_data_need_update));
+                if (!updateAll()) {
+                    Tools.toast(getActivity(), getString(R.string.no_data_need_update));
+                }
                 break;
         }
+    }
+
+    private boolean updateAll() {
+        boolean isHaveUpdate = false;
+        for (int i = 0; i < mAppInstallInfos.size(); i++) {
+            AppInstallInfo appInstallInfo = mAppInstallInfos.get(i);
+            int state = appInstallInfo.getState();
+            switch (state) {
+                case Constants.APP_NEED_UPDATE:
+                    isHaveUpdate = true;
+                    MainActivity.mDownloadService.addTask(appInstallInfo.getTaskId(),
+                            StoreApplication.mBaseUrl + "/" + appInstallInfo.getDownloadUrl(),
+                            appInstallInfo.getName(),
+                            appInstallInfo.getPackageName(),
+                            appInstallInfo.getIconUrl());
+                    break;
+                case Constants.APP_DOWNLOAD_PAUSE:
+                    isHaveUpdate = true;
+                    MainActivity.mDownloadService.startTask(appInstallInfo.getTaskId());
+                    break;
+                case Constants.APP_DOWNLOAD_CONTINUE:
+                    isHaveUpdate = true;
+                    break;
+                default:
+                    break;
+            }
+        }
+        refresh();
+        return isHaveUpdate;
     }
 }

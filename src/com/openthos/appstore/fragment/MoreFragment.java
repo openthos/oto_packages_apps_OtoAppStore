@@ -52,7 +52,8 @@ public class MoreFragment extends BaseFragment {
     @Override
     public void setData(Object datas) {
         if (datas != null) {
-            mDatas = (List<AppItemInfo>) datas;
+            mDatas.clear();
+            mDatas.addAll((List<AppItemInfo>) datas);
         }
     }
 }

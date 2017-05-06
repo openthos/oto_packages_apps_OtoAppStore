@@ -19,6 +19,8 @@ import com.openthos.appstore.utils.Tools;
 import com.openthos.appstore.view.CustomListView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,6 +78,16 @@ public class ManagerFragment extends BaseFragment implements View.OnClickListene
         for (Map.Entry<String, AppInstallInfo> entry : mAppInstallMap.entrySet()) {
             mAppInstallInfos.add(entry.getValue());
         }
+        Collections.sort(mAppInstallInfos, new Comparator<AppInstallInfo>() {
+            @Override
+            public int compare(AppInstallInfo info0, AppInstallInfo info1) {
+                if (info1.getLastUpdateTime() > info0.getLastUpdateTime()) {
+                    return 1;
+                } else {
+                    return -1;
+                }
+            }
+        });
         mUpdateTitle.setText(getNumText(R.string.updates, mAppInstallInfos.size()));
         mUpdateAdapter = new ManagerUpdateAdapter(mContext, mAppInstallInfos);
         mUpdateList.setAdapter(mUpdateAdapter);

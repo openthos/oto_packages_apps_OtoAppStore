@@ -13,6 +13,7 @@ public class AppInstallInfo {
     private String downloadUrl;
     private String taskId;
     private String iconUrl;
+    private long lastUpdateTime;
 
     public long getId() {
         return _id;
@@ -100,6 +101,14 @@ public class AppInstallInfo {
 
     public void setIconUrl(String iconUrl) {
         this.iconUrl = iconUrl;
+    }
+
+    public long getLastUpdateTime() {
+        return lastUpdateTime;
+    }
+
+    public void setLastUpdateTime(long lastUpdateTime) {
+        this.lastUpdateTime = lastUpdateTime;
     }
 
     @Override

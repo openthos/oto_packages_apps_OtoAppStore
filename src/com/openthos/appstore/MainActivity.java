@@ -361,6 +361,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 appInfo.setVersionCode(packageInfo.versionCode);
                 appInfo.setVersionName(packageInfo.versionName);
                 appInfo.setState(Constants.APP_HAVE_INSTALLED);
+                appInfo.setLastUpdateTime(packageInfo.lastUpdateTime);
                 mAppInstallMap.put(packageInfo.packageName, appInfo);
             }
         }

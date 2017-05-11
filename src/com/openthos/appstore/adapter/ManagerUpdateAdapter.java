@@ -1,6 +1,7 @@
 package com.openthos.appstore.adapter;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,7 @@ import com.openthos.appstore.utils.Tools;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -134,14 +136,11 @@ public class ManagerUpdateAdapter extends BasicAdapter implements View.OnClickLi
                 long fileSize = downloadInfo.getFileSize();
                 if (downloadSize < fileSize) {
                     appInstallInfo.setState(Constants.APP_DOWNLOAD_PAUSE);
-                } else if (fileSize != 0 && downloadSize == fileSize) {
-                    switch (appInstallInfo.getState()) {
-                        case Constants.APP_HAVE_INSTALLED:
-                            break;
-                        default:
-                            appInstallInfo.setState(Constants.APP_DOWNLOAD_FINISHED);
-                            break;
-                    }
+                } else if (fileSize != 0 && downloadSize == fileSize
+                        && appInstallInfo.getState() == Constants.APP_NEED_UPDATE
+                        && getVersionCodeByApk(downloadInfo.getFilePath())
+                                                               > appInstallInfo.getVersionCode()) {
+                    appInstallInfo.setState(Constants.APP_DOWNLOAD_FINISHED);
                 }
             }
 
@@ -210,6 +209,15 @@ public class ManagerUpdateAdapter extends BasicAdapter implements View.OnClickLi
     public void refreshLayout() {
         initState();
         notifyDataSetChanged();
+    }
+
+    private int getVersionCodeByApk(String apkPath) {
+        if (new File(apkPath).exists()) {
+            return mContext.getPackageManager().getPackageArchiveInfo(
+                    apkPath, PackageManager.GET_ACTIVITIES).versionCode;
+        } else {
+            return 0;
+        }
     }
 
     private class ViewHolder {

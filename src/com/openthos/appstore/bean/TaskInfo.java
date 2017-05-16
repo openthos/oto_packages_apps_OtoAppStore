@@ -101,16 +101,12 @@ public class TaskInfo {
         this.filePath = filePath;
     }
 
+    public void setDownloadState(int downloadState) {
+        this.downloadState = downloadState;
+    }
+
     public int getDownloadState() {
-        if (isOnDownloading) {
-            return Constants.APP_DOWNLOAD_CONTINUE;
-        } else {
-            if (fileSize != 0 && fileSize == downFileSize) {
-                return Constants.APP_DOWNLOAD_FINISHED;
-            } else {
-                return Constants.APP_DOWNLOAD_PAUSE;
-            }
-        }
+        return downloadState;
     }
 
     public long getDownFileSize() {

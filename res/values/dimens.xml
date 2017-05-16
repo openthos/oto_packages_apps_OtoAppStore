@@ -14,6 +14,7 @@
 
     <dimen name="titile_height">72dp</dimen>
     <dimen name="titile_item">40dp</dimen>
+    <dimen name="manager_height">55dp</dimen>
     <dimen name="title_img_size">40dp</dimen>
     <dimen name="item_img_size">12dp</dimen>
     <dimen name="title_img_back">25dp</dimen>

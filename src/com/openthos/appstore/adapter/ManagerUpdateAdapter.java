@@ -17,10 +17,12 @@ import com.openthos.appstore.bean.AppInstallInfo;
 import com.openthos.appstore.bean.AppItemInfo;
 import com.openthos.appstore.bean.DownloadInfo;
 import com.openthos.appstore.bean.TaskInfo;
+import com.openthos.appstore.download.DownloadListener;
 import com.openthos.appstore.download.DownloadManager;
 import com.openthos.appstore.download.DownloadService;
 import com.openthos.appstore.utils.AppUtils;
 import com.openthos.appstore.utils.FileHelper;
+import com.openthos.appstore.utils.ImageCache;
 import com.openthos.appstore.utils.NetUtils;
 import com.openthos.appstore.utils.SPUtils;
 import com.openthos.appstore.utils.SQLOperator;
@@ -34,15 +36,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ManagerUpdateAdapter extends BasicAdapter implements View.OnClickListener {
-    private DownloadManager mManager;
-    private SQLOperator mSQLOperator;
+    private DownloadManager mDownloadManager;
+    private List<AppInstallInfo> mAppInstallInfos;
 
-    public ManagerUpdateAdapter(Context context, List<AppInstallInfo> datas) {
+    public ManagerUpdateAdapter(Context context, DownloadManager downloadManager,
+                                List<AppInstallInfo> appInstallInfos, List<AppItemInfo> datas) {
         super(context);
-        mSQLOperator = new SQLOperator(mContext);
-        mManager = DownloadService.getDownloadManager();
         mDatas = datas;
-        initState();
+        mAppInstallInfos = appInstallInfos;
+        mDownloadManager = downloadManager;
+        mDownloadManager.setAllTaskListener(new UpdateManagerListener());
     }
 
     @Override
@@ -58,19 +61,16 @@ public class ManagerUpdateAdapter extends BasicAdapter implements View.OnClickLi
         }
 
         if (mDatas != null && mDatas.size() != 0) {
-            AppInstallInfo appInstallInfo = (AppInstallInfo) mDatas.get(position);
-            holder.appIcon.setImageDrawable(appInstallInfo.getIcon());
-            holder.appName.setText(appInstallInfo.getName());
+            AppItemInfo appItemInfo = (AppItemInfo) mDatas.get(position);
+            ImageCache.loadImage(holder.appIcon, appItemInfo.getIconUrl());
+            holder.appName.setText(appItemInfo.getAppName());
             holder.category.setText("");
-            holder.appVersion.setText(appInstallInfo.getVersionName());
-            holder.appContent.setText(appInstallInfo.getPackageName());
-            holder.uninstall.setOnClickListener(this);
-            holder.open.setOnClickListener(this);
+            holder.appVersion.setText(
+                    appItemInfo.getVersionName() + "(" + appItemInfo.getVersionCode() + ")");
+            holder.appContent.setText(appItemInfo.getPackageName());
             holder.update.setOnClickListener(this);
-            holder.update.setTag(appInstallInfo);
-            holder.uninstall.setTag(appInstallInfo);
-            holder.open.setTag(appInstallInfo);
-            switch (appInstallInfo.getState()) {
+            holder.update.setTag(appItemInfo);
+            switch (appItemInfo.getState()) {
                 case Constants.APP_NOT_EXIST:
                 case Constants.APP_HAVE_INSTALLED:
                     holder.update.setVisibility(View.GONE);
@@ -97,24 +97,20 @@ public class ManagerUpdateAdapter extends BasicAdapter implements View.OnClickLi
     }
 
     public void initState() {
-        for (int i = 0; i < mDatas.size(); i++) {
-            AppInstallInfo appInstallInfo = ((List<AppInstallInfo>) mDatas).get(i);
+        mDatas.clear();
+        AppItemInfo appItemInfo = null;
+        for (int i = 0; i < mAppInstallInfos.size(); i++) {
+            AppInstallInfo appInstallInfo = mAppInstallInfos.get(i);
             List<String> searchData = SPUtils.getSearchData(mContext, appInstallInfo.getName());
             if (searchData.size() < 1) {
-                appInstallInfo.setState(Constants.APP_NOT_EXIST);
                 continue;
             } else {
                 for (int j = 0; j < searchData.size(); j++) {
                     try {
-                        AppItemInfo appItemInfo = new AppItemInfo(new JSONObject(searchData.get(j)));
+                        appItemInfo = new AppItemInfo(new JSONObject(searchData.get(j)));
                         if (appItemInfo.getPackageName().equals(appInstallInfo.getPackageName())) {
-                            appInstallInfo.setDownloadUrl(appItemInfo.getDownloadUrl());
-                            appInstallInfo.setIconUrl(appItemInfo.getIconUrl());
-                            appInstallInfo.setTaskId(appItemInfo.getTaskId());
                             if (appInstallInfo.getVersionCode() < appItemInfo.getVersionCode()) {
-                                appInstallInfo.setState(Constants.APP_NEED_UPDATE);
-                            } else {
-                                appInstallInfo.setState(Constants.APP_HAVE_INSTALLED);
+                                appItemInfo.setState(Constants.APP_NEED_UPDATE);
                             }
                             break;
                         }
@@ -122,87 +118,73 @@ public class ManagerUpdateAdapter extends BasicAdapter implements View.OnClickLi
                         e.printStackTrace();
                     }
                 }
-                if (appInstallInfo.getState() != Constants.APP_HAVE_INSTALLED
-                        && appInstallInfo.getState() != Constants.APP_NEED_UPDATE) {
-                    appInstallInfo.setState(Constants.APP_NOT_EXIST);
+                if (appItemInfo.getState() != Constants.APP_NEED_UPDATE) {
                     continue;
                 }
             }
 
             DownloadInfo downloadInfo = new SQLOperator(mContext).
-                    getDownloadInfoByPkgName(appInstallInfo.getPackageName());
+                    getDownloadInfoByPkgName(appItemInfo.getPackageName());
             if (downloadInfo != null) {
                 long downloadSize = downloadInfo.getDownloadSize();
                 long fileSize = downloadInfo.getFileSize();
                 if (downloadSize < fileSize) {
-                    appInstallInfo.setState(Constants.APP_DOWNLOAD_PAUSE);
+                    appItemInfo.setState(Constants.APP_DOWNLOAD_PAUSE);
                 } else if (fileSize != 0 && downloadSize == fileSize
-                        && appInstallInfo.getState() == Constants.APP_NEED_UPDATE
-                        && getVersionCodeByApk(downloadInfo.getFilePath())
-                                                               > appInstallInfo.getVersionCode()) {
-                    appInstallInfo.setState(Constants.APP_DOWNLOAD_FINISHED);
+                        && getVersionCodeByApk(
+                                downloadInfo.getFilePath()) > appInstallInfo.getVersionCode()) {
+                    appItemInfo.setState(Constants.APP_DOWNLOAD_FINISHED);
                 }
             }
 
-            ArrayList<TaskInfo> allTask = mManager.getAllTask();
+            ArrayList<TaskInfo> allTask = mDownloadManager.getAllTask();
             for (int j = 0; j < allTask.size(); j++) {
                 TaskInfo taskInfo = allTask.get(j);
-                if (appInstallInfo.getTaskId().equals(taskInfo.getTaskID())) {
+                if (appItemInfo.getTaskId().equals(taskInfo.getTaskID())) {
                     if (taskInfo.isOnDownloading()) {
-                        appInstallInfo.setState(Constants.APP_DOWNLOAD_CONTINUE);
+                        appItemInfo.setState(Constants.APP_DOWNLOAD_CONTINUE);
                     }
                 }
+            }
+
+            if (appItemInfo != null) {
+                mDatas.add(appItemInfo);
             }
         }
     }
 
     @Override
     public void onClick(View view) {
-        AppInstallInfo appInstallInfo = (AppInstallInfo) view.getTag();
-        switch (view.getId()) {
-            case R.id.item_update_uninstall:
-                AppUtils.uninstallApk(mContext, appInstallInfo.getPackageName());
-                break;
-            case R.id.item_update_open:
-                AppUtils.openApp(mContext, appInstallInfo.getPackageName());
-                break;
-            case R.id.item_update_update:
-                updateOperate((Button) view, appInstallInfo);
-                MainActivity.mHandler.sendEmptyMessage(Constants.REFRESH);
-                break;
-            default:
-                break;
-        }
-    }
-
-    private void updateOperate(Button btn, AppInstallInfo appInstallInfo) {
-        if (appInstallInfo.getState() == Constants.APP_DOWNLOAD_FINISHED) {
+        AppItemInfo appItemInfo = (AppItemInfo) view.getTag();
+        Button btn = (Button) view;
+        if (appItemInfo.getState() == Constants.APP_DOWNLOAD_FINISHED) {
             MainActivity.mHandler.sendMessage(
                     MainActivity.mHandler.obtainMessage(
                             Constants.INSTALL_APK,
-                            FileHelper.getDownloadUrlPath(appInstallInfo.getDownloadUrl())));
+                            FileHelper.getDownloadUrlPath(appItemInfo.getDownloadUrl())));
         } else if (NetUtils.isConnected(mContext)) {
-            switch (appInstallInfo.getState()) {
+            switch (appItemInfo.getState()) {
                 case Constants.APP_NEED_UPDATE:
                     btn.setText(mContext.getString(R.string.updating));
-                    MainActivity.mDownloadService.addTask(appInstallInfo.getTaskId(),
-                            StoreApplication.mBaseUrl + "/" + appInstallInfo.getDownloadUrl(),
-                            appInstallInfo.getName(),
-                            appInstallInfo.getPackageName(),
-                            appInstallInfo.getIconUrl());
+                    MainActivity.mDownloadService.addTask(appItemInfo.getTaskId(),
+                            StoreApplication.mBaseUrl + "/" + appItemInfo.getDownloadUrl(),
+                            appItemInfo.getAppName(),
+                            appItemInfo.getPackageName(),
+                            appItemInfo.getIconUrl());
                     break;
                 case Constants.APP_DOWNLOAD_PAUSE:
                     btn.setText(mContext.getString(R.string.updating));
-                    MainActivity.mDownloadService.startTask(appInstallInfo.getTaskId());
+                    MainActivity.mDownloadService.startTask(appItemInfo.getTaskId());
                     break;
                 case Constants.APP_DOWNLOAD_CONTINUE:
                     btn.setText(mContext.getString(R.string.pause));
-                    MainActivity.mDownloadService.stopTask(appInstallInfo.getTaskId());
+                    MainActivity.mDownloadService.stopTask(appItemInfo.getTaskId());
                     break;
             }
         } else {
             Tools.toast(mContext, mContext.getString(R.string.check_net_state));
         }
+        MainActivity.mHandler.sendEmptyMessage(Constants.REFRESH);
     }
 
     @Override
@@ -227,8 +209,6 @@ public class ManagerUpdateAdapter extends BasicAdapter implements View.OnClickLi
         private TextView appContent;
         private TextView category;
         private Button update;
-        private Button open;
-        private Button uninstall;
 
         public ViewHolder(View view) {
             appIcon = ((ImageView) view.findViewById(R.id.item_update_appIcon));
@@ -237,8 +217,62 @@ public class ManagerUpdateAdapter extends BasicAdapter implements View.OnClickLi
             appVersion = (TextView) view.findViewById(R.id.item_update_version);
             appContent = (TextView) view.findViewById(R.id.item_update_newFeature);
             update = ((Button) view.findViewById(R.id.item_update_update));
-            open = ((Button) view.findViewById(R.id.item_update_open));
-            uninstall = ((Button) view.findViewById(R.id.item_update_uninstall));
+            update.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private class UpdateManagerListener implements DownloadListener {
+        @Override
+        public void onStart(DownloadInfo downloadInfo) {
+            for (int i = 0; i < mDatas.size(); i++) {
+                AppItemInfo updateInfo = (AppItemInfo) mDatas.get(i);
+                if (updateInfo.getPackageName().equals(downloadInfo.getPackageName())) {
+                    updateInfo.setState(Constants.APP_DOWNLOAD_CONTINUE);
+                    notifyDataSetChanged();
+                    break;
+                }
+            }
+        }
+
+        @Override
+        public void onProgress(DownloadInfo downloadInfo, boolean isSupportF) {
+
+        }
+
+        @Override
+        public void onStop(DownloadInfo downloadInfo, boolean isSupportFTP) {
+            for (int i = 0; i < mDatas.size(); i++) {
+                AppItemInfo updateInfo = (AppItemInfo) mDatas.get(i);
+                if (updateInfo.getPackageName().equals(downloadInfo.getPackageName())) {
+                    updateInfo.setState(Constants.APP_DOWNLOAD_PAUSE);
+                    notifyDataSetChanged();
+                    break;
+                }
+            }
+        }
+
+        @Override
+        public void onError(DownloadInfo downloadInfo, String error) {
+            for (int i = 0; i < mDatas.size(); i++) {
+                AppItemInfo updateInfo = (AppItemInfo) mDatas.get(i);
+                if (updateInfo.getPackageName().equals(downloadInfo.getPackageName())) {
+                    updateInfo.setState(Constants.APP_DOWNLOAD_PAUSE);
+                    notifyDataSetChanged();
+                    break;
+                }
+            }
+        }
+
+        @Override
+        public void onSuccess(DownloadInfo downloadInfo) {
+            for (int i = 0; i < mDatas.size(); i++) {
+                AppItemInfo updateInfo = (AppItemInfo) mDatas.get(i);
+                if (updateInfo.getPackageName().equals(downloadInfo.getPackageName())) {
+                    updateInfo.setState(Constants.APP_DOWNLOAD_FINISHED);
+                    notifyDataSetChanged();
+                    break;
+                }
+            }
         }
     }
 }

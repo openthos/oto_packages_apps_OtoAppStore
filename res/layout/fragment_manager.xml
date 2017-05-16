@@ -4,95 +4,56 @@
               android:layout_height="match_parent"
               android:background="@color/main_background"
               android:orientation="vertical"
-              android:paddingLeft="50dp"
-              android:paddingRight="50dp"
     >
 
-    <LinearLayout
+    <RadioGroup
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:layout_marginTop="5dp"
+        android:layout_height="@dimen/manager_height"
+        android:background="@color/white"
+        android:gravity="center"
         android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/fragment_manager_updateTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/updates"
-            android:textColor="@color/item_title"
-            android:textSize="@dimen/big_text_size"/>
-
-        <View
+        <RadioButton
+            android:id="@+id/update"
+            style="@style/Main_Button"
             android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_weight="1"/>
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:checked="true"
+            android:paddingLeft="@dimen/spacing_thirty"
+            android:paddingRight="@dimen/spacing_thirty"
+            android:text="@string/update"
+            />
 
-        <TextView
-            android:id="@+id/fragment_manager_updateAll"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/updateAll"
-            android:textColor="@color/item_more"
-            android:textSize="@dimen/first_title_size"/>
-    </LinearLayout>
-
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="5dp"
-        android:background="@color/gray"/>
-
-    <com.openthos.appstore.view.CustomListView
-        android:id="@+id/fragment_manager_updateList"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:divider="@color/item_background"
-        android:dividerHeight="1dp"
-        android:padding="@dimen/spacing_five"/>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:layout_marginTop="5dp"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/fragment_manager_downloadTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/downloads"
-            android:textColor="@color/item_title"
-            android:textSize="@dimen/big_text_size"/>
-
-        <View
+        <RadioButton
+            android:id="@+id/download"
+            style="@style/Main_Button"
             android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_weight="1"/>
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:paddingLeft="@dimen/spacing_thirty"
+            android:paddingRight="@dimen/spacing_thirty"
+            android:text="@string/download"
+            />
 
-        <TextView
-            android:id="@+id/fragment_manager_startAll"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/startAll"
-            android:textColor="@color/item_more"
-            android:textSize="@dimen/first_title_size"/>
-    </LinearLayout>
+        <RadioButton
+            android:id="@+id/have_installed"
+            style="@style/Main_Button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:paddingLeft="@dimen/spacing_thirty"
+            android:paddingRight="@dimen/spacing_thirty"
+            android:text="@string/have_installed"
+            />
+    </RadioGroup>
 
-    <View
+    <FrameLayout
+        android:id="@+id/manager_contain"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="5dp"
-        android:background="@color/gray"/>
+        android:layout_height="match_parent"
+        android:paddingLeft="@dimen/spacing_thirty"
+        android:paddingRight="@dimen/spacing_thirty"
+        />
 
-    <com.openthos.appstore.view.CustomListView
-        android:id="@+id/fragment_manager_downloadList"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="30dp"
-        android:divider="@color/item_background"
-        android:dividerHeight="1dp"
-        android:padding="@dimen/spacing_five"/>
 </LinearLayout>

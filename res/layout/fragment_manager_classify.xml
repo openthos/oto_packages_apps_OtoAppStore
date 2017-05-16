@@ -1,0 +1,30 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:paddingLeft="@dimen/spacing_five"
+              android:paddingRight="@dimen/spacing_five">
+
+    <Button
+        android:id="@+id/state"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/manager_height"
+        android:background="@null"
+        android:textColor="@color/item_more"
+        android:textSize="@dimen/first_title_size"
+        />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/view_line"/>
+
+    <com.openthos.appstore.view.CustomListView
+        android:id="@+id/customlistView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="@color/item_background"
+        android:dividerHeight="1dp"
+        android:padding="@dimen/spacing_five"/>
+
+</LinearLayout>

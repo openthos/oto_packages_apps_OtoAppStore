@@ -1,22 +1,13 @@
 package com.openthos.appstore.fragment;
 
-import android.content.Context;
 import android.os.Message;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.RadioButton;
 
-import com.openthos.appstore.MainActivity;
 import com.openthos.appstore.R;
-import com.openthos.appstore.adapter.ManagerDownloadAdapter;
-import com.openthos.appstore.adapter.ManagerUpdateAdapter;
-import com.openthos.appstore.app.Constants;
-import com.openthos.appstore.app.StoreApplication;
 import com.openthos.appstore.bean.AppInstallInfo;
-import com.openthos.appstore.bean.TaskInfo;
-import com.openthos.appstore.download.DownloadManager;
-import com.openthos.appstore.download.DownloadService;
-import com.openthos.appstore.utils.Tools;
-import com.openthos.appstore.view.CustomListView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,18 +17,15 @@ import java.util.List;
 import java.util.Map;
 
 public class ManagerFragment extends BaseFragment implements View.OnClickListener {
-
-    private CustomListView mUpdateList;
-    private CustomListView mDownloadList;
-    private TextView mUpdateTitle;
-    private TextView mDownloadTitle;
-    private TextView mStartAll;
-    private TextView mUpdateAll;
-    private Context mContext;
-    private ManagerUpdateAdapter mUpdateAdapter;
-    private DownloadManager mDownloadManager;
-    private ManagerDownloadAdapter mDownloadAdapter;
-    private List<AppInstallInfo> mAppInstallInfos;
+    private List<AppInstallInfo> mInstallInfos;
+    private RadioButton mUpdate;
+    private RadioButton mDownload;
+    private RadioButton mInstalled;
+    private FragmentManager mFragmentManager;
+    private UpdateFragment mUpdateFragment;
+    private DownloadFragment mDownloadFragment;
+    private InstallFragment mInstallFragment;
+    private Fragment mCurrentFragment;
 
     public ManagerFragment(HashMap<String, AppInstallInfo> appInstallMap) {
         super(appInstallMap);
@@ -54,107 +42,92 @@ public class ManagerFragment extends BaseFragment implements View.OnClickListene
 
     @Override
     public void refresh() {
-        initData();
+        initAppInstallInfos();
+        if (mCurrentFragment instanceof UpdateFragment) {
+            mUpdateFragment.refresh();
+        } else if (mCurrentFragment instanceof DownloadFragment) {
+            mDownloadFragment.refresh();
+        } else {
+            mInstallFragment.refresh();
+        }
     }
 
     @Override
     public void initView(View view) {
-        mUpdateList = (CustomListView) view.findViewById(R.id.fragment_manager_updateList);
-        mDownloadList = (CustomListView) view.findViewById(R.id.fragment_manager_downloadList);
-        mUpdateTitle = (TextView) view.findViewById(R.id.fragment_manager_updateTitle);
-        mDownloadTitle = (TextView) view.findViewById(R.id.fragment_manager_downloadTitle);
-        mStartAll = (TextView) view.findViewById(R.id.fragment_manager_startAll);
-        mUpdateAll = (TextView) view.findViewById(R.id.fragment_manager_updateAll);
-        mDownloadManager = DownloadService.getDownloadManager();
-        mContext = getActivity();
-        mAppInstallInfos = new ArrayList<>();
-        mStartAll.setOnClickListener(this);
-        mUpdateAll.setOnClickListener(this);
+        mUpdate = (RadioButton) view.findViewById(R.id.update);
+        mDownload = (RadioButton) view.findViewById(R.id.download);
+        mInstalled = (RadioButton) view.findViewById(R.id.have_installed);
+
+        mUpdate.setOnClickListener(this);
+        mDownload.setOnClickListener(this);
+        mInstalled.setOnClickListener(this);
+
+        mInstallInfos = new ArrayList<>();
+        mFragmentManager = getChildFragmentManager();
     }
 
     @Override
     public void initData() {
-        mAppInstallInfos.clear();
-        for (Map.Entry<String, AppInstallInfo> entry : mAppInstallMap.entrySet()) {
-            mAppInstallInfos.add(entry.getValue());
-        }
-        Collections.sort(mAppInstallInfos, new Comparator<AppInstallInfo>() {
-            @Override
-            public int compare(AppInstallInfo info0, AppInstallInfo info1) {
-                if (info1.getLastUpdateTime() > info0.getLastUpdateTime()) {
-                    return 1;
-                } else {
-                    return -1;
-                }
-            }
-        });
-        mUpdateTitle.setText(getNumText(R.string.updates, mAppInstallInfos.size()));
-        mUpdateAdapter = new ManagerUpdateAdapter(mContext, mAppInstallInfos);
-        mUpdateList.setAdapter(mUpdateAdapter);
-        mUpdateAdapter.refreshLayout();
-
-        List<TaskInfo> allTask = mDownloadManager.getAllTask();
-        mDownloadTitle.setText(getNumText(R.string.downloads, allTask.size()));
-        mDownloadAdapter = new ManagerDownloadAdapter(mContext, mDownloadManager, allTask);
-        mDownloadList.setAdapter(mDownloadAdapter);
-        mDownloadAdapter.refreshLayout();
+        initAppInstallInfos();
+        mUpdateFragment = new UpdateFragment(mInstallInfos);
+        mDownloadFragment = new DownloadFragment(mInstallInfos);
+        mInstallFragment = new InstallFragment(mInstallInfos);
+        mFragmentManager.beginTransaction().
+                add(R.id.manager_contain, mDownloadFragment).hide(mDownloadFragment).commit();
+        mFragmentManager.beginTransaction().
+                add(R.id.manager_contain, mInstallFragment).hide(mInstallFragment).commit();
+        mFragmentManager.beginTransaction().
+                add(R.id.manager_contain, mUpdateFragment).show(mUpdateFragment).commit();
+        mCurrentFragment = mUpdateFragment;
     }
 
     @Override
     public void getHandlerMessage(Message message) {
     }
 
-    private String getNumText(int text, int size) {
-        return String.format(getResources().getString(text), size);
-    }
-
     @Override
     public void onClick(View view) {
-        TextView btn = (TextView) view;
+        if (mCurrentFragment != null) {
+            mFragmentManager.beginTransaction().hide(mCurrentFragment).commit();
+        }
+        initAppInstallInfos();
         switch (view.getId()) {
-            case R.id.fragment_manager_startAll:
-                if (btn.getText().equals(getString(R.string.startAll))) {
-                    btn.setText(getString(R.string.stopAll));
-                    mDownloadManager.startAllTask();
-                } else {
-                    btn.setText(getString(R.string.startAll));
-                    mDownloadManager.stopAllTask();
-                }
+            case R.id.update:
+                mUpdate.setChecked(true);
+                mFragmentManager.beginTransaction().show(mUpdateFragment).commit();
+                mCurrentFragment = mUpdateFragment;
+                mUpdateFragment.refresh();
                 break;
-            case R.id.fragment_manager_updateAll:
-                if (!updateAll()) {
-                    Tools.toast(getActivity(), getString(R.string.no_data_need_update));
-                }
+            case R.id.download:
+                mDownload.setChecked(true);
+                mFragmentManager.beginTransaction().show(mDownloadFragment).commit();
+                mCurrentFragment = mDownloadFragment;
+                mDownloadFragment.refresh();
+                break;
+            case R.id.have_installed:
+                mInstalled.setChecked(true);
+                mFragmentManager.beginTransaction().show(mInstallFragment).commit();
+                mCurrentFragment = mInstallFragment;
+                mInstallFragment.refresh();
                 break;
         }
     }
 
-    private boolean updateAll() {
-        boolean isHaveUpdate = false;
-        for (int i = 0; i < mAppInstallInfos.size(); i++) {
-            AppInstallInfo appInstallInfo = mAppInstallInfos.get(i);
-            int state = appInstallInfo.getState();
-            switch (state) {
-                case Constants.APP_NEED_UPDATE:
-                    isHaveUpdate = true;
-                    MainActivity.mDownloadService.addTask(appInstallInfo.getTaskId(),
-                            StoreApplication.mBaseUrl + "/" + appInstallInfo.getDownloadUrl(),
-                            appInstallInfo.getName(),
-                            appInstallInfo.getPackageName(),
-                            appInstallInfo.getIconUrl());
-                    break;
-                case Constants.APP_DOWNLOAD_PAUSE:
-                    isHaveUpdate = true;
-                    MainActivity.mDownloadService.startTask(appInstallInfo.getTaskId());
-                    break;
-                case Constants.APP_DOWNLOAD_CONTINUE:
-                    isHaveUpdate = true;
-                    break;
-                default:
-                    break;
-            }
+    private void initAppInstallInfos() {
+        mInstallInfos.clear();
+        for (Map.Entry<String, AppInstallInfo> entry : mAppInstallMap.entrySet()) {
+            mInstallInfos.add(entry.getValue());
         }
-        refresh();
-        return isHaveUpdate;
+
+        Collections.sort(mInstallInfos, new Comparator<AppInstallInfo>() {
+            @Override
+            public int compare(AppInstallInfo info0, AppInstallInfo info1) {
+                if (info1.getLastUpdateTime() >= info0.getLastUpdateTime()) {
+                    return 1;
+                } else {
+                    return -1;
+                }
+            }
+        });
     }
 }

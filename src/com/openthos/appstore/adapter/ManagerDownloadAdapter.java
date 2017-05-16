@@ -1,6 +1,7 @@
 package com.openthos.appstore.adapter;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 import com.openthos.appstore.MainActivity;
 import com.openthos.appstore.R;
 import com.openthos.appstore.app.Constants;
+import com.openthos.appstore.bean.AppInstallInfo;
 import com.openthos.appstore.bean.DownloadInfo;
 import com.openthos.appstore.bean.TaskInfo;
 import com.openthos.appstore.download.DownloadListener;
@@ -22,15 +24,19 @@ import com.openthos.appstore.utils.ImageCache;
 import com.openthos.appstore.utils.NetUtils;
 import com.openthos.appstore.utils.Tools;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ManagerDownloadAdapter extends BasicAdapter implements View.OnClickListener {
     private DownloadManager mDownloadManager;
+    private List<AppInstallInfo> mAppInstallInfos;
 
-    public ManagerDownloadAdapter(Context context,
-                                  DownloadManager downloadManager, List<TaskInfo> datas) {
+    public ManagerDownloadAdapter(Context context, DownloadManager downloadManager,
+                                  List<AppInstallInfo> appInstallInfos, List<TaskInfo> datas) {
         super(context);
         mDatas = datas;
+        mAppInstallInfos = appInstallInfos;
         mDownloadManager = downloadManager;
         mDownloadManager.setAllTaskListener(new DownloadManagerListener());
     }
@@ -68,6 +74,11 @@ public class ManagerDownloadAdapter extends BasicAdapter implements View.OnClick
                     holder.downloadState.setText(R.string.finished);
                     holder.fileProgress.setVisibility(View.GONE);
                     break;
+                case Constants.APP_HAVE_INSTALLED:
+                    holder.install.setText(R.string.open);
+                    holder.downloadState.setText(R.string.finished);
+                    holder.fileProgress.setVisibility(View.GONE);
+                    break;
                 default:
                     break;
             }
@@ -90,7 +101,7 @@ public class ManagerDownloadAdapter extends BasicAdapter implements View.OnClick
             case R.id.item_download_remove:
                 MainActivity.mDownloadService.stopTask(taskInfo.getTaskID());
                 mDownloadManager.deleteTask(taskInfo.getTaskID());
-                mDatas.remove(taskInfo.getTaskID());
+                mDatas.remove(taskInfo);
                 break;
             default:
                 break;
@@ -102,6 +113,8 @@ public class ManagerDownloadAdapter extends BasicAdapter implements View.OnClick
         if (taskInfo.getDownloadState() == Constants.APP_DOWNLOAD_FINISHED) {
             MainActivity.mHandler.sendMessage(MainActivity.mHandler.
                     obtainMessage(Constants.INSTALL_APK, taskInfo.getFilePath()));
+        } else if (taskInfo.getDownloadState() == Constants.APP_HAVE_INSTALLED) {
+            AppUtils.openApp(mContext, taskInfo.getPackageName());
         } else if (NetUtils.isConnected(mContext)) {
             switch (taskInfo.getDownloadState()) {
                 case Constants.APP_DOWNLOAD_PAUSE:
@@ -120,7 +133,50 @@ public class ManagerDownloadAdapter extends BasicAdapter implements View.OnClick
 
     @Override
     public void refreshLayout() {
+        ArrayList<TaskInfo> allTask = mDownloadManager.getAllTask();
+        mDatas.clear();
+        for (int i = 0; i < allTask.size(); i++) {
+            TaskInfo taskInfo = allTask.get(i);
+            if (taskInfo.isOnDownloading()) {
+                taskInfo.setDownloadState(Constants.APP_DOWNLOAD_CONTINUE);
+            } else if (taskInfo.getDownFileSize() != 0
+                    && taskInfo.getFileSize() == taskInfo.getDownFileSize()) {
+                boolean isBreak = false;
+                for (int j = 0; j < mAppInstallInfos.size(); j++) {
+                    AppInstallInfo appInstallInfo = mAppInstallInfos.get(j);
+                    if (taskInfo.getPackageName().equals(appInstallInfo.getPackageName())) {
+                        if (new File(taskInfo.getFilePath()).exists()) {
+                            if (getVersionCodeByApk(taskInfo.getFilePath())
+                                    > appInstallInfo.getVersionCode()) {
+                                taskInfo.setDownloadState(Constants.APP_DOWNLOAD_FINISHED);
+                            } else {
+                                taskInfo.setDownloadState(Constants.APP_HAVE_INSTALLED);
+                            }
+                        }
+                        isBreak = true;
+                        break;
+                    }
+                }
+                if (!isBreak) {
+                    taskInfo.setDownloadState(Constants.APP_DOWNLOAD_FINISHED);
+                }
+            } else {
+                taskInfo.setDownloadState(Constants.APP_DOWNLOAD_PAUSE);
+            }
+            if (taskInfo.getDownloadState() != Constants.APP_HAVE_INSTALLED) {
+                mDatas.add(taskInfo);
+            }
+        }
         notifyDataSetChanged();
+    }
+
+    private int getVersionCodeByApk(String apkPath) {
+        if (new File(apkPath).exists()) {
+            return mContext.getPackageManager().getPackageArchiveInfo(
+                    apkPath, PackageManager.GET_ACTIVITIES).versionCode;
+        } else {
+            return 0;
+        }
     }
 
     private class ViewHolder {
@@ -149,7 +205,7 @@ public class ManagerDownloadAdapter extends BasicAdapter implements View.OnClick
             for (TaskInfo info : (List<TaskInfo>) mDatas) {
                 if (downloadInfo.getTaskID().equals(info.getTaskID())) {
                     info.setOnDownloading(true);
-                    notifyDataSetChanged();
+                    MainActivity.mHandler.sendEmptyMessage(Constants.REFRESH);
                     break;
                 }
             }
@@ -174,7 +230,7 @@ public class ManagerDownloadAdapter extends BasicAdapter implements View.OnClick
                 if (downloadInfo.getTaskID().equals(info.getTaskID())) {
                     info.setSpeed(0);
                     info.setOnDownloading(false);
-                    notifyDataSetChanged();
+                    MainActivity.mHandler.sendEmptyMessage(Constants.REFRESH);
                     break;
                 }
             }

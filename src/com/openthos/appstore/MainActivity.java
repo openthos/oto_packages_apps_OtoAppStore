@@ -161,7 +161,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         loadAppPackageInfo();
         initHandler();
         updateAllData();
-        mHomeButton.performClick();
+        mHandler.sendEmptyMessage(Constants.HOME_FRAGMENT);
     }
 
     private void updateAllData() {
@@ -203,7 +203,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         }
     }
 
-    private Fragment getCurrentFragment() {
+    public Fragment getCurrentFragment() {
         return mCurrentFragment;
     }
 
@@ -275,51 +275,52 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         switch (msg.what) {
             case Constants.HOME_FRAGMENT:
                 mBack.setVisibility(View.GONE);
+                mHomeButton.setChecked(true);
                 if (fragment == null) {
-                    fragment = new HomeFragment(mAppInstallMap);
+                    fragment = new HomeFragment();
                 }
                 break;
             case Constants.SOFTWARE_FRAGMENT:
                 mBack.setVisibility(View.GONE);
                 mSoftwareButton.setChecked(true);
                 if (fragment == null) {
-                    fragment = new SoftwareFragment(mAppInstallMap);
+                    fragment = new SoftwareFragment();
                 }
                 break;
             case Constants.GAME_FRAGMENT:
                 mBack.setVisibility(View.GONE);
                 mGameButton.setChecked(true);
                 if (fragment == null) {
-                    fragment = new GameFragment(mAppInstallMap);
+                    fragment = new GameFragment();
                 }
                 break;
             case Constants.MANAGER_FRAGMENT:
                 mBack.setVisibility(View.GONE);
                 mManagerButton.setChecked(true);
                 if (fragment == null) {
-                    fragment = new ManagerFragment(mAppInstallMap);
+                    fragment = new ManagerFragment();
                 }
                 break;
             case Constants.DETAIL_FRAGMENT:
                 if (fragment == null) {
-                    fragment = new DetailFragment(mAppInstallMap);
+                    fragment = new DetailFragment();
                 }
                 fragment.setData(msg.obj);
                 break;
             case Constants.MORE_FRAGMENT:
                 if (fragment == null) {
-                    fragment = new MoreFragment(mAppInstallMap);
+                    fragment = new MoreFragment();
                 }
                 fragment.setData(msg.obj);
                 break;
             case Constants.COMMENT_FRAGMENT:
                 if (fragment == null) {
-                    fragment = new CommentFragment(mAppInstallMap);
+                    fragment = new CommentFragment();
                 }
                 break;
             case Constants.SEARCH_FRAGMENT:
                 if (fragment == null) {
-                    fragment = new SearchFragment(mAppInstallMap);
+                    fragment = new SearchFragment();
                 }
                 fragment.setData(msg.obj);
                 break;
@@ -333,7 +334,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         unbindService(conn);
         stopService(new Intent(this, DownloadService.class));
         unregisterReceiver(mAppInstallBroadCast);
-        finish();
+//        finish();
     }
 
 
@@ -423,5 +424,9 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                     "application/vnd.android.package-archive");
             startActivity(intent);
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
     }
 }

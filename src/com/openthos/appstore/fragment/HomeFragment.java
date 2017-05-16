@@ -2,7 +2,6 @@ package com.openthos.appstore.fragment;
 
 import android.os.Message;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 
 import com.openthos.appstore.R;
@@ -19,7 +18,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class HomeFragment extends BaseFragment {
@@ -28,8 +26,8 @@ public class HomeFragment extends BaseFragment {
     private AppItemLayoutAdapter mAdapter;
     private List<AppItemLayoutInfo> mDatas;
 
-    public HomeFragment(HashMap<String, AppInstallInfo> appInstallMap) {
-        super(appInstallMap);
+    public HomeFragment(){
+        super();
         mDatas = new ArrayList<>();
     }
 

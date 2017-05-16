@@ -13,8 +13,8 @@ import java.util.HashMap;
 
 public class GameFragment extends BaseClassifyFragment {
 
-    public GameFragment(HashMap<String, AppInstallInfo> appInstallMap) {
-        super(appInstallMap);
+    public GameFragment() {
+        super();
     }
 
     @Override

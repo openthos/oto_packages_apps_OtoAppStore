@@ -18,8 +18,8 @@ public class MoreFragment extends BaseFragment {
     private CustomGridView mGridView;
     private AppItemAdapter mAppItemAdapter;
 
-    public MoreFragment(HashMap<String, AppInstallInfo> appInstallMap) {
-        super(appInstallMap);
+    public MoreFragment() {
+        super();
         mDatas = new ArrayList<>();
     }
 

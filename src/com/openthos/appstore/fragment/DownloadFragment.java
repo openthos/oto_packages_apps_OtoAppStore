@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.openthos.appstore.MainActivity;
 import com.openthos.appstore.R;
 import com.openthos.appstore.adapter.ManagerDownloadAdapter;
 import com.openthos.appstore.bean.AppInstallInfo;
@@ -31,15 +32,16 @@ public class DownloadFragment extends Fragment implements View.OnClickListener {
     private ManagerDownloadAdapter mAdapter;
     private DownloadManager mDownloadManager;
 
-    public DownloadFragment(List<AppInstallInfo> appInstallInfos) {
+    public DownloadFragment() {
         mTaskInfos = new ArrayList<>();
-        mAppInstallInfos = appInstallInfos;
         mDownloadManager = DownloadService.getDownloadManager();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        mAppInstallInfos =
+             ((ManagerFragment) ((MainActivity) getActivity()).getCurrentFragment()).mInstallInfos;
         return inflater.inflate(R.layout.fragment_manager_classify, container, false);
     }
 

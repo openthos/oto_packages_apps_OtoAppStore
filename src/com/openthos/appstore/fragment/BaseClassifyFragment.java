@@ -22,8 +22,8 @@ public abstract class BaseClassifyFragment extends BaseFragment {
     public AppItemLayoutAdapter mAdapter;
     public List<AppItemLayoutInfo> mDatas;
 
-    public BaseClassifyFragment(HashMap<String, AppInstallInfo> appInstallMap) {
-        super(appInstallMap);
+    public BaseClassifyFragment() {
+        super();
         mDatas = new ArrayList<>();
     }
 

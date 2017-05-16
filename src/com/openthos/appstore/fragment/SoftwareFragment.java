@@ -13,8 +13,8 @@ import java.util.HashMap;
 
 public class SoftwareFragment extends BaseClassifyFragment {
 
-    public SoftwareFragment(HashMap<String, AppInstallInfo> appInstallMap) {
-        super(appInstallMap);
+    public SoftwareFragment() {
+        super();
     }
 
     @Override

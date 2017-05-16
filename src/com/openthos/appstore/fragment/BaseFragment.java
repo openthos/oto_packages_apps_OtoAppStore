@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.openthos.appstore.MainActivity;
 import com.openthos.appstore.bean.AppInstallInfo;
 import com.openthos.appstore.utils.DataCache;
 
@@ -21,13 +22,20 @@ public abstract class BaseFragment extends Fragment {
     public HashMap<String, AppInstallInfo> mAppInstallMap;
     public String localData;
 
-    public BaseFragment(HashMap<String, AppInstallInfo> appInstallMap) {
-        mAppInstallMap = appInstallMap;
+    public BaseFragment() {
+        super();
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        mAppInstallMap = ((MainActivity) getActivity()).mAppInstallMap;
         return inflater.inflate(getLayoutId(), container, false);
     }
 

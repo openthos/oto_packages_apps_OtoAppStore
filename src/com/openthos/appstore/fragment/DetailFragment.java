@@ -49,8 +49,8 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
     private AppItemInfo mAppItemInfo;
     private DownloadManager mManager;
 
-    public DetailFragment(HashMap<String, AppInstallInfo> appInstallMap) {
-        super(appInstallMap);
+    public DetailFragment() {
+        super();
     }
 
     @Override
@@ -68,7 +68,7 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
     private void initFragment() {
         FragmentManager manager = getChildFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
-        CommentFragment commentFragment = new CommentFragment(mAppInstallMap);
+        CommentFragment commentFragment = new CommentFragment();
         commentFragment.setDatas(Constants.getComment());
         commentFragment.setAll(false);
         transaction.replace(R.id.fragment_detail_comment, commentFragment);

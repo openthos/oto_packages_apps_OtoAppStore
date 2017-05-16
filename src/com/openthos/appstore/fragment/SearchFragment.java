@@ -24,8 +24,8 @@ public class SearchFragment extends BaseFragment {
     private AppItemAdapter mAppItemAdapter;
     private List<AppItemInfo> mDatas;
 
-    public SearchFragment(HashMap<String, AppInstallInfo> appInstallMap) {
-        super(appInstallMap);
+    public SearchFragment() {
+        super();
         mDatas = new ArrayList<>();
     }
 

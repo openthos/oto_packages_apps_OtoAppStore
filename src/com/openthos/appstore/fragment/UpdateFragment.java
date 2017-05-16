@@ -35,8 +35,7 @@ public class UpdateFragment extends Fragment implements View.OnClickListener {
     private ManagerUpdateAdapter mAdapter;
     private DownloadManager mDownloadManager;
 
-    public UpdateFragment(List<AppInstallInfo> appInstallInfos) {
-        mAppInstallInfos = appInstallInfos;
+    public UpdateFragment() {
         mUpdateDatas = new ArrayList<>();
         mDownloadManager = DownloadService.getDownloadManager();
     }
@@ -50,6 +49,8 @@ public class UpdateFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        mAppInstallInfos =
+             ((ManagerFragment) ((MainActivity) getActivity()).getCurrentFragment()).mInstallInfos;
         mState = (TextView) view.findViewById(R.id.state);
         mListView = (CustomListView) view.findViewById(R.id.customlistView);
 

@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ManagerFragment extends BaseFragment implements View.OnClickListener {
-    private List<AppInstallInfo> mInstallInfos;
+    public List<AppInstallInfo> mInstallInfos;
     private RadioButton mUpdate;
     private RadioButton mDownload;
     private RadioButton mInstalled;
@@ -27,8 +27,8 @@ public class ManagerFragment extends BaseFragment implements View.OnClickListene
     private InstallFragment mInstallFragment;
     private Fragment mCurrentFragment;
 
-    public ManagerFragment(HashMap<String, AppInstallInfo> appInstallMap) {
-        super(appInstallMap);
+    public ManagerFragment() {
+        super();
     }
 
     @Override
@@ -69,9 +69,9 @@ public class ManagerFragment extends BaseFragment implements View.OnClickListene
     @Override
     public void initData() {
         initAppInstallInfos();
-        mUpdateFragment = new UpdateFragment(mInstallInfos);
-        mDownloadFragment = new DownloadFragment(mInstallInfos);
-        mInstallFragment = new InstallFragment(mInstallInfos);
+        mUpdateFragment = new UpdateFragment();
+        mDownloadFragment = new DownloadFragment();
+        mInstallFragment = new InstallFragment();
         mFragmentManager.beginTransaction().
                 add(R.id.manager_contain, mDownloadFragment).hide(mDownloadFragment).commit();
         mFragmentManager.beginTransaction().

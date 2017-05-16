@@ -35,8 +35,8 @@ public class CommentFragment extends BaseFragment implements View.OnClickListene
     private TextView mTouchComment;
     private List<CommentInfo> mDatas = new ArrayList<>();
 
-    public CommentFragment(HashMap<String, AppInstallInfo> appInstallMap) {
-        super(appInstallMap);
+    public CommentFragment() {
+        super();
     }
 
     public void setAll(boolean isAll) {

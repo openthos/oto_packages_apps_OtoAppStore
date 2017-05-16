@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.openthos.appstore.MainActivity;
 import com.openthos.appstore.R;
 import com.openthos.appstore.adapter.ManagerInstallAdapter;
 import com.openthos.appstore.bean.AppInstallInfo;
@@ -24,8 +25,7 @@ public class InstallFragment extends Fragment {
     private CustomListView mListView;
     private ManagerInstallAdapter mAdapter;
 
-    public InstallFragment(List<AppInstallInfo> appInstallInfos) {
-        mAppInstallInfos = appInstallInfos;
+    public InstallFragment() {
     }
 
 
@@ -38,6 +38,8 @@ public class InstallFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        mAppInstallInfos =
+             ((ManagerFragment) ((MainActivity) getActivity()).getCurrentFragment()).mInstallInfos;
         mState = (TextView) view.findViewById(R.id.state);
         mState.setVisibility(View.GONE);
         mListView = (CustomListView) view.findViewById(R.id.customlistView);

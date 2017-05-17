@@ -16,9 +16,8 @@
         <RadioButton
             android:id="@+id/update"
             style="@style/Main_Button"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="1"
             android:checked="true"
             android:paddingLeft="@dimen/spacing_thirty"
             android:paddingRight="@dimen/spacing_thirty"
@@ -28,9 +27,8 @@
         <RadioButton
             android:id="@+id/download"
             style="@style/Main_Button"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="1"
             android:paddingLeft="@dimen/spacing_thirty"
             android:paddingRight="@dimen/spacing_thirty"
             android:text="@string/download"
@@ -39,9 +37,8 @@
         <RadioButton
             android:id="@+id/have_installed"
             style="@style/Main_Button"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="1"
             android:paddingLeft="@dimen/spacing_thirty"
             android:paddingRight="@dimen/spacing_thirty"
             android:text="@string/have_installed"

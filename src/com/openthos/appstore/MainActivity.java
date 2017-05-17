@@ -103,6 +103,9 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            savedInstanceState.clear();
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 //        initUrl();
@@ -353,7 +356,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         List<PackageInfo> pinfo = packageManager.getInstalledPackages(0);
         for (int i = 0; i < pinfo.size(); i++) {
             PackageInfo packageInfo = pinfo.get(i);
-            if ((packageInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
+            if (isDisplayApplication(packageInfo)) {
                 appInfo = new AppInstallInfo();
                 appInfo.setId(i);
                 appInfo.setIcon(packageInfo.applicationInfo.loadIcon(packageManager));
@@ -366,6 +369,15 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 mAppInstallMap.put(packageInfo.packageName, appInfo);
             }
         }
+    }
+
+    private boolean isDisplayApplication(PackageInfo packageInfo) {
+        if (packageInfo.packageName.equals(Constants.INTERNET_FENNEC_APP)) {
+            return true;
+        } else if ((packageInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
+            return true;
+        }
+        return false;
     }
 
     class HomeItemClick implements View.OnClickListener {
@@ -424,9 +436,5 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                     "application/vnd.android.package-archive");
             startActivity(intent);
         }
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
     }
 }

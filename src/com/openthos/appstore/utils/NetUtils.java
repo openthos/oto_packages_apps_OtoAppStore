@@ -7,8 +7,9 @@ import android.net.NetworkInfo;
 import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.app.StoreApplication;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -31,7 +32,6 @@ public class NetUtils {
     }
 
     public static String getNetStr(String urlPath) {
-        InputStream in = null;
         HttpURLConnection conn = null;
         try {
             URL url = new URL(StoreApplication.mBaseUrl + urlPath);
@@ -43,14 +43,14 @@ public class NetUtils {
             conn.connect();
 
             if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                in = conn.getInputStream();
-                int len = -1;
+                BufferedReader reader =
+                        new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"));
                 StringBuffer buffer = new StringBuffer();
-                byte[] bytes = new byte[Constants.KB];
-                while ((len = in.read(bytes)) != -1) {
-                    buffer.append(new String(bytes, 0, len));
+                String line = null;
+                while ((line=reader.readLine()) != null){
+                    buffer.append(line + "\n");
                 }
-                return new String(buffer.toString().getBytes("UTF-8"));
+                return buffer.toString();
             }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -63,13 +63,6 @@ public class NetUtils {
         } finally {
             if (conn != null) {
                 conn.disconnect();
-            }
-            try {
-                if (in != null) {
-                    in.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         }
         return null;

@@ -161,8 +161,8 @@ public class DownloadManager {
         for (int i = 0; i < mTaskList.size(); i++) {
             Downloader deletedownloader = mTaskList.get(i);
             DownloadInfo downloadInfo = deletedownloader.getDownloadInfo();
-            if (downloadInfo != null && downloadInfo.getFileSize() != 0 &&
-                    downloadInfo.getFileSize() != downloadInfo.getDownloadSize()) {
+            if (downloadInfo != null && (downloadInfo.getFileSize() == 0 ||
+                    downloadInfo.getFileSize() != downloadInfo.getDownloadSize())) {
                 deletedownloader.start();
             }
         }

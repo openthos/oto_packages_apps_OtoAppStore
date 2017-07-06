@@ -3,12 +3,11 @@ package com.openthos.appstore.download;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 
 import com.openthos.appstore.MainActivity;
 import com.openthos.appstore.R;
 import com.openthos.appstore.app.Constants;
-import com.openthos.appstore.bean.DownloadInfo;
+import com.openthos.appstore.bean.AppItemInfo;
 import com.openthos.appstore.utils.FileHelper;
 import com.openthos.appstore.utils.SQLOperator;
 
@@ -49,18 +48,18 @@ public class Downloader {
     private String mUserID;
     private Context mContext;
     private SQLOperator mDatakeeper;
-    private DownloadInfo mDownloadInfo;
+    private AppItemInfo mDownloadInfo;
     private DownloadThread mDownloadThread;
     private ThreadPoolExecutor mPool;
 
-    public Downloader(Context context, DownloadInfo sqlFileInfo, ThreadPoolExecutor pool,
+    public Downloader(Context context, AppItemInfo sqlFileInfo, ThreadPoolExecutor pool,
                       String userID, boolean isSupportFTP, boolean isNewTask) {
         mContext = context;
         mIsSupportFTP = isSupportFTP;
         mPool = pool;
         mUserID = userID;
         mFileSize = sqlFileInfo.getFileSize();
-        mDownFileSize = sqlFileInfo.getDownloadSize();
+        mDownFileSize = sqlFileInfo.getDownFileSize();
         mDatakeeper = new SQLOperator(context);
         mDownloadInfo = sqlFileInfo;
         mOndownload = false;
@@ -71,7 +70,7 @@ public class Downloader {
     }
 
     public String getTaskID() {
-        return mDownloadInfo.getTaskID();
+        return mDownloadInfo.getTaskId();
     }
 
     public void start() {
@@ -113,7 +112,7 @@ public class Downloader {
             mDownloadThread.stopDownload();
             mDownloadThread = null;
         } else {
-            mDatakeeper.deleteDownloadInfo(mUserID, mDownloadInfo.getTaskID());
+            mDatakeeper.deleteDownloadInfo(mUserID, mDownloadInfo.getTaskId());
         }
         File downloadFile = FileHelper.getDownloadTempFile(mDownloadInfo.getFilePath());
         if (downloadFile.exists()) {
@@ -125,8 +124,8 @@ public class Downloader {
         return mOndownload;
     }
 
-    public DownloadInfo getDownloadInfo() {
-        mDownloadInfo.setDownloadSize(mDownFileSize);
+    public AppItemInfo getDownloadInfo() {
+        mDownloadInfo.setDownFileSize(mDownFileSize);
         return mDownloadInfo;
     }
 
@@ -151,6 +150,9 @@ public class Downloader {
 
         @Override
         public void run() {
+            if (!FileHelper.getDownloadUrlFile(mDownloadInfo.getUrl()).exists()) {
+                mDownFileSize = 0;
+            }
             while (mNumberOfDownload < MAX_NUMBER_OF_DOWNLOAD) {
 
                 try {
@@ -207,7 +209,7 @@ public class Downloader {
                                         (currentTimeMillis - timeMillis);
                                 downloadSize = mDownFileSize;
                                 mDownloadInfo.setSpeed(speed);
-                                mDownloadInfo.setDownloadSize(downloadSize);
+                                mDownloadInfo.setDownFileSize(downloadSize);
                                 timeMillis = currentTimeMillis;
                                 mHandler.sendEmptyMessage(TASK_PROGESS);
                             }
@@ -215,7 +217,7 @@ public class Downloader {
                         if (mDownFileSize == mFileSize) {
                             boolean renameResult = RenameFile();
                             if (renameResult) {
-                                mDownloadInfo.setDownloadSize(mFileSize);
+                                mDownloadInfo.setDownFileSize(mFileSize);
                                 saveDownloadInfo();
                                 mHandler.sendEmptyMessage(TASK_SUCCESS);
                             } else {
@@ -330,7 +332,7 @@ public class Downloader {
 
     private void saveDownloadInfo() {
         if (mIsSupportFTP) {
-            mDownloadInfo.setDownloadSize(mDownFileSize);
+            mDownloadInfo.setDownFileSize(mDownFileSize);
             mDownloadInfo.setFileSize(mFileSize);
             mDatakeeper.saveDownloadInfo(mDownloadInfo);
         }
@@ -403,7 +405,7 @@ public class Downloader {
             } else if (msg.what == TASK_STOP) {
                 mDownloadInfo.setSpeed(0);
                 if (mIsDelete) {
-                    mDatakeeper.deleteDownloadInfo(mUserID, mDownloadInfo.getTaskID());
+                    mDatakeeper.deleteDownloadInfo(mUserID, mDownloadInfo.getTaskId());
                 } else {
                     saveDownloadInfo();
                 }
@@ -420,7 +422,7 @@ public class Downloader {
                 successNotice();
                 saveDownloadInfo();
                 MainActivity.mHandler.sendMessage(MainActivity.mHandler.
-                        obtainMessage(Constants.INSTALL_APK, mDownloadInfo.getFilePath()));
+                        obtainMessage(Constants.INSTALL_APK, mDownloadInfo));
             }
         }
     };

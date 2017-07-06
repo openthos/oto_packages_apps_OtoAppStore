@@ -16,8 +16,6 @@ import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.app.StoreApplication;
 import com.openthos.appstore.bean.AppInstallInfo;
 import com.openthos.appstore.bean.AppItemInfo;
-import com.openthos.appstore.bean.DownloadInfo;
-import com.openthos.appstore.bean.TaskInfo;
 import com.openthos.appstore.download.DownloadListener;
 import com.openthos.appstore.download.DownloadManager;
 import com.openthos.appstore.download.DownloadService;
@@ -32,7 +30,6 @@ import com.openthos.appstore.view.CustomRatingBar;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class DetailFragment extends BaseFragment implements View.OnClickListener {
     private ImageView mIcon;
@@ -114,12 +111,15 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
     public void onClick(View view) {
         if (mAppItemInfo.getState() == Constants.APP_DOWNLOAD_FINISHED) {
             File file = FileHelper.getDownloadUrlFile(mAppItemInfo.getDownloadUrl());
+            mAppItemInfo.setFilePath(FileHelper.
+                getDownloadUrlFile(mAppItemInfo.getDownloadUrl()).getAbsolutePath());
             MainActivity.mHandler.sendMessage(MainActivity.mHandler.
-                    obtainMessage(Constants.INSTALL_APK, file.getAbsolutePath()));
+                    obtainMessage(Constants.INSTALL_APK, mAppItemInfo));
             if (!file.exists() || file.length() == 0) {
                 setContent(mDownload, R.string.download,
                         R.drawable.shape_button_white_cyan, R.color.button_cyan);
             }
+
         } else if (mAppItemInfo.getState() == Constants.APP_HAVE_INSTALLED) {
             AppUtils.openApp(getActivity(), mAppItemInfo.getPackageName());
         } else if (NetUtils.isConnected(getActivity())) {
@@ -189,12 +189,12 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
                     break;
                 case Constants.APP_DOWNLOAD_CONTINUE:
                     mProgressBar.setVisibility(View.VISIBLE);
-                    mProgressBar.setProgress(mAppItemInfo.getProgress());
+                    mProgressBar.setProgress(mAppItemInfo.getSqlProgress());
                     setContent(mDownload, R.string.pause, 0, R.color.white);
                     break;
                 case Constants.APP_DOWNLOAD_PAUSE:
                     mProgressBar.setVisibility(View.VISIBLE);
-                    mProgressBar.setProgress(mAppItemInfo.getProgress());
+                    mProgressBar.setProgress(mAppItemInfo.getSqlProgress());
                     setContent(mDownload, R.string.continues, 0, R.color.white);
                     break;
                 case Constants.APP_NEED_UPDATE:
@@ -226,10 +226,10 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
                 mAppItemInfo.setState(Constants.APP_NOT_INSTALL);
             }
 
-            DownloadInfo downloadInfo = new SQLOperator(getActivity()).
+            AppItemInfo downloadInfo = new SQLOperator(getActivity()).
                     getDownloadInfoByPkgName(mAppItemInfo.getPackageName());
             if (downloadInfo != null) {
-                long downloadSize = downloadInfo.getDownloadSize();
+                long downloadSize = downloadInfo.getDownFileSize();
                 long fileSize = downloadInfo.getFileSize();
                 if (fileSize == 0) {
                     mAppItemInfo.setProgress(0);
@@ -248,13 +248,13 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
                 }
             }
 
-            ArrayList<TaskInfo> allTask = mManager.getAllTask();
+            ArrayList<AppItemInfo> allTask = mManager.getAllInfo();
             for (int i = 0; i < allTask.size(); i++) {
-                TaskInfo taskInfo = allTask.get(i);
-                if (mAppItemInfo.getTaskId().equals(taskInfo.getTaskID())) {
-                    if (taskInfo.isOnDownloading()) {
+                AppItemInfo appInfo = allTask.get(i);
+                if (mAppItemInfo.getTaskId().equals(appInfo.getTaskId())) {
+                    if (appInfo.isOnDownloading()) {
                         mAppItemInfo.setState(Constants.APP_DOWNLOAD_CONTINUE);
-                        mAppItemInfo.setProgress(taskInfo.getProgress());
+                        mAppItemInfo.setProgress(appInfo.getProgress());
                     }
                 }
             }
@@ -268,13 +268,15 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
         } else {
             btn.setBackground(null);
         }
-        btn.setTextColor(getActivity().getResources().getColor(color));
+        if (getActivity() != null) {
+            btn.setTextColor(getActivity().getResources().getColor(color));
+        }
     }
 
     private class DetailDownloadListener implements DownloadListener {
         @Override
-        public void onStart(DownloadInfo downloadInfo) {
-            if (mAppItemInfo.getTaskId().equals(downloadInfo.getTaskID())) {
+        public void onStart(AppItemInfo downloadInfo) {
+            if (mAppItemInfo.getTaskId().equals(downloadInfo.getTaskId())) {
                 mProgressBar.setVisibility(View.VISIBLE);
                 mProgressBar.setProgress(downloadInfo.getProgress());
                 mAppItemInfo.setState(Constants.APP_DOWNLOAD_CONTINUE);
@@ -283,8 +285,8 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
         }
 
         @Override
-        public void onProgress(DownloadInfo downloadInfo, boolean isSupportFTP) {
-            if (mAppItemInfo.getTaskId().equals(downloadInfo.getTaskID())) {
+        public void onProgress(AppItemInfo downloadInfo, boolean isSupportFTP) {
+            if (mAppItemInfo.getTaskId().equals(downloadInfo.getTaskId())) {
                 mProgressBar.setVisibility(View.VISIBLE);
                 mProgressBar.setProgress(downloadInfo.getProgress());
                 mAppItemInfo.setState(Constants.APP_DOWNLOAD_CONTINUE);
@@ -294,8 +296,8 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
         }
 
         @Override
-        public void onStop(DownloadInfo downloadInfo, boolean isSupportFTP) {
-            if (mAppItemInfo.getTaskId().equals(downloadInfo.getTaskID())) {
+        public void onStop(AppItemInfo downloadInfo, boolean isSupportFTP) {
+            if (mAppItemInfo.getTaskId().equals(downloadInfo.getTaskId())) {
                 mProgressBar.setVisibility(View.VISIBLE);
                 mProgressBar.setProgress(downloadInfo.getProgress());
                 mAppItemInfo.setState(Constants.APP_DOWNLOAD_PAUSE);
@@ -304,14 +306,14 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
         }
 
         @Override
-        public void onError(DownloadInfo downloadInfo, String error) {
+        public void onError(AppItemInfo downloadInfo, String error) {
             mProgressBar.setVisibility(View.GONE);
             mAppItemInfo.setState(Constants.APP_DOWNLOAD_PAUSE);
         }
 
         @Override
-        public void onSuccess(DownloadInfo downloadInfo) {
-            if (mAppItemInfo.getTaskId().equals(downloadInfo.getTaskID())) {
+        public void onSuccess(AppItemInfo downloadInfo) {
+            if (mAppItemInfo.getTaskId().equals(downloadInfo.getTaskId())) {
                 mProgressBar.setVisibility(View.GONE);
                 setContent(mDownload, R.string.finished,
                         R.drawable.shape_button_white_cyan, R.color.button_cyan);

@@ -106,8 +106,9 @@ public class RecyclerItemAdapter extends RecyclerView.Adapter<RecyclerItemAdapte
             int state = appItemInfo.getState();
             if (state == Constants.APP_DOWNLOAD_FINISHED) {
                 File file = FileHelper.getDownloadUrlFile(appItemInfo.getDownloadUrl());
+                appItemInfo.setFilePath(file.getAbsolutePath());
                 MainActivity.mHandler.sendMessage(MainActivity.mHandler.
-                        obtainMessage(Constants.INSTALL_APK, file.getAbsolutePath()));
+                        obtainMessage(Constants.INSTALL_APK, appItemInfo));
                 if (!file.exists() || file.length() == 0) {
                     installBtn.setText(mContext.getString(R.string.download));
                 }

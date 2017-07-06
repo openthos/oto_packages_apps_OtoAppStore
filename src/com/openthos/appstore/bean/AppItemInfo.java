@@ -24,6 +24,15 @@ public class AppItemInfo {
     private float star;
     private int state;
     private int progress;
+    private String filePath;
+    private boolean isOnDownloading;
+    private String fileName;
+    private long downFileSize = 0L;
+    private int downloadState;
+    private long speed;
+    private String userID;
+    private String url;
+    private boolean isSuccess;
 
     public AppItemInfo(JSONObject obj) throws JSONException {
         taskId = obj.getString("taskId");
@@ -38,6 +47,9 @@ public class AppItemInfo {
         type = obj.getString("type");
         company = obj.getString("company");
         star = (float) obj.getDouble("star");
+    }
+
+    public AppItemInfo() {
     }
 
     public String getTaskId() {
@@ -147,6 +159,14 @@ public class AppItemInfo {
     }
 
     public int getProgress() {
+        if (fileSize == 0) {
+            return 0;
+        } else {
+            return ((int) (100 * downFileSize / fileSize));
+        }
+    }
+
+    public int getSqlProgress() {
         return progress;
     }
 
@@ -169,5 +189,77 @@ public class AppItemInfo {
                 ", type='" + type + '\'' +
                 ", company='" + company + '\'' +
                 '}';
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
+    public boolean isOnDownloading() {
+        return isOnDownloading;
+    }
+
+    public void setOnDownloading(boolean onDownloading) {
+        isOnDownloading = onDownloading;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public long getDownFileSize() {
+        return downFileSize;
+    }
+
+    public void setDownFileSize(long downFileSize) {
+        this.downFileSize = downFileSize;
+    }
+
+    public int getDownloadState() {
+        return downloadState;
+    }
+
+    public void setDownloadState(int downloadState) {
+        this.downloadState = downloadState;
+    }
+
+    public long getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(long speed) {
+        this.speed = speed;
+    }
+
+    public boolean isSuccess() {
+        return fileSize == downFileSize;
+    }
+
+    public void setIsSuccess(boolean isSuccess) {
+        this.isSuccess = isSuccess;
+    }
+
+    public String getUserID() {
+        return userID;
+    }
+
+    public void setUserID(String userID) {
+        this.userID = userID;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

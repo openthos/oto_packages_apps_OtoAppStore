@@ -14,7 +14,7 @@
     <string name="continues">继续</string>
     <string name="pause">暂停</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="author">评论人：</string>
+    <string name="author">评论人 :&#160;</string>
     <string name="submit_comment">提交评论</string>
     <string name="cancel">取消</string>
     <string name="comment_star">评分</string>
@@ -37,9 +37,9 @@
     <string name="install">安装</string>
 
     <string name="news">news</string>
-    <string name="promulgator">发布者 : </string>
-    <string name="type">类别 : </string>
-    <string name="size">大小 ： </string>
+    <string name="promulgator">发布者 :&#160;</string>
+    <string name="type">类别 :&#160;</string>
+    <string name="size">大小 :&#160;</string>
     <string name="name">name</string>
     <string name="more">所有</string>
     <string name="touch_star">点击评分</string>
@@ -51,7 +51,6 @@
     <string name="touch_look">点击查看</string>
     <string name="uninstall">卸载</string>
     <string name="remove">移除</string>
-    <string name="this_file_is_not_exist">该安装文件不存在</string>
     <string name="stopAll">停止所有</string>
     <string name="no_task">当前没有下载任务</string>
     <string name="parsing_package_meet_peoblem">解析包出现问题</string>

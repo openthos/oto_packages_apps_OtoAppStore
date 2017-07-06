@@ -15,8 +15,6 @@ import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.app.StoreApplication;
 import com.openthos.appstore.bean.AppInstallInfo;
 import com.openthos.appstore.bean.AppItemInfo;
-import com.openthos.appstore.bean.DownloadInfo;
-import com.openthos.appstore.bean.TaskInfo;
 import com.openthos.appstore.download.DownloadListener;
 import com.openthos.appstore.download.DownloadManager;
 import com.openthos.appstore.download.DownloadService;
@@ -123,10 +121,10 @@ public class AppItemAdapter extends BasicAdapter implements View.OnClickListener
                 appItemInfo.setState(Constants.APP_NOT_INSTALL);
             }
 
-            DownloadInfo downloadInfo = new SQLOperator(mContext).
+            AppItemInfo downloadInfo = new SQLOperator(mContext).
                     getDownloadInfoByPkgName(appItemInfo.getPackageName());
             if (downloadInfo != null) {
-                long downloadSize = downloadInfo.getDownloadSize();
+                long downloadSize = downloadInfo.getDownFileSize();
                 long fileSize = downloadInfo.getFileSize();
                 if (fileSize == 0) {
                     appItemInfo.setProgress(0);
@@ -145,13 +143,13 @@ public class AppItemAdapter extends BasicAdapter implements View.OnClickListener
                 }
             }
 
-            ArrayList<TaskInfo> allTask = mManager.getAllTask();
+            ArrayList<AppItemInfo> allTask = mManager.getAllInfo();
             for (int i = 0; i < allTask.size(); i++) {
-                TaskInfo taskInfo = allTask.get(i);
-                if (appItemInfo.getTaskId().equals(taskInfo.getTaskID())) {
-                    if (taskInfo.isOnDownloading()) {
+                AppItemInfo appInfo = allTask.get(i);
+                if (appItemInfo.getTaskId().equals(appInfo.getTaskId())) {
+                    if (appInfo.isOnDownloading()) {
                         appItemInfo.setState(Constants.APP_DOWNLOAD_CONTINUE);
-                        appItemInfo.setProgress(taskInfo.getProgress());
+                        appItemInfo.setProgress(appInfo.getProgress());
                     }
                 }
             }
@@ -176,12 +174,10 @@ public class AppItemAdapter extends BasicAdapter implements View.OnClickListener
         if (appItemInfo != null) {
             int state = appItemInfo.getState();
             if (state == Constants.APP_DOWNLOAD_FINISHED) {
-                File file = FileHelper.getDownloadUrlFile(appItemInfo.getDownloadUrl());
+                appItemInfo.setFilePath(FileHelper.
+                    getDownloadUrlFile(appItemInfo.getDownloadUrl()).getAbsolutePath());
                 MainActivity.mHandler.sendMessage(MainActivity.mHandler.
-                        obtainMessage(Constants.INSTALL_APK, file.getAbsolutePath()));
-                if (!file.exists() || file.length() == 0) {
-                    installBtn.setText(mContext.getString(R.string.download));
-                }
+                        obtainMessage(Constants.INSTALL_APK, appItemInfo));
             } else if (state == Constants.APP_HAVE_INSTALLED) {
                 AppUtils.openApp(mContext, appItemInfo.getPackageName());
             } else if (NetUtils.isConnected(mContext)) {
@@ -237,7 +233,7 @@ public class AppItemAdapter extends BasicAdapter implements View.OnClickListener
 
     private class ItemDownloadListener implements DownloadListener {
         @Override
-        public void onStart(DownloadInfo downloadInfo) {
+        public void onStart(AppItemInfo downloadInfo) {
             for (int i = 0; i < mDatas.size(); i++) {
                 AppItemInfo appItemInfo = ((List<AppItemInfo>) mDatas).get(i);
                 if (appItemInfo.getPackageName().equals(downloadInfo.getPackageName())) {
@@ -248,7 +244,7 @@ public class AppItemAdapter extends BasicAdapter implements View.OnClickListener
         }
 
         @Override
-        public void onProgress(DownloadInfo downloadInfo, boolean isSupportFTP) {
+        public void onProgress(AppItemInfo downloadInfo, boolean isSupportFTP) {
             for (int i = 0; i < mDatas.size(); i++) {
                 AppItemInfo appItemInfo = ((List<AppItemInfo>) mDatas).get(i);
                 if (appItemInfo.getPackageName().equals(downloadInfo.getPackageName())) {
@@ -259,7 +255,7 @@ public class AppItemAdapter extends BasicAdapter implements View.OnClickListener
         }
 
         @Override
-        public void onStop(DownloadInfo downloadInfo, boolean isSupportFTP) {
+        public void onStop(AppItemInfo downloadInfo, boolean isSupportFTP) {
             for (int i = 0; i < mDatas.size(); i++) {
                 AppItemInfo appItemInfo = ((List<AppItemInfo>) mDatas).get(i);
                 if (appItemInfo.getPackageName().equals(downloadInfo.getPackageName())) {
@@ -270,7 +266,7 @@ public class AppItemAdapter extends BasicAdapter implements View.OnClickListener
         }
 
         @Override
-        public void onError(DownloadInfo downloadInfo, String error) {
+        public void onError(AppItemInfo downloadInfo, String error) {
             for (int i = 0; i < mDatas.size(); i++) {
                 AppItemInfo appItemInfo = ((List<AppItemInfo>) mDatas).get(i);
                 if (appItemInfo.getPackageName().equals(downloadInfo.getPackageName())) {
@@ -281,7 +277,7 @@ public class AppItemAdapter extends BasicAdapter implements View.OnClickListener
         }
 
         @Override
-        public void onSuccess(DownloadInfo downloadInfo) {
+        public void onSuccess(AppItemInfo downloadInfo) {
             for (int i = 0; i < mDatas.size(); i++) {
                 AppItemInfo appItemInfo = ((List<AppItemInfo>) mDatas).get(i);
                 if (appItemInfo.getPackageName().equals(downloadInfo.getPackageName())) {

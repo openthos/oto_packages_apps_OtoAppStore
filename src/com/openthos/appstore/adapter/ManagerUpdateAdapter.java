@@ -15,12 +15,8 @@ import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.app.StoreApplication;
 import com.openthos.appstore.bean.AppInstallInfo;
 import com.openthos.appstore.bean.AppItemInfo;
-import com.openthos.appstore.bean.DownloadInfo;
-import com.openthos.appstore.bean.TaskInfo;
 import com.openthos.appstore.download.DownloadListener;
 import com.openthos.appstore.download.DownloadManager;
-import com.openthos.appstore.download.DownloadService;
-import com.openthos.appstore.utils.AppUtils;
 import com.openthos.appstore.utils.FileHelper;
 import com.openthos.appstore.utils.ImageCache;
 import com.openthos.appstore.utils.NetUtils;
@@ -123,10 +119,10 @@ public class ManagerUpdateAdapter extends BasicAdapter implements View.OnClickLi
                 }
             }
 
-            DownloadInfo downloadInfo = new SQLOperator(mContext).
+            AppItemInfo downloadInfo = new SQLOperator(mContext).
                     getDownloadInfoByPkgName(appItemInfo.getPackageName());
             if (downloadInfo != null) {
-                long downloadSize = downloadInfo.getDownloadSize();
+                long downloadSize = downloadInfo.getDownFileSize();
                 long fileSize = downloadInfo.getFileSize();
                 if (downloadSize < fileSize) {
                     appItemInfo.setState(Constants.APP_DOWNLOAD_PAUSE);
@@ -137,11 +133,11 @@ public class ManagerUpdateAdapter extends BasicAdapter implements View.OnClickLi
                 }
             }
 
-            ArrayList<TaskInfo> allTask = mDownloadManager.getAllTask();
+            ArrayList<AppItemInfo> allTask = mDownloadManager.getAllInfo();
             for (int j = 0; j < allTask.size(); j++) {
-                TaskInfo taskInfo = allTask.get(j);
-                if (appItemInfo.getTaskId().equals(taskInfo.getTaskID())) {
-                    if (taskInfo.isOnDownloading()) {
+                AppItemInfo appInfo = allTask.get(j);
+                if (appItemInfo.getTaskId().equals(appInfo.getTaskId())) {
+                    if (appInfo.isOnDownloading()) {
                         appItemInfo.setState(Constants.APP_DOWNLOAD_CONTINUE);
                     }
                 }
@@ -158,10 +154,10 @@ public class ManagerUpdateAdapter extends BasicAdapter implements View.OnClickLi
         AppItemInfo appItemInfo = (AppItemInfo) view.getTag();
         Button btn = (Button) view;
         if (appItemInfo.getState() == Constants.APP_DOWNLOAD_FINISHED) {
+            appItemInfo.setFilePath(FileHelper.
+                getDownloadUrlFile(appItemInfo.getDownloadUrl()).getAbsolutePath());
             MainActivity.mHandler.sendMessage(
-                    MainActivity.mHandler.obtainMessage(
-                            Constants.INSTALL_APK,
-                            FileHelper.getDownloadUrlPath(appItemInfo.getDownloadUrl())));
+                    MainActivity.mHandler.obtainMessage(Constants.INSTALL_APK, appItemInfo));
         } else if (NetUtils.isConnected(mContext)) {
             switch (appItemInfo.getState()) {
                 case Constants.APP_NEED_UPDATE:
@@ -223,7 +219,7 @@ public class ManagerUpdateAdapter extends BasicAdapter implements View.OnClickLi
 
     private class UpdateManagerListener implements DownloadListener {
         @Override
-        public void onStart(DownloadInfo downloadInfo) {
+        public void onStart(AppItemInfo downloadInfo) {
             for (int i = 0; i < mDatas.size(); i++) {
                 AppItemInfo updateInfo = (AppItemInfo) mDatas.get(i);
                 if (updateInfo.getPackageName().equals(downloadInfo.getPackageName())) {
@@ -235,12 +231,12 @@ public class ManagerUpdateAdapter extends BasicAdapter implements View.OnClickLi
         }
 
         @Override
-        public void onProgress(DownloadInfo downloadInfo, boolean isSupportF) {
+        public void onProgress(AppItemInfo downloadInfo, boolean isSupportF) {
 
         }
 
         @Override
-        public void onStop(DownloadInfo downloadInfo, boolean isSupportFTP) {
+        public void onStop(AppItemInfo downloadInfo, boolean isSupportFTP) {
             for (int i = 0; i < mDatas.size(); i++) {
                 AppItemInfo updateInfo = (AppItemInfo) mDatas.get(i);
                 if (updateInfo.getPackageName().equals(downloadInfo.getPackageName())) {
@@ -252,7 +248,7 @@ public class ManagerUpdateAdapter extends BasicAdapter implements View.OnClickLi
         }
 
         @Override
-        public void onError(DownloadInfo downloadInfo, String error) {
+        public void onError(AppItemInfo downloadInfo, String error) {
             for (int i = 0; i < mDatas.size(); i++) {
                 AppItemInfo updateInfo = (AppItemInfo) mDatas.get(i);
                 if (updateInfo.getPackageName().equals(downloadInfo.getPackageName())) {
@@ -264,7 +260,7 @@ public class ManagerUpdateAdapter extends BasicAdapter implements View.OnClickLi
         }
 
         @Override
-        public void onSuccess(DownloadInfo downloadInfo) {
+        public void onSuccess(AppItemInfo downloadInfo) {
             for (int i = 0; i < mDatas.size(); i++) {
                 AppItemInfo updateInfo = (AppItemInfo) mDatas.get(i);
                 if (updateInfo.getPackageName().equals(downloadInfo.getPackageName())) {

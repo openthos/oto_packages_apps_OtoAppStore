@@ -14,8 +14,6 @@ import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.bean.AppInstallInfo;
 import com.openthos.appstore.bean.AppItemInfo;
 import com.openthos.appstore.bean.AppItemLayoutInfo;
-import com.openthos.appstore.bean.DownloadInfo;
-import com.openthos.appstore.bean.TaskInfo;
 import com.openthos.appstore.download.DownloadListener;
 import com.openthos.appstore.download.DownloadManager;
 import com.openthos.appstore.download.DownloadService;
@@ -52,7 +50,6 @@ public class AppItemLayoutAdapter extends BasicAdapter implements View.OnClickLi
         if (mDatas != null && mDatas.size() != 0) {
             AppItemLayoutInfo appItemLayoutInfo = (AppItemLayoutInfo) mDatas.get(position);
             holder.type.setText(appItemLayoutInfo.getType());
-            holder.whole.setText(appItemLayoutInfo.getWhole());
             RecyclerItemAdapter recyclerItemAdapter = new RecyclerItemAdapter(mContext,
                     appItemLayoutInfo.getAppItemInfoList());
             CustomLayoutManager layout = new CustomLayoutManager(mContext);
@@ -91,10 +88,10 @@ public class AppItemLayoutAdapter extends BasicAdapter implements View.OnClickLi
                 appItemInfo.setState(Constants.APP_NOT_INSTALL);
             }
 
-            DownloadInfo downloadInfo = new SQLOperator(mContext).
+            AppItemInfo downloadInfo = new SQLOperator(mContext).
                     getDownloadInfoByPkgName(appItemInfo.getPackageName());
             if (downloadInfo != null) {
-                long downloadSize = downloadInfo.getDownloadSize();
+                long downloadSize = downloadInfo.getDownFileSize();
                 long fileSize = downloadInfo.getFileSize();
                 if (fileSize == 0) {
                     appItemInfo.setProgress(0);
@@ -113,13 +110,13 @@ public class AppItemLayoutAdapter extends BasicAdapter implements View.OnClickLi
                 }
             }
 
-            ArrayList<TaskInfo> allTask = mManager.getAllTask();
+            ArrayList<AppItemInfo> allTask = mManager.getAllInfo();
             for (int i = 0; i < allTask.size(); i++) {
-                TaskInfo taskInfo = allTask.get(i);
-                if (appItemInfo.getTaskId().equals(taskInfo.getTaskID())) {
-                    if (taskInfo.isOnDownloading()) {
+                AppItemInfo appInfo = allTask.get(i);
+                if (appItemInfo.getTaskId().equals(appInfo.getTaskId())) {
+                    if (appInfo.isOnDownloading()) {
                         appItemInfo.setState(Constants.APP_DOWNLOAD_CONTINUE);
-                        appItemInfo.setProgress(taskInfo.getProgress());
+                        appItemInfo.setProgress(appInfo.getProgress());
                     }
                 }
             }
@@ -146,7 +143,7 @@ public class AppItemLayoutAdapter extends BasicAdapter implements View.OnClickLi
 
     private class LayoutDownloadListener implements DownloadListener {
         @Override
-        public void onStart(DownloadInfo downloadInfo) {
+        public void onStart(AppItemInfo downloadInfo) {
             for (int i = 0; i < mDatas.size(); i++) {
                 AppItemLayoutInfo appItemLayoutInfo = ((List<AppItemLayoutInfo>) mDatas).get(i);
                 for (int j = 0; j < appItemLayoutInfo.getAppItemInfoList().size(); j++) {
@@ -161,12 +158,12 @@ public class AppItemLayoutAdapter extends BasicAdapter implements View.OnClickLi
         }
 
         @Override
-        public void onProgress(DownloadInfo downloadInfo, boolean isSupportFTP) {
+        public void onProgress(AppItemInfo downloadInfo, boolean isSupportFTP) {
             notifyDataSetChanged();
         }
 
         @Override
-        public void onStop(DownloadInfo downloadInfo, boolean isSupportFTP) {
+        public void onStop(AppItemInfo downloadInfo, boolean isSupportFTP) {
             for (int i = 0; i < mDatas.size(); i++) {
                 AppItemLayoutInfo appItemLayoutInfo = ((List<AppItemLayoutInfo>) mDatas).get(i);
                 for (int j = 0; j < appItemLayoutInfo.getAppItemInfoList().size(); j++) {
@@ -181,7 +178,7 @@ public class AppItemLayoutAdapter extends BasicAdapter implements View.OnClickLi
         }
 
         @Override
-        public void onError(DownloadInfo downloadInfo, String error) {
+        public void onError(AppItemInfo downloadInfo, String error) {
             for (int i = 0; i < mDatas.size(); i++) {
                 AppItemLayoutInfo appItemLayoutInfo = ((List<AppItemLayoutInfo>) mDatas).get(i);
                 for (int j = 0; j < appItemLayoutInfo.getAppItemInfoList().size(); j++) {
@@ -196,7 +193,7 @@ public class AppItemLayoutAdapter extends BasicAdapter implements View.OnClickLi
         }
 
         @Override
-        public void onSuccess(DownloadInfo downloadInfo) {
+        public void onSuccess(AppItemInfo downloadInfo) {
             for (int i = 0; i < mDatas.size(); i++) {
                 AppItemLayoutInfo appItemLayoutInfo = ((List<AppItemLayoutInfo>) mDatas).get(i);
                 for (int j = 0; j < appItemLayoutInfo.getAppItemInfoList().size(); j++) {

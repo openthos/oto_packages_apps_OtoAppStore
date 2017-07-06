@@ -47,7 +47,7 @@ public class NetUtils {
                         new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"));
                 StringBuffer buffer = new StringBuffer();
                 String line = null;
-                while ((line=reader.readLine()) != null){
+                while ((line = reader.readLine()) != null) {
                     buffer.append(line + "\n");
                 }
                 return buffer.toString();

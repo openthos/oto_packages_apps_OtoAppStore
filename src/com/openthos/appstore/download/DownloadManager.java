@@ -4,8 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.openthos.appstore.app.StoreApplication;
-import com.openthos.appstore.bean.DownloadInfo;
-import com.openthos.appstore.bean.TaskInfo;
+import com.openthos.appstore.bean.AppItemInfo;
 import com.openthos.appstore.utils.SQLOperator;
 import com.openthos.appstore.utils.FileHelper;
 
@@ -44,7 +43,7 @@ public class DownloadManager {
         stopAllTask();
         mTaskList = new ArrayList<>();
         mSQLOperator = new SQLOperator(context);
-        ArrayList<DownloadInfo> downloadInfoList = null;
+        ArrayList<AppItemInfo> downloadInfoList = null;
         if (userID == null) {
             downloadInfoList = mSQLOperator.getAllDownloadInfo();
         } else {
@@ -53,7 +52,7 @@ public class DownloadManager {
         if (downloadInfoList.size() > 0) {
             int listSize = downloadInfoList.size();
             for (int i = 0; i < listSize; i++) {
-                DownloadInfo downloadInfo = downloadInfoList.get(i);
+                AppItemInfo downloadInfo = downloadInfoList.get(i);
                 Downloader sqlDownloader = new Downloader(
                         context, downloadInfo, mPool, userID, mIsSupportFTP, false);
                 sqlDownloader.setDownloadListener("public", mAlltasklistener);
@@ -79,17 +78,17 @@ public class DownloadManager {
             taskID = fileName;
         }
 
-        DownloadInfo downloadInfoByPkgName = mSQLOperator.getDownloadInfoByPkgName(packageName);
+        AppItemInfo downloadInfoByPkgName = mSQLOperator.getDownloadInfoByPkgName(packageName);
         if (downloadInfoByPkgName != null) {
             mSQLOperator.deleteDownloadInfo(mUserID, taskID);
             deleteTask(taskID);
         }
 
-        DownloadInfo downloadinfo = new DownloadInfo();
+        AppItemInfo downloadinfo = new AppItemInfo();
         downloadinfo.setUserID(mUserID);
-        downloadinfo.setDownloadSize(0);
+        downloadinfo.setDownFileSize(0);
         downloadinfo.setFileSize(0);
-        downloadinfo.setTaskID(taskID);
+        downloadinfo.setTaskId(taskID);
         downloadinfo.setFileName(fileName);
         downloadinfo.setUrl(url);
         downloadinfo.setPackageName(packageName);
@@ -118,23 +117,24 @@ public class DownloadManager {
         }
     }
 
-    public ArrayList<TaskInfo> getAllTask() {
-        ArrayList<TaskInfo> taskInfolist = new ArrayList<TaskInfo>();
+    public ArrayList<AppItemInfo> getAllInfo() {
+        ArrayList<AppItemInfo> appInfolist = new ArrayList<>();
         for (int i = 0; i < mTaskList.size(); i++) {
             Downloader deletedownloader = mTaskList.get(i);
-            DownloadInfo sqldownloadinfo = deletedownloader.getDownloadInfo();
-            TaskInfo taskinfo = new TaskInfo();
-            taskinfo.setFileName(sqldownloadinfo.getFileName());
-            taskinfo.setOnDownloading(deletedownloader.isDownloading());
-            taskinfo.setTaskID(sqldownloadinfo.getTaskID());
-            taskinfo.setFileSize(sqldownloadinfo.getFileSize());
-            taskinfo.setDownFileSize(sqldownloadinfo.getDownloadSize());
-            taskinfo.setIconUrl(sqldownloadinfo.getIconUrl());
-            taskinfo.setFilePath(sqldownloadinfo.getFilePath());
-            taskinfo.setPackageName(sqldownloadinfo.getPackageName());
-            taskInfolist.add(taskinfo);
+            AppItemInfo sqldownloadinfo = deletedownloader.getDownloadInfo();
+            AppItemInfo appInfo = new AppItemInfo();
+            appInfo.setFileName(sqldownloadinfo.getFileName());
+            appInfo.setOnDownloading(deletedownloader.isDownloading());
+            appInfo.setTaskId(sqldownloadinfo.getTaskId());
+            appInfo.setFileSize(sqldownloadinfo.getFileSize());
+            appInfo.setDownFileSize(sqldownloadinfo.getDownFileSize());
+            appInfo.setIconUrl(sqldownloadinfo.getIconUrl());
+            appInfo.setFilePath(sqldownloadinfo.getFilePath());
+            appInfo.setPackageName(sqldownloadinfo.getPackageName());
+            appInfo.setDownloadUrl(sqldownloadinfo.getUrl());
+            appInfolist.add(appInfo);
         }
-        return taskInfolist;
+        return appInfolist;
     }
 
     public void startTask(String taskID) {
@@ -160,9 +160,9 @@ public class DownloadManager {
     public void startAllTask() {
         for (int i = 0; i < mTaskList.size(); i++) {
             Downloader deletedownloader = mTaskList.get(i);
-            DownloadInfo downloadInfo = deletedownloader.getDownloadInfo();
-            if (downloadInfo != null && (downloadInfo.getFileSize() == 0 ||
-                    downloadInfo.getFileSize() != downloadInfo.getDownloadSize())) {
+            AppItemInfo downloadInfo = deletedownloader.getDownloadInfo();
+            if (downloadInfo != null && downloadInfo.getFileSize() != 0 &&
+                    downloadInfo.getFileSize() != downloadInfo.getDownFileSize()) {
                 deletedownloader.start();
             }
         }

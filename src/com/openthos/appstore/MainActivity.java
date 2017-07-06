@@ -240,7 +240,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                         Tools.toast(MainActivity.this, (String) msg.obj);
                         break;
                     case Constants.INSTALL_APK:
-                        installApk((String) msg.obj);
+                        installApk((AppItemInfo) msg.obj);
                         break;
                     default:
                         showFragment(msg);
@@ -424,10 +424,10 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         }
     }
 
-    private void installApk(String apkFilePath) {
-        File apkFile = new File(apkFilePath);
+    private void installApk(AppItemInfo appInfo) {
+        File apkFile = new File(appInfo.getFilePath());
         if (!apkFile.exists() || apkFile.length() == 0) {
-            Tools.toast(this, getString(R.string.this_file_is_not_exist));
+            mDownloadService.startTask(appInfo.getTaskId());
         } else {
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

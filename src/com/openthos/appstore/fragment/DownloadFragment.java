@@ -13,7 +13,7 @@ import com.openthos.appstore.MainActivity;
 import com.openthos.appstore.R;
 import com.openthos.appstore.adapter.ManagerDownloadAdapter;
 import com.openthos.appstore.bean.AppInstallInfo;
-import com.openthos.appstore.bean.TaskInfo;
+import com.openthos.appstore.bean.AppItemInfo;
 import com.openthos.appstore.download.DownloadManager;
 import com.openthos.appstore.download.DownloadService;
 import com.openthos.appstore.view.CustomListView;
@@ -25,7 +25,7 @@ import java.util.List;
  * A simple {@link Fragment} subclass.
  */
 public class DownloadFragment extends Fragment implements View.OnClickListener {
-    private List<TaskInfo> mTaskInfos;
+    private List<AppItemInfo> mAppInfos;
     private List<AppInstallInfo> mAppInstallInfos;
     private TextView mState;
     private CustomListView mListView;
@@ -33,7 +33,7 @@ public class DownloadFragment extends Fragment implements View.OnClickListener {
     private DownloadManager mDownloadManager;
 
     public DownloadFragment() {
-        mTaskInfos = new ArrayList<>();
+        mAppInfos = new ArrayList<>();
         mDownloadManager = DownloadService.getDownloadManager();
     }
 
@@ -51,13 +51,13 @@ public class DownloadFragment extends Fragment implements View.OnClickListener {
         mState = (TextView) view.findViewById(R.id.state);
         mListView = (CustomListView) view.findViewById(R.id.customlistView);
         mAdapter = new ManagerDownloadAdapter(getActivity(), mDownloadManager,
-                mAppInstallInfos, mTaskInfos);
+                mAppInstallInfos, mAppInfos);
         mListView.setAdapter(mAdapter);
-        mTaskInfos.addAll(mDownloadManager.getAllTask());
+        mAppInfos.addAll(mDownloadManager.getAllInfo());
         mAdapter.refreshLayout();
 
         mState.setOnClickListener(this);
-        if (mTaskInfos.size() > 0) {
+        if (mAppInfos.size() > 0) {
             mState.setText(getString(R.string.startAll));
         } else {
             mState.setText(getString(R.string.no_task));
@@ -66,7 +66,7 @@ public class DownloadFragment extends Fragment implements View.OnClickListener {
 
     public void refresh() {
         mAdapter.refreshLayout();
-        if (mTaskInfos.size() == 0) {
+        if (mAppInfos.size() == 0) {
             mState.setText(getString(R.string.no_task));
         } else if (!mState.getText().toString().equals(getString(R.string.stopAll))) {
             mState.setText(getString(R.string.startAll));

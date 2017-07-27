@@ -50,7 +50,7 @@
         android:background="@color/view_line"
         />
 
-    <android.support.v7.widget.RecyclerView
+    <com.openthos.appstore.view.CustomRecyclerView
         android:id="@+id/app_item_layout_recycler"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>

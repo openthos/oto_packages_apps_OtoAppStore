@@ -40,6 +40,7 @@ public abstract class BaseClassifyFragment extends BaseFragment {
     @Override
     public void initView(View view) {
         mListView = (CustomListView) view.findViewById(R.id.fragment_classify_listview);
+        mListView.setIsDisableScroll(false);
         mAdapter = new AppItemLayoutAdapter(getActivity(), mAppInstallMap, mDatas);
         mListView.setAdapter(mAdapter);
     }

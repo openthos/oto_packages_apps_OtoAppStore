@@ -53,6 +53,7 @@ public class UpdateFragment extends Fragment implements View.OnClickListener {
              ((ManagerFragment) ((MainActivity) getActivity()).getCurrentFragment()).mInstallInfos;
         mState = (TextView) view.findViewById(R.id.state);
         mListView = (CustomListView) view.findViewById(R.id.customlistView);
+        mListView.setIsDisableScroll(false);
 
         mAdapter = new ManagerUpdateAdapter(getActivity(), mDownloadManager,
                 mAppInstallInfos, mUpdateDatas);

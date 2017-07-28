@@ -43,6 +43,7 @@ public class InstallFragment extends Fragment {
         mState = (TextView) view.findViewById(R.id.state);
         mState.setVisibility(View.GONE);
         mListView = (CustomListView) view.findViewById(R.id.customlistView);
+        mListView.setIsDisableScroll(false);
 
         mAdapter = new ManagerInstallAdapter(getActivity(), mAppInstallInfos);
         mListView.setAdapter(mAdapter);

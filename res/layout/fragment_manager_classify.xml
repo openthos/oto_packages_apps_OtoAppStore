@@ -25,6 +25,7 @@
         android:layout_height="match_parent"
         android:divider="@color/item_background"
         android:dividerHeight="1dp"
+        android:scrollbars="none"
         android:padding="@dimen/spacing_five"/>
 
 </LinearLayout>

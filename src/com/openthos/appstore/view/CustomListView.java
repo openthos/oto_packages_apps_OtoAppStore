@@ -9,6 +9,8 @@ import android.widget.ListView;
 import com.openthos.appstore.app.Constants;
 
 public class CustomListView extends ListView {
+    private boolean isDisableScroll = true;
+
     public CustomListView(Context context) {
         super(context);
     }
@@ -28,8 +30,16 @@ public class CustomListView extends ListView {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int height = MeasureSpec.makeMeasureSpec(Integer.MAX_VALUE & Constants.HEIGHT_MASK,
-                MeasureSpec.AT_MOST);
-        super.onMeasure(widthMeasureSpec, height);
+        if (isDisableScroll) {
+            int height = MeasureSpec.makeMeasureSpec(Integer.MAX_VALUE & Constants.HEIGHT_MASK,
+                    MeasureSpec.AT_MOST);
+            super.onMeasure(widthMeasureSpec, height);
+        } else {
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        }
+    }
+
+    public void setIsDisableScroll(boolean isDisableScroll) {
+        this.isDisableScroll = isDisableScroll;
     }
 }

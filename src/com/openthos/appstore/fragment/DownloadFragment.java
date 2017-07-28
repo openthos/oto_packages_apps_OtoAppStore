@@ -50,6 +50,7 @@ public class DownloadFragment extends Fragment implements View.OnClickListener {
         super.onViewCreated(view, savedInstanceState);
         mState = (TextView) view.findViewById(R.id.state);
         mListView = (CustomListView) view.findViewById(R.id.customlistView);
+        mListView.setIsDisableScroll(false);
         mAdapter = new ManagerDownloadAdapter(getActivity(), mDownloadManager,
                 mAppInstallInfos, mAppInfos);
         mListView.setAdapter(mAdapter);

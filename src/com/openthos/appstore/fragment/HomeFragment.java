@@ -48,6 +48,7 @@ public class HomeFragment extends BaseFragment {
     public void initView(View view) {
         mBannerView = (BannerView) view.findViewById(R.id.fragment_home_carousel);
         mListView = (CustomListView) view.findViewById(R.id.fragment_home_list);
+        mListView.setIsDisableScroll(true);
         mAdapter = new AppItemLayoutAdapter(getActivity(), mAppInstallMap, mDatas);
         mListView.setAdapter(mAdapter);
         mBannerView.setImageUrls(Constants.getString());

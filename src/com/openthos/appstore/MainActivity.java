@@ -73,9 +73,10 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private EditText mSearchText;
     private ImageView mSearchImg;
     private ScrollView mScrollView;
-    private BaseFragment mCurrentFragment;
+    private Fragment mCurrentFragment;
     private List<Integer> mPages;
     private boolean mIsSearch;
+    private List<Integer> mFragmentFlags = new ArrayList<>();
 
     private BroadcastReceiver mAppInstallBroadCast = new BroadcastReceiver() {
         @Override
@@ -282,6 +283,11 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 if (fragment == null) {
                     fragment = new HomeFragment();
                 }
+                if (mFragmentFlags.size() == 0) {
+                    mFragmentFlags.add(msg.what);
+                } else {
+                    mFragmentFlags.set(0, msg.what);
+                }
                 break;
             case Constants.SOFTWARE_FRAGMENT:
                 mBack.setVisibility(View.GONE);
@@ -289,6 +295,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 if (fragment == null) {
                     fragment = new SoftwareFragment();
                 }
+                mFragmentFlags.set(0, msg.what);
                 break;
             case Constants.GAME_FRAGMENT:
                 mBack.setVisibility(View.GONE);
@@ -296,6 +303,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 if (fragment == null) {
                     fragment = new GameFragment();
                 }
+                mFragmentFlags.set(0, msg.what);
                 break;
             case Constants.MANAGER_FRAGMENT:
                 mBack.setVisibility(View.GONE);
@@ -303,29 +311,34 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 if (fragment == null) {
                     fragment = new ManagerFragment();
                 }
+                mFragmentFlags.set(0, msg.what);
                 break;
             case Constants.DETAIL_FRAGMENT:
                 if (fragment == null) {
                     fragment = new DetailFragment();
                 }
                 fragment.setData(msg.obj);
+                mFragmentFlags.add(msg.what);
                 break;
             case Constants.MORE_FRAGMENT:
                 if (fragment == null) {
                     fragment = new MoreFragment();
                 }
                 fragment.setData(msg.obj);
+                mFragmentFlags.add(msg.what);
                 break;
             case Constants.COMMENT_FRAGMENT:
                 if (fragment == null) {
                     fragment = new CommentFragment();
                 }
+                mFragmentFlags.add(msg.what);
                 break;
             case Constants.SEARCH_FRAGMENT:
                 if (fragment == null) {
                     fragment = new SearchFragment();
                 }
                 fragment.setData(msg.obj);
+                mFragmentFlags.add(msg.what);
                 break;
         }
         return fragment;
@@ -435,6 +448,37 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             intent.setDataAndType(Uri.parse("file://" + apkFile.toString()),
                     "application/vnd.android.package-archive");
             startActivity(intent);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mFragmentFlags.size() > 1) {
+            Integer mesWhat = mFragmentFlags.get(mFragmentFlags.size() - 2);
+            Fragment fragment =  mManager.findFragmentByTag(String.valueOf(mesWhat));
+            switch (mesWhat) {
+                case Constants.HOME_FRAGMENT:
+                    mBack.setVisibility(View.GONE);
+                    mHomeButton.setChecked(true);
+                    break;
+                case Constants.SOFTWARE_FRAGMENT:
+                    mBack.setVisibility(View.GONE);
+                    mSoftwareButton.setChecked(true);
+                    break;
+                case Constants.GAME_FRAGMENT:
+                    mBack.setVisibility(View.GONE);
+                    mGameButton.setChecked(true);
+                    break;
+                case Constants.MANAGER_FRAGMENT:
+                    mBack.setVisibility(View.GONE);
+                    mManagerButton.setChecked(true);
+                    break;
+            }
+            mManager.beginTransaction().hide(mCurrentFragment).show(fragment).commit();
+            mCurrentFragment = fragment;
+            mFragmentFlags.remove(mFragmentFlags.size() - 1);
+        } else {
+            super.onBackPressed();
         }
     }
 }

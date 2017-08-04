@@ -2,11 +2,14 @@ package com.openthos.appstore.utils;
 
 import android.content.Context;
 import android.util.Log;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
+import android.widget.ImageButton;
 import android.widget.Toast;
-
 import com.openthos.appstore.app.Constants;
-
 import java.text.DecimalFormat;
+import static android.view.animation.Animation.INFINITE;
+import static android.view.animation.Animation.RESTART;
 
 public class Tools {
 
@@ -43,5 +46,15 @@ public class Tools {
         } catch (NumberFormatException e) {
             return 0;
         }
+    }
+
+    public static void setDowningAnimation(ImageButton iv) {
+        RotateAnimation animation = new RotateAnimation(0, 360, Animation.RELATIVE_TO_SELF,
+                0.5F, Animation.RELATIVE_TO_SELF, 0.5f);
+        animation.setDuration(2000);
+        animation.setFillAfter(false);
+        animation.setRepeatCount(INFINITE);
+        animation.setRepeatMode(RESTART);
+        iv.setAnimation(animation);
     }
 }

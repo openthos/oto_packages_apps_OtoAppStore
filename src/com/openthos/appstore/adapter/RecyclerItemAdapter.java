@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -54,22 +55,23 @@ public class RecyclerItemAdapter extends RecyclerView.Adapter<RecyclerItemAdapte
             holder.install.setTag(appItemInfo);
             switch (appItemInfo.getState()) {
                 case Constants.APP_NOT_INSTALL:
-                    holder.install.setText(mContext.getString(R.string.download));
+                    holder.install.setBackground(mContext.getDrawable(R.drawable.download));
                     break;
                 case Constants.APP_HAVE_INSTALLED:
-                    holder.install.setText(mContext.getString(R.string.open));
+                    holder.install.setBackground(mContext.getDrawable(R.drawable.open));
                     break;
                 case Constants.APP_DOWNLOAD_CONTINUE:
-                    holder.install.setText(mContext.getString(R.string.downloading));
+                    holder.install.setBackground(mContext.getDrawable(R.drawable.downloading));
+                    Tools.setDowningAnimation(holder.install);
                     break;
                 case Constants.APP_DOWNLOAD_PAUSE:
-                    holder.install.setText(mContext.getString(R.string.pause));
+                    holder.install.setBackground(mContext.getDrawable(R.drawable.pause));
                     break;
                 case Constants.APP_NEED_UPDATE:
-                    holder.install.setText(mContext.getString(R.string.update));
+                    holder.install.setBackground(mContext.getDrawable(R.drawable.upgrade));
                     break;
                 case Constants.APP_DOWNLOAD_FINISHED:
-                    holder.install.setText(mContext.getString(R.string.install));
+                    holder.install.setBackground(mContext.getDrawable(R.drawable.open));
                     break;
                 default:
                     break;
@@ -94,14 +96,14 @@ public class RecyclerItemAdapter extends RecyclerView.Adapter<RecyclerItemAdapte
                         obtainMessage(Constants.DETAIL_FRAGMENT, view.getTag()));
                 break;
             case R.id.app_item_install:
-                installClick((Button) view, (AppItemInfo) view.getTag());
+                installClick((ImageButton) view, (AppItemInfo) view.getTag());
                 break;
             default:
                 break;
         }
     }
 
-    private void installClick(Button installBtn, AppItemInfo appItemInfo) {
+    private void installClick(ImageButton installBtn, AppItemInfo appItemInfo) {
         if (appItemInfo != null) {
             int state = appItemInfo.getState();
             if (state == Constants.APP_DOWNLOAD_FINISHED) {
@@ -110,14 +112,15 @@ public class RecyclerItemAdapter extends RecyclerView.Adapter<RecyclerItemAdapte
                 MainActivity.mHandler.sendMessage(MainActivity.mHandler.
                         obtainMessage(Constants.INSTALL_APK, appItemInfo));
                 if (!file.exists() || file.length() == 0) {
-                    installBtn.setText(mContext.getString(R.string.download));
+                    installBtn.setBackground(mContext.getDrawable(R.drawable.download));
                 }
             } else if (state == Constants.APP_HAVE_INSTALLED) {
                 AppUtils.openApp(mContext, appItemInfo.getPackageName());
             } else if (NetUtils.isConnected(mContext)) {
                 switch (state) {
                     case Constants.APP_NOT_INSTALL:
-                        installBtn.setText(mContext.getString(R.string.downloading));
+                        installBtn.setBackground(mContext.getDrawable(R.drawable.downloading));
+                        Tools.setDowningAnimation(installBtn);
                         MainActivity.mDownloadService.addTask(appItemInfo.getTaskId() + "",
                                 StoreApplication.mBaseUrl + "/" + appItemInfo.getDownloadUrl(),
                                 appItemInfo.getAppName(),
@@ -125,15 +128,17 @@ public class RecyclerItemAdapter extends RecyclerView.Adapter<RecyclerItemAdapte
                                 appItemInfo.getIconUrl());
                         break;
                     case Constants.APP_DOWNLOAD_CONTINUE:
-                        installBtn.setText(mContext.getString(R.string.pause));
+                        installBtn.setBackground(mContext.getDrawable(R.drawable.pause));
                         MainActivity.mDownloadService.stopTask(appItemInfo.getTaskId() + "");
                         break;
                     case Constants.APP_DOWNLOAD_PAUSE:
-                        installBtn.setText(mContext.getString(R.string.downloading));
+                        installBtn.setBackground(mContext.getDrawable(R.drawable.downloading));
+                        Tools.setDowningAnimation(installBtn);
                         MainActivity.mDownloadService.startTask(appItemInfo.getTaskId() + "");
                         break;
                     case Constants.APP_NEED_UPDATE:
-                        installBtn.setText(mContext.getString(R.string.downloading));
+                        installBtn.setBackground(mContext.getDrawable(R.drawable.downloading));
+                        Tools.setDowningAnimation(installBtn);
                         MainActivity.mDownloadService.addTask(appItemInfo.getTaskId() + "",
                                 StoreApplication.mBaseUrl + "/" + appItemInfo.getDownloadUrl(),
                                 appItemInfo.getAppName(),
@@ -152,7 +157,7 @@ public class RecyclerItemAdapter extends RecyclerView.Adapter<RecyclerItemAdapte
         private TextView appName;
         private TextView type;
         private TextView starNum;
-        private Button install;
+        private ImageButton install;
         private LinearLayout layout;
 
         public HorViewHolder(View view) {
@@ -162,7 +167,7 @@ public class RecyclerItemAdapter extends RecyclerView.Adapter<RecyclerItemAdapte
             appName = (TextView) view.findViewById(R.id.app_item_name);
             type = (TextView) view.findViewById(R.id.app_item_type);
             starNum = (TextView) view.findViewById(R.id.app_item_star_num);
-            install = (Button) view.findViewById(R.id.app_item_install);
+            install = (ImageButton) view.findViewById(R.id.app_item_install);
         }
     }
 }

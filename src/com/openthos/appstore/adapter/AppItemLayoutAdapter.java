@@ -158,7 +158,8 @@ public class AppItemLayoutAdapter extends BasicAdapter implements View.OnClickLi
 
         @Override
         public void onProgress(AppItemInfo downloadInfo, boolean isSupportFTP) {
-            notifyDataSetChanged();
+            // disable refresh UI in download state
+//            notifyDataSetChanged();
         }
 
         @Override

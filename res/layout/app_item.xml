@@ -75,8 +75,8 @@
 
             <ImageButton
                 android:id="@+id/app_item_install"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
                 android:layout_marginRight="@dimen/spacing_ten"
                 android:padding="@dimen/spacing_five" />
         </LinearLayout>

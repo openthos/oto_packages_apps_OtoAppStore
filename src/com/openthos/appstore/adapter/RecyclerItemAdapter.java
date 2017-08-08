@@ -53,6 +53,7 @@ public class RecyclerItemAdapter extends RecyclerView.Adapter<RecyclerItemAdapte
             holder.install.setOnClickListener(this);
             holder.layout.setTag(appItemInfo);
             holder.install.setTag(appItemInfo);
+            holder.install.setAnimation(null);
             switch (appItemInfo.getState()) {
                 case Constants.APP_NOT_INSTALL:
                     holder.install.setBackground(mContext.getDrawable(R.drawable.download));
@@ -71,7 +72,7 @@ public class RecyclerItemAdapter extends RecyclerView.Adapter<RecyclerItemAdapte
                     holder.install.setBackground(mContext.getDrawable(R.drawable.upgrade));
                     break;
                 case Constants.APP_DOWNLOAD_FINISHED:
-                    holder.install.setBackground(mContext.getDrawable(R.drawable.open));
+                    holder.install.setBackground(mContext.getDrawable(R.drawable.install));
                     break;
                 default:
                     break;
@@ -117,6 +118,7 @@ public class RecyclerItemAdapter extends RecyclerView.Adapter<RecyclerItemAdapte
             } else if (state == Constants.APP_HAVE_INSTALLED) {
                 AppUtils.openApp(mContext, appItemInfo.getPackageName());
             } else if (NetUtils.isConnected(mContext)) {
+                installBtn.setAnimation(null);
                 switch (state) {
                     case Constants.APP_NOT_INSTALL:
                         installBtn.setBackground(mContext.getDrawable(R.drawable.downloading));

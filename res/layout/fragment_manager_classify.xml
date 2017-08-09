@@ -26,6 +26,8 @@
         android:divider="@color/item_background"
         android:dividerHeight="1dp"
         android:scrollbars="none"
+        android:layout_marginLeft="100dp"
+        android:layout_marginRight="100dp"
         android:padding="@dimen/spacing_five"/>
 
 </LinearLayout>

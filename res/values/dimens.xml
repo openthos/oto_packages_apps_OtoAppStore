@@ -26,5 +26,5 @@
     <dimen name="spacing_ten">10dp</dimen>
     <dimen name="spacing_five">5dp</dimen>
     <dimen name="spacing_thirty">30dp</dimen>
-    <dimen name="item_update_imageview_width">80dp</dimen>
+    <dimen name="item_update_imageview_width">48dp</dimen>
 </resources>

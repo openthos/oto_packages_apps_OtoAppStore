@@ -26,6 +26,7 @@ import java.util.List;
 public class AppItemLayoutAdapter extends BasicAdapter implements View.OnClickListener {
     private HashMap<String, AppInstallInfo> mAppInstallMap;
     private DownloadManager mManager;
+    private RecyclerViewScrollListener mRecyclerViewScrollListener;
 
     public AppItemLayoutAdapter(Context context, HashMap<String, AppInstallInfo> appInstallMap,
                                 List<AppItemLayoutInfo> datas) {
@@ -56,6 +57,10 @@ public class AppItemLayoutAdapter extends BasicAdapter implements View.OnClickLi
             holder.recyclerView.setLayoutManager(layout);
             holder.recyclerView.setHasFixedSize(true);
             holder.recyclerView.setAdapter(recyclerItemAdapter);
+            if (mRecyclerViewScrollListener == null) {
+                mRecyclerViewScrollListener = new RecyclerViewScrollListener();
+            }
+            holder.recyclerView.setOnScrollListener(mRecyclerViewScrollListener);
             recyclerItemAdapter.refreshLayout();
             holder.whole.setOnClickListener(this);
             holder.whole.setTag(appItemLayoutInfo.getAppItemInfoList());
@@ -205,6 +210,44 @@ public class AppItemLayoutAdapter extends BasicAdapter implements View.OnClickLi
                 }
             }
             notifyDataSetChanged();
+        }
+    }
+
+    class RecyclerViewScrollListener extends RecyclerView.OnScrollListener {
+        private int horizontalScrollDistance = 0;
+
+        @Override
+        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            super.onScrollStateChanged(recyclerView, newState);
+            if (recyclerView.getScrollState() == RecyclerView.SCROLL_STATE_IDLE) {
+                View firstVisibleChild = recyclerView.getChildAt(0);
+                int childWidth = firstVisibleChild.getMeasuredWidth();
+                int remain = horizontalScrollDistance % childWidth;
+                int childPosition = recyclerView.getChildPosition(firstVisibleChild);
+                int halfWidth = childWidth / 2;
+                if (Math.abs(remain) >= halfWidth) {
+                    if (remain > 0) {
+                        recyclerView.scrollBy(childWidth - remain, 0);
+                    } else {
+                        recyclerView.scrollToPosition(childPosition);
+                    }
+                } else {
+                    if (remain > 0) {
+                        recyclerView.scrollToPosition(childPosition);
+                    } else {
+                        recyclerView.scrollBy(-remain, 0);
+                    }
+                }
+                horizontalScrollDistance = 0;
+            }
+        }
+
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+            if ( recyclerView.getScrollState() != RecyclerView.SCROLL_STATE_IDLE) {
+                horizontalScrollDistance += dx;
+            }
         }
     }
 }

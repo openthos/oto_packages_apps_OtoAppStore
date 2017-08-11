@@ -1,13 +1,20 @@
 package com.openthos.appstore.view;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 public class CustomRecyclerView extends RecyclerView{
+    private int mDisplayWidth;
+    private int mFirstVisibleChildPos;
+    private int mLastVisiblePosition;
+
     public CustomRecyclerView(Context context) {
         super(context);
     }
@@ -43,5 +50,27 @@ public class CustomRecyclerView extends RecyclerView{
         int measuredWidth = getMeasuredWidth();
 
         setMeasuredDimension(measuredWidth - measuredWidth % childWidth, childHeight);
+    }
+
+    @Override
+    public void onDraw(Canvas c) {
+        super.onDraw(c);
+        LinearLayoutManager layoutManager = (LinearLayoutManager) getLayoutManager();
+        int lastVisiblePosition = layoutManager.findLastVisibleItemPosition();
+        ImageView imageView = (ImageView) getTag();
+
+        if (layoutManager.findFirstVisibleItemPosition() == mFirstVisibleChildPos
+                || lastVisiblePosition == mLastVisiblePosition) {
+            imageView.setVisibility(lastVisiblePosition == layoutManager.getItemCount() - 1 ?
+                    View.INVISIBLE : View.VISIBLE);
+        }
+
+        View firstVisibleChild = getChildAt(0);
+        if (mDisplayWidth != getDisplay().getWidth()) {
+            scrollBy(mFirstVisibleChildPos * firstVisibleChild.getMeasuredWidth(), 0);
+        }
+        mFirstVisibleChildPos = getChildPosition(firstVisibleChild);
+        mLastVisiblePosition = layoutManager.findLastVisibleItemPosition();
+        mDisplayWidth = getDisplay().getWidth();
     }
 }

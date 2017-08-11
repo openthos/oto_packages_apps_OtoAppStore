@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.openthos.appstore.MainActivity;
@@ -57,6 +58,8 @@ public class AppItemLayoutAdapter extends BasicAdapter implements View.OnClickLi
             holder.recyclerView.setLayoutManager(layout);
             holder.recyclerView.setHasFixedSize(true);
             holder.recyclerView.setAdapter(recyclerItemAdapter);
+            holder.imageView.setTag(holder.recyclerView);
+            holder.recyclerView.setTag(holder.imageView);
             if (mRecyclerViewScrollListener == null) {
                 mRecyclerViewScrollListener = new RecyclerViewScrollListener();
             }
@@ -64,6 +67,7 @@ public class AppItemLayoutAdapter extends BasicAdapter implements View.OnClickLi
             recyclerItemAdapter.refreshLayout();
             holder.whole.setOnClickListener(this);
             holder.whole.setTag(appItemLayoutInfo.getAppItemInfoList());
+            holder.imageView.setOnClickListener(this);
         }
         return convertView;
     }
@@ -129,19 +133,31 @@ public class AppItemLayoutAdapter extends BasicAdapter implements View.OnClickLi
 
     @Override
     public void onClick(View view) {
-        MainActivity.mHandler.sendMessage(
-                MainActivity.mHandler.obtainMessage(Constants.MORE_FRAGMENT, view.getTag()));
+        switch (view.getId()) {
+            case R.id.app_item_layout_whole:
+                MainActivity.mHandler.sendMessage(MainActivity.mHandler
+                                         .obtainMessage(Constants.MORE_FRAGMENT, view.getTag()));
+                break;
+            case R.id.more:
+                Object tag = view.getTag();
+                RecyclerView recyclerView = (RecyclerView) tag;
+                int childWidth = recyclerView.getChildAt(0).getMeasuredWidth();
+                recyclerView.scrollBy(childWidth, 0);
+                break;
+        }
     }
 
     private class ViewHolder {
         private TextView type;
         private TextView whole;
         private RecyclerView recyclerView;
+        private ImageView imageView;
 
         public ViewHolder(View view) {
             type = (TextView) view.findViewById(R.id.app_item_layout_type);
             whole = (TextView) view.findViewById(R.id.app_item_layout_whole);
             recyclerView = (RecyclerView) view.findViewById(R.id.app_item_layout_recycler);
+            imageView = (ImageView) view.findViewById(R.id.more);
         }
     }
 

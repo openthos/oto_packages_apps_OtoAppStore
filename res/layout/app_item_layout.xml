@@ -50,8 +50,26 @@
         android:background="@color/view_line"
         />
 
-    <com.openthos.appstore.view.CustomRecyclerView
-        android:id="@+id/app_item_layout_recycler"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="match_parent"
+        android:weightSum="1"
+        android:orientation="horizontal">
+        <com.openthos.appstore.view.CustomRecyclerView
+            android:id="@+id/app_item_layout_recycler"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"/>
+        <ImageView
+            android:id="@+id/more"
+            android:layout_width="30dp"
+            android:background="@drawable/shape_background_more"
+            android:layout_height="match_parent"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:scaleType="fitCenter"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            android:src="@drawable/more"/>
+    </LinearLayout>
 </LinearLayout>

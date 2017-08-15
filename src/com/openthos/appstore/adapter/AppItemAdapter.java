@@ -167,6 +167,7 @@ public class AppItemAdapter extends BasicAdapter implements View.OnClickListener
                 break;
             case R.id.app_item_install:
                 installClick((ImageButton) view, (AppItemInfo) view.getTag());
+                refreshLayout();
                 break;
             default:
                 break;
@@ -292,6 +293,7 @@ public class AppItemAdapter extends BasicAdapter implements View.OnClickListener
                     break;
                 }
             }
+            refreshLayout();
         }
     }
 }

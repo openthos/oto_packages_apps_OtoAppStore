@@ -102,6 +102,7 @@
             >
 
             <RelativeLayout
+                android:id="@+id/searchbox"
                 android:layout_width="200dp"
                 android:layout_height="30dp"
                 android:layout_alignParentRight="true"

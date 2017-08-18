@@ -29,6 +29,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 
 import com.openthos.appstore.app.Constants;
@@ -73,10 +74,12 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private EditText mSearchText;
     private ImageView mSearchImg;
     private ScrollView mScrollView;
+    private RelativeLayout mSearchBox;
     private Fragment mCurrentFragment;
     private List<Integer> mPages;
     private boolean mIsSearch;
     private List<Integer> mFragmentFlags = new ArrayList<>();
+    public List<AppItemInfo> mDataSource = new ArrayList<>();
 
     private BroadcastReceiver mAppInstallBroadCast = new BroadcastReceiver() {
         @Override
@@ -125,6 +128,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         mGameButton = (RadioButton) findViewById(R.id.rb_game);
         mSoftwareButton = (RadioButton) findViewById(R.id.rb_software);
         mManagerButton = (RadioButton) findViewById(R.id.rb_manager);
+        mSearchBox = (RelativeLayout) findViewById(R.id.searchbox);
         int[] drawables = new int[]{
                 R.drawable.select_home_drawable,
                 R.drawable.select_software_drawable,
@@ -321,6 +325,8 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 mFragmentFlags.add(msg.what);
                 break;
             case Constants.MORE_FRAGMENT:
+                mDataSource.clear();
+                mSearchBox.setVisibility(View.VISIBLE);
                 if (fragment == null) {
                     fragment = new MoreFragment();
                 }
@@ -396,17 +402,22 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     class HomeItemClick implements View.OnClickListener {
         @Override
         public void onClick(View view) {
+            mDataSource.clear();
             switch (view.getId()) {
                 case R.id.rb_home:
+                    mSearchBox.setVisibility(View.VISIBLE);
                     mHandler.sendEmptyMessage(Constants.HOME_FRAGMENT);
                     break;
                 case R.id.rb_software:
+                    mSearchBox.setVisibility(View.VISIBLE);
                     mHandler.sendEmptyMessage(Constants.SOFTWARE_FRAGMENT);
                     break;
                 case R.id.rb_game:
+                    mSearchBox.setVisibility(View.VISIBLE);
                     mHandler.sendEmptyMessage(Constants.GAME_FRAGMENT);
                     break;
                 case R.id.rb_manager:
+                    mSearchBox.setVisibility(View.INVISIBLE);
                     mHandler.sendEmptyMessage(Constants.MANAGER_FRAGMENT);
                     break;
             }

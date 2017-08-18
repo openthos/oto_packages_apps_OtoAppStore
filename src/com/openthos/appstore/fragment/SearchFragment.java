@@ -1,6 +1,7 @@
 package com.openthos.appstore.fragment;
 
 import android.os.Message;
+import android.text.TextUtils;
 import android.view.View;
 
 import com.openthos.appstore.R;
@@ -8,6 +9,7 @@ import com.openthos.appstore.adapter.AppItemAdapter;
 import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.bean.AppInstallInfo;
 import com.openthos.appstore.bean.AppItemInfo;
+import com.openthos.appstore.bean.AppItemLayoutInfo;
 import com.openthos.appstore.utils.SPUtils;
 import com.openthos.appstore.view.CustomGridView;
 
@@ -42,15 +44,15 @@ public class SearchFragment extends BaseFragment {
     @Override
     public void initData() {
         mDatas.clear();
-        List<String> searchData = SPUtils.getSearchData(getActivity(), mContent);
-        if (searchData != null) {
-            for (int i = 0; i < searchData.size(); i++) {
-                try {
-                    AppItemInfo appItemInfo =
-                            new AppItemInfo(new JSONObject(searchData.get(i)));
-                    mDatas.add(appItemInfo);
-                } catch (JSONException e) {
-                    e.printStackTrace();
+        if (mMainActivity.mDataSource.size() != 0) {
+            if (TextUtils.isEmpty(mContent)) {
+                mDatas.addAll(mMainActivity.mDataSource);
+            } else {
+                for (AppItemInfo appItemInfo : mMainActivity.mDataSource) {
+                    if (appItemInfo.getAppName().toLowerCase().contains(
+                            mContent.toLowerCase().trim()) && !mDatas.contains(appItemInfo)) {
+                        mDatas.add(appItemInfo);
+                    }
                 }
             }
         }

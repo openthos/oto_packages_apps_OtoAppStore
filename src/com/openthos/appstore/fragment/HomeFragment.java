@@ -8,6 +8,7 @@ import com.openthos.appstore.R;
 import com.openthos.appstore.adapter.AppItemLayoutAdapter;
 import com.openthos.appstore.app.Constants;
 import com.openthos.appstore.bean.AppInstallInfo;
+import com.openthos.appstore.bean.AppItemInfo;
 import com.openthos.appstore.bean.AppItemLayoutInfo;
 import com.openthos.appstore.bean.AppLayout;
 import com.openthos.appstore.utils.DataCache;
@@ -67,6 +68,11 @@ public class HomeFragment extends BaseFragment {
             }
         }
         new Thread(new GetData("/data/home", HOME_DATA_BACK)).start();
+
+        for (AppItemLayoutInfo appItemLayoutInfo : mDatas) {
+            List<AppItemInfo> appItemInfoList = appItemLayoutInfo.getAppItemInfoList();
+            mMainActivity.mDataSource.addAll(appItemInfoList);
+        }
     }
 
 

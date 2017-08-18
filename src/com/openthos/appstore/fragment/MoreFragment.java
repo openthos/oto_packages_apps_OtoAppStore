@@ -43,6 +43,7 @@ public class MoreFragment extends BaseFragment {
     @Override
     public void initData() {
         mAppItemAdapter.refreshLayout();
+        mMainActivity.mDataSource = mDatas;
     }
 
     @Override

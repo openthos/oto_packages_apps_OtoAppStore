@@ -21,6 +21,7 @@ public abstract class BaseFragment extends Fragment {
     public static final int HOME_DATA_BACK = 1;
     public HashMap<String, AppInstallInfo> mAppInstallMap;
     public String localData;
+    public MainActivity mMainActivity;
 
     public BaseFragment() {
         super();
@@ -34,7 +35,8 @@ public abstract class BaseFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mAppInstallMap = ((MainActivity) getActivity()).mAppInstallMap;
+        mMainActivity = ((MainActivity) getActivity());
+        mAppInstallMap = mMainActivity.mAppInstallMap;
         return inflater.inflate(getLayoutId(), container, false);
     }
 

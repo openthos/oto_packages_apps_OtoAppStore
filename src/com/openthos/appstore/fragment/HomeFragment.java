@@ -14,6 +14,7 @@ import com.openthos.appstore.bean.AppLayout;
 import com.openthos.appstore.utils.DataCache;
 import com.openthos.appstore.view.BannerView;
 import com.openthos.appstore.view.CustomListView;
+import com.openthos.appstore.utils.SPUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -69,12 +70,19 @@ public class HomeFragment extends BaseFragment {
         }
         new Thread(new GetData("/data/home", HOME_DATA_BACK)).start();
 
-        for (AppItemLayoutInfo appItemLayoutInfo : mDatas) {
-            List<AppItemInfo> appItemInfoList = appItemLayoutInfo.getAppItemInfoList();
-            mMainActivity.mDataSource.addAll(appItemInfoList);
+        List<String> searchData = SPUtils.getSearchData(getActivity(), "");
+        if (searchData != null) {
+            for (int i = 0; i < searchData.size(); i++) {
+                try {
+                    AppItemInfo appItemInfo =
+                            new AppItemInfo(new JSONObject(searchData.get(i)));
+                    mMainActivity.mDataSource.add(appItemInfo);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
-
 
     @Override
     public void getHandlerMessage(Message message) {

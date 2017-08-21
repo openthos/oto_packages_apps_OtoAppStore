@@ -3,22 +3,15 @@ package com.openthos.appstore.fragment;
 import android.os.Message;
 import android.text.TextUtils;
 import android.view.View;
-
 import com.openthos.appstore.R;
 import com.openthos.appstore.adapter.AppItemAdapter;
-import com.openthos.appstore.app.Constants;
-import com.openthos.appstore.bean.AppInstallInfo;
 import com.openthos.appstore.bean.AppItemInfo;
-import com.openthos.appstore.bean.AppItemLayoutInfo;
-import com.openthos.appstore.utils.SPUtils;
 import com.openthos.appstore.view.CustomGridView;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class SearchFragment extends BaseFragment {
     private String mContent;
@@ -44,17 +37,21 @@ public class SearchFragment extends BaseFragment {
     @Override
     public void initData() {
         mDatas.clear();
+        Map<String, AppItemInfo> map = new HashMap<>();
         if (mMainActivity.mDataSource.size() != 0) {
-            if (TextUtils.isEmpty(mContent)) {
-                mDatas.addAll(mMainActivity.mDataSource);
-            } else {
-                for (AppItemInfo appItemInfo : mMainActivity.mDataSource) {
-                    if (appItemInfo.getAppName().toLowerCase().contains(
-                            mContent.toLowerCase().trim()) && !mDatas.contains(appItemInfo)) {
-                        mDatas.add(appItemInfo);
-                    }
+            for (AppItemInfo appItemInfo : mMainActivity.mDataSource) {
+                if (TextUtils.isEmpty(mContent)) {
+                    map.put(appItemInfo.getAppName(), appItemInfo);
+                } else if (appItemInfo.getAppName().toLowerCase().contains(
+                            mContent.toLowerCase().trim())) {
+                    map.put(appItemInfo.getAppName(), appItemInfo);
                 }
             }
+        }
+        Iterator<Map.Entry<String, AppItemInfo>> iterator = map.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, AppItemInfo> next = iterator.next();
+            mDatas.add(next.getValue());
         }
         mAppItemAdapter.refreshLayout();
     }

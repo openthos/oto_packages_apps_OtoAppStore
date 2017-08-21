@@ -199,11 +199,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
     @Override
     public void onClick(View view) {
-        if (view.getId() == R.id.activity_title_back && mPages.size() > 1) {
-            mPages.remove(mPages.size() - 1);
-            mHandler.sendEmptyMessage(mPages.get(mPages.size() - 1));
-            mPages.remove(mPages.size() - 1);
-        }
+        onBackPressed();
         if (!TextUtils.isEmpty(mSearchText.getText())) {
             mIsSearch = false;
             mSearchText.clearFocus();

@@ -166,7 +166,8 @@ public class ManagerDownloadAdapter extends BasicAdapter implements View.OnClick
             } else {
                 appInfo.setDownloadState(Constants.APP_DOWNLOAD_PAUSE);
             }
-            if (appInfo.getDownloadState() != Constants.APP_HAVE_INSTALLED) {
+            int appState = appInfo.getDownloadState();
+            if (appState != Constants.APP_NOT_EXIST && appState != Constants.APP_HAVE_INSTALLED) {
                 mDatas.add(appInfo);
             }
         }

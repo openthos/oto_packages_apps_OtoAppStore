@@ -7,9 +7,13 @@ import android.view.animation.RotateAnimation;
 import android.widget.ImageButton;
 import android.widget.Toast;
 import com.openthos.appstore.app.Constants;
+import com.openthos.appstore.bean.AppItemInfo;
+import org.json.JSONException;
+import org.json.JSONObject;
 import java.text.DecimalFormat;
 import static android.view.animation.Animation.INFINITE;
 import static android.view.animation.Animation.RESTART;
+import java.util.Map;
 
 public class Tools {
 
@@ -57,4 +61,20 @@ public class Tools {
         animation.setRepeatMode(RESTART);
         iv.setAnimation(animation);
     }
+
+    public static AppItemInfo getAppItemInfo(
+            JSONObject obj, Map<String, AppItemInfo> appItemInfos) {
+        String packageName = null;
+        try {
+            packageName = obj.getString("packageName");
+            if (!appItemInfos.containsKey(packageName)) {
+                AppItemInfo appItemInfo = new AppItemInfo(obj);
+                appItemInfos.put(packageName, appItemInfo);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            appItemInfos.put(packageName, null);
+        }
+        return appItemInfos.get(packageName);
+   }
 }

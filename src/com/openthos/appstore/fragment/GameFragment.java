@@ -26,8 +26,8 @@ public class GameFragment extends BaseClassifyFragment {
         if (!TextUtils.isEmpty(localData)) {
             mDatas.clear();
             try {
-                mDatas.addAll(
-                        new AppLayout(new JSONObject(localData)).getAppItemLayoutInfos());
+                mDatas.addAll(new AppLayout(new JSONObject(localData),
+                        mMainActivity).getAppItemLayoutInfos());
                 mAdapter.refreshLayout();
             } catch (JSONException e) {
                 e.printStackTrace();

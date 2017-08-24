@@ -58,6 +58,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends FragmentActivity implements View.OnClickListener {
     public static Handler mHandler;
@@ -80,6 +81,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private boolean mIsSearch;
     private List<Integer> mFragmentFlags = new ArrayList<>();
     public List<AppItemInfo> mDataSource = new ArrayList<>();
+    public Map<String, AppItemInfo> mAllAppItemInfos = new HashMap<>();
 
     private BroadcastReceiver mAppInstallBroadCast = new BroadcastReceiver() {
         @Override
@@ -179,7 +181,8 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 String allData = NetUtils.getNetStr("/all");
                 if (!TextUtils.isEmpty(allData)) {
                     try {
-                        NetDataListInfo netDataInfos = new NetDataListInfo(new JSONObject(allData));
+                        NetDataListInfo netDataInfos = new NetDataListInfo(
+                            new JSONObject(allData), MainActivity.this);
                         if (netDataInfos != null && netDataInfos.getNetDataInfoList() != null) {
                             List<AppItemInfo> appList = netDataInfos.getNetDataInfoList();
                             SPUtils.clearData(MainActivity.this, Constants.SP_ALL_DATA);

@@ -1,5 +1,9 @@
 package com.openthos.appstore.bean;
 
+import android.content.Context;
+
+import com.openthos.appstore.MainActivity;
+import com.openthos.appstore.utils.Tools;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,15 +15,20 @@ public class NetDataListInfo {
     private int result;
     private String message;
     private List<AppItemInfo> netDataInfoList;
-    public NetDataListInfo(JSONObject obj) throws JSONException {
+    public NetDataListInfo(JSONObject obj, Context context) throws JSONException {
         result = obj.getInt("result");
         message = obj.getString("message");
         netDataInfoList = new ArrayList<>();
         AppItemInfo appItemInfo = null;
         JSONArray arr = obj.getJSONArray("data");
         for (int i = 0; i < arr.length(); i++) {
-            appItemInfo = new AppItemInfo(arr.getJSONObject(i));
-            netDataInfoList.add(appItemInfo);
+            appItemInfo = Tools.getAppItemInfo(arr.getJSONObject(i),
+                ((MainActivity)context).mAllAppItemInfos);
+            if (appItemInfo == null) {
+                continue;
+            } else {
+                netDataInfoList.add(appItemInfo);
+            }
         }
     }
 

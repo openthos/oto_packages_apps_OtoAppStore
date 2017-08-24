@@ -103,8 +103,10 @@ public class ManagerUpdateAdapter extends BasicAdapter implements View.OnClickLi
             } else {
                 for (int j = 0; j < searchData.size(); j++) {
                     try {
-                        appItemInfo = new AppItemInfo(new JSONObject(searchData.get(j)));
-                        if (appItemInfo.getPackageName().equals(appInstallInfo.getPackageName())) {
+                        appItemInfo = Tools.getAppItemInfo(new JSONObject(searchData.get(j)),
+                                mMainActivity.mAllAppItemInfos);
+                        if (appItemInfo != null && appItemInfo.getPackageName()
+                                .equals(appInstallInfo.getPackageName())) {
                             if (appInstallInfo.getVersionCode() < appItemInfo.getVersionCode()) {
                                 appItemInfo.setState(Constants.APP_NEED_UPDATE);
                             }
@@ -114,7 +116,7 @@ public class ManagerUpdateAdapter extends BasicAdapter implements View.OnClickLi
                         e.printStackTrace();
                     }
                 }
-                if (appItemInfo.getState() != Constants.APP_NEED_UPDATE) {
+                if (appItemInfo != null && appItemInfo.getState() != Constants.APP_NEED_UPDATE) {
                     continue;
                 }
             }

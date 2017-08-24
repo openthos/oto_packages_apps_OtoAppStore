@@ -50,8 +50,8 @@ public abstract class BaseClassifyFragment extends BaseFragment {
         if (message.what == GAME_SOFTWARE_BACK && message.obj != null) {
             try {
                 mDatas.clear();
-                mDatas.addAll(
-                        new AppLayout(new JSONObject((String) message.obj)).getAppItemLayoutInfos());
+                mDatas.addAll(new AppLayout(new JSONObject((String) message.obj),
+                        mMainActivity).getAppItemLayoutInfos());
                 mAdapter.refreshLayout();
             } catch (JSONException e) {
                 e.printStackTrace();

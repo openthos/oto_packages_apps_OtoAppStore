@@ -40,7 +40,7 @@ public class SPUtils {
                 "\"company\":\"" + appInfo.getCompany() + "\"," +
                 "\"star\":" + appInfo.getStar() +
                 "}";
-        edit.putString(appInfo.getAppName(), json);
+        edit.putString(appInfo.getPackageName(), json);
         edit.commit();
     }
 

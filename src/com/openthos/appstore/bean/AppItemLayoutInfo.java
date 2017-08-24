@@ -1,5 +1,8 @@
 package com.openthos.appstore.bean;
 
+import com.openthos.appstore.utils.Tools;
+import com.openthos.appstore.MainActivity;
+import android.content.Context;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,15 +15,20 @@ public class AppItemLayoutInfo {
     private String whole;
     private List<AppItemInfo> appItemInfoList;
 
-    public AppItemLayoutInfo(JSONObject obj) throws JSONException {
+    public AppItemLayoutInfo(JSONObject obj, Context context) throws JSONException {
         type = obj.getString("type");
         whole = obj.getString("whole");
         JSONArray array = obj.getJSONArray("data");
         appItemInfoList = new ArrayList<>();
         AppItemInfo appItemInfo = null;
         for (int i = 0; i < array.length(); i++) {
-            appItemInfo = new AppItemInfo(array.getJSONObject(i));
-            appItemInfoList.add(appItemInfo);
+            appItemInfo = Tools.getAppItemInfo(array.getJSONObject(i),
+                    ((MainActivity)context).mAllAppItemInfos);
+            if (appItemInfo == null) {
+                continue;
+            } else {
+                appItemInfoList.add(appItemInfo);
+            }
         }
     }
 

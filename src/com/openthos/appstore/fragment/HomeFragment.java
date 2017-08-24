@@ -15,6 +15,7 @@ import com.openthos.appstore.utils.DataCache;
 import com.openthos.appstore.view.BannerView;
 import com.openthos.appstore.view.CustomListView;
 import com.openthos.appstore.utils.SPUtils;
+import com.openthos.appstore.utils.Tools;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -61,8 +62,8 @@ public class HomeFragment extends BaseFragment {
         if (!TextUtils.isEmpty(localData)) {
             mDatas.clear();
             try {
-                mDatas.addAll(
-                        new AppLayout(new JSONObject(localData)).getAppItemLayoutInfos());
+                mDatas.addAll(new AppLayout(new JSONObject(localData),
+                        mMainActivity).getAppItemLayoutInfos());
                 mAdapter.refreshLayout();
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -70,13 +71,18 @@ public class HomeFragment extends BaseFragment {
         }
         new Thread(new GetData("/data/home", HOME_DATA_BACK)).start();
 
-        List<String> searchData = SPUtils.getSearchData(getActivity(), "");
+        List<String> searchData = SPUtils.getAllData(getActivity());
+        AppItemInfo appItemInfo = null;
         if (searchData != null) {
             for (int i = 0; i < searchData.size(); i++) {
                 try {
-                    AppItemInfo appItemInfo =
-                            new AppItemInfo(new JSONObject(searchData.get(i)));
-                    mMainActivity.mDataSource.add(appItemInfo);
+                    appItemInfo = Tools.getAppItemInfo(
+                        new JSONObject(searchData.get(i)), mMainActivity.mAllAppItemInfos);
+                    if (appItemInfo == null) {
+                        continue;
+                    } else {
+                        mMainActivity.mDataSource.add(appItemInfo);
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -89,8 +95,8 @@ public class HomeFragment extends BaseFragment {
         if (message.what == HOME_DATA_BACK && message.obj != null) {
             try {
                 mDatas.clear();
-                mDatas.addAll(
-                        new AppLayout(new JSONObject((String) message.obj)).getAppItemLayoutInfos());
+                mDatas.addAll(new AppLayout(new JSONObject((String) message.obj),
+                        mMainActivity).getAppItemLayoutInfos());
                 mAdapter.refreshLayout();
             } catch (JSONException e) {
                 e.printStackTrace();

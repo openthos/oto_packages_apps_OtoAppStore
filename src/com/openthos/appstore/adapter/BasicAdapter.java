@@ -1,5 +1,6 @@
 package com.openthos.appstore.adapter;
 
+import com.openthos.appstore.MainActivity;
 import android.content.Context;
 import android.widget.BaseAdapter;
 
@@ -9,10 +10,12 @@ import java.util.List;
 public abstract class BasicAdapter extends BaseAdapter {
     protected Context mContext;
     protected List mDatas;
+    protected MainActivity mMainActivity;
 
     public BasicAdapter(Context context) {
         mDatas = new ArrayList();
         mContext = context;
+        mMainActivity = (MainActivity) mContext;
     }
 
     @Override

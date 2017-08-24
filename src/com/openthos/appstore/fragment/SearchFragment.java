@@ -37,21 +37,19 @@ public class SearchFragment extends BaseFragment {
     @Override
     public void initData() {
         mDatas.clear();
-        Map<String, AppItemInfo> map = new HashMap<>();
         if (mMainActivity.mDataSource.size() != 0) {
             for (AppItemInfo appItemInfo : mMainActivity.mDataSource) {
                 if (TextUtils.isEmpty(mContent)) {
-                    map.put(appItemInfo.getAppName(), appItemInfo);
+                    if (!mDatas.contains(appItemInfo)) {
+                        mDatas.add(appItemInfo);
+                    }
                 } else if (appItemInfo.getAppName().toLowerCase().contains(
-                            mContent.toLowerCase().trim())) {
-                    map.put(appItemInfo.getAppName(), appItemInfo);
+                        mContent.toLowerCase().trim()) && !mDatas.contains(appItemInfo)) {
+                    mDatas.add(appItemInfo);
                 }
+
+
             }
-        }
-        Iterator<Map.Entry<String, AppItemInfo>> iterator = map.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, AppItemInfo> next = iterator.next();
-            mDatas.add(next.getValue());
         }
         mAppItemAdapter.refreshLayout();
     }

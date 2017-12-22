@@ -36,7 +36,7 @@ public abstract class BaseFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mMainActivity = ((MainActivity) getActivity());
-        mAppInstallMap = mMainActivity.mAppInstallMap;
+        mAppInstallMap = mMainActivity.mAllAppMap;
         return inflater.inflate(getLayoutId(), container, false);
     }
 

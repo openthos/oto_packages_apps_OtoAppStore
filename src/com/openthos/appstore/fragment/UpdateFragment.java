@@ -1,6 +1,5 @@
 package com.openthos.appstore.fragment;
 
-
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -49,8 +48,7 @@ public class UpdateFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mAppInstallInfos =
-             ((ManagerFragment) ((MainActivity) getActivity()).getCurrentFragment()).mInstallInfos;
+        mAppInstallInfos = ((MainActivity) getActivity()).mAppInstallInfos;
         mState = (TextView) view.findViewById(R.id.state);
         mListView = (CustomListView) view.findViewById(R.id.customlistView);
         mListView.setIsDisableScroll(false);

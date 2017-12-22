@@ -14,9 +14,6 @@ public class Constants {
     public static final String SP_CACHE_DATA = "cache";
     public static final String SP_ALL_DATA = "all";
     public static final String SP_DOWNLOAD_STATE = "state";
-
-    public static final String INTERNET_FENNEC_APP = "org.mozilla.fennec_root";
-
     public static final int HOME_FRAGMENT = 0;
     public static final int SOFTWARE_FRAGMENT = 1;
     public static final int GAME_FRAGMENT = 2;

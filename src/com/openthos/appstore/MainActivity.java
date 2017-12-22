@@ -9,6 +9,7 @@ import android.content.ServiceConnection;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
@@ -63,7 +64,8 @@ import java.util.Map;
 public class MainActivity extends FragmentActivity implements View.OnClickListener {
     public static Handler mHandler;
     public static DownloadService.AppStoreBinder mDownloadService;
-    public HashMap<String, AppInstallInfo> mAppInstallMap;
+    public HashMap<String, AppInstallInfo> mAllAppMap;
+    public List<AppInstallInfo> mAppInstallInfos;
     private FragmentManager mManager;
     private FragmentTransaction mTransaction;
     private RadioButton mManagerButton;
@@ -86,9 +88,10 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private BroadcastReceiver mAppInstallBroadCast = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (mAppInstallMap != null) {
-                mAppInstallMap.clear();
-                loadAppPackageInfo();
+            if (mAllAppMap != null) {
+                mAllAppMap.clear();
+                mAppInstallInfos.clear();
+                loadAllAppInfos();
                 mHandler.sendEmptyMessage(Constants.REFRESH);
             }
         }
@@ -166,9 +169,10 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         registerBroadcastReceiver();
         mManager = getSupportFragmentManager();
         mPages = new ArrayList<>();
-        mAppInstallMap = new HashMap<>();
+        mAllAppMap = new HashMap<>();
+        mAppInstallInfos = new ArrayList<>();
         mIsSearch = true;
-        loadAppPackageInfo();
+        loadAllAppInfos();
         initHandler();
         updateAllData();
         mHandler.sendEmptyMessage(Constants.HOME_FRAGMENT);
@@ -368,34 +372,33 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         registerReceiver(mAppInstallBroadCast, myIntentFilter);
     }
 
-    private void loadAppPackageInfo() {
+    private void loadAllAppInfos() {
         AppInstallInfo appInfo = null;
         PackageManager packageManager = getPackageManager();
-        List<PackageInfo> pinfo = packageManager.getInstalledPackages(0);
-        for (int i = 0; i < pinfo.size(); i++) {
-            PackageInfo packageInfo = pinfo.get(i);
-            if (isDisplayApplication(packageInfo)) {
-                appInfo = new AppInstallInfo();
-                appInfo.setId(i);
-                appInfo.setIcon(packageInfo.applicationInfo.loadIcon(packageManager));
-                appInfo.setName(packageInfo.applicationInfo.loadLabel(packageManager).toString());
-                appInfo.setPackageName(packageInfo.packageName);
-                appInfo.setVersionCode(packageInfo.versionCode);
-                appInfo.setVersionName(packageInfo.versionName);
-                appInfo.setState(Constants.APP_HAVE_INSTALLED);
-                appInfo.setLastUpdateTime(packageInfo.lastUpdateTime);
-                mAppInstallMap.put(packageInfo.packageName, appInfo);
+        Intent intent = new Intent(Intent.ACTION_MAIN, null);
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        List<ResolveInfo> allAppList = packageManager.queryIntentActivities(intent, 0);
+        PackageInfo packageInfo = null;
+        String packageName;
+        for (int i = 0; i < allAppList.size(); i++) {
+            packageName = allAppList.get(i).activityInfo.packageName;
+            try {
+                packageInfo = packageManager.getPackageInfo(packageName, 0);
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
             }
+            appInfo = new AppInstallInfo();
+            appInfo.setId(i);
+            appInfo.setIcon(packageInfo.applicationInfo.loadIcon(packageManager));
+            appInfo.setName(packageInfo.applicationInfo.loadLabel(packageManager).toString());
+            appInfo.setPackageName(packageInfo.packageName);
+            appInfo.setVersionCode(packageInfo.versionCode);
+            appInfo.setVersionName(packageInfo.versionName);
+            appInfo.setState(Constants.APP_HAVE_INSTALLED);
+            appInfo.setLastUpdateTime(packageInfo.lastUpdateTime);
+            mAppInstallInfos.add(appInfo);
+            mAllAppMap.put(packageInfo.packageName, appInfo);
         }
-    }
-
-    private boolean isDisplayApplication(PackageInfo packageInfo) {
-        if (packageInfo.packageName.equals(Constants.INTERNET_FENNEC_APP)) {
-            return true;
-        } else if ((packageInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
-            return true;
-        }
-        return false;
     }
 
     class HomeItemClick implements View.OnClickListener {

@@ -97,7 +97,7 @@ public class ManagerUpdateAdapter extends BasicAdapter implements View.OnClickLi
         AppItemInfo appItemInfo = null;
         for (int i = 0; i < mAppInstallInfos.size(); i++) {
             AppInstallInfo appInstallInfo = mAppInstallInfos.get(i);
-            List<String> searchData = SPUtils.getSearchData(mContext, appInstallInfo.getName());
+            List<String> searchData = SPUtils.getSearchData(mContext, appInstallInfo.getPackageName());
             if (searchData.size() < 1) {
                 continue;
             } else {

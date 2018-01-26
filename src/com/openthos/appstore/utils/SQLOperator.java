@@ -74,7 +74,7 @@ public class SQLOperator {
             downloadinfo.setFilePath(cursor.getString(cursor.getColumnIndex("filePath")));
             downloadinfo.setFileSize(cursor.getLong(cursor.getColumnIndex("fileSize")));
             downloadinfo.setUrl(cursor.getString(cursor.getColumnIndex("url")));
-            downloadinfo.setTaskId(cursor.getString(cursor.getColumnIndex("taskID")));
+            downloadinfo.setTaskId(cursor.getString(cursor.getColumnIndex("packageName")));
             downloadinfo.setPackageName(cursor.getString(cursor.getColumnIndex("packageName")));
             downloadinfo.setUserID(cursor.getString(cursor.getColumnIndex("userID")));
             downloadinfo.setIsSuccess("true".
@@ -98,7 +98,7 @@ public class SQLOperator {
             downloadinfo.setFilePath(cursor.getString(cursor.getColumnIndex("filePath")));
             downloadinfo.setFileSize(cursor.getLong(cursor.getColumnIndex("fileSize")));
             downloadinfo.setUrl(cursor.getString(cursor.getColumnIndex("url")));
-            downloadinfo.setTaskId(cursor.getString(cursor.getColumnIndex("taskID")));
+            downloadinfo.setTaskId(cursor.getString(cursor.getColumnIndex("packageName")));
             downloadinfo.setPackageName(cursor.getString(cursor.getColumnIndex("packageName")));
             downloadinfo.setUserID(cursor.getString(cursor.getColumnIndex("userID")));
             downloadinfo.setIsSuccess("true".
@@ -127,7 +127,7 @@ public class SQLOperator {
                 downloadinfo.setFilePath(cursor.getString(cursor.getColumnIndex("filePath")));
                 downloadinfo.setFileSize(cursor.getLong(cursor.getColumnIndex("fileSize")));
                 downloadinfo.setUrl(cursor.getString(cursor.getColumnIndex("url")));
-                downloadinfo.setTaskId(cursor.getString(cursor.getColumnIndex("taskID")));
+                downloadinfo.setTaskId(cursor.getString(cursor.getColumnIndex("packageName")));
                 downloadinfo.setPackageName(cursor.getString(cursor.getColumnIndex("packageName")));
                 downloadinfo.setUserID(cursor.getString(cursor.getColumnIndex("userID")));
                 downloadinfo.setIsSuccess("true".

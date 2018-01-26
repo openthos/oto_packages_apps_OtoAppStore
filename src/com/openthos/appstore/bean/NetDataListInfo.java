@@ -3,6 +3,7 @@ package com.openthos.appstore.bean;
 import android.content.Context;
 
 import com.openthos.appstore.MainActivity;
+import com.openthos.appstore.download.DownloadService;
 import com.openthos.appstore.utils.Tools;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,7 +24,9 @@ public class NetDataListInfo {
         JSONArray arr = obj.getJSONArray("data");
         for (int i = 0; i < arr.length(); i++) {
             appItemInfo = Tools.getAppItemInfo(arr.getJSONObject(i),
-                ((MainActivity)context).mAllAppItemInfos);
+                context instanceof MainActivity ?
+                    ((MainActivity)context).mAllAppItemInfos :
+                    ((DownloadService)context).mAllAppItemInfos);
             if (appItemInfo == null) {
                 continue;
             } else {

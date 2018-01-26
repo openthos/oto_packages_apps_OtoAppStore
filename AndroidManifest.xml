@@ -29,7 +29,9 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".download.DownloadService" />
+        <service android:name=".download.DownloadService"
+                 android:exported="true">
+        </service>
     </application>
 
 </manifest>

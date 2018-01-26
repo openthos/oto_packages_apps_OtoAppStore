@@ -10,7 +10,6 @@ import org.json.JSONObject;
  */
 
 public class AppItemInfo {
-    private String taskId;
     private long fileSize;
     private String packageName;
     private String appName;
@@ -35,7 +34,6 @@ public class AppItemInfo {
     private boolean isSuccess;
 
     public AppItemInfo(JSONObject obj) throws JSONException {
-        taskId = obj.getString("taskId");
         fileSize = obj.getLong("fileSize");
         packageName = obj.getString("packageName");
         appName = obj.getString("appName");
@@ -53,11 +51,11 @@ public class AppItemInfo {
     }
 
     public String getTaskId() {
-        return taskId;
+        return packageName;
     }
 
     public void setTaskId(String taskId) {
-        this.taskId = taskId;
+        this.packageName = taskId;
     }
 
     public long getFileSize() {
@@ -177,7 +175,7 @@ public class AppItemInfo {
     @Override
     public String toString() {
         return "NetDataInfo{" +
-                "taskId=" + taskId +
+                "taskId=" + packageName +
                 ", fileSize=" + fileSize +
                 ", packageName='" + packageName + '\'' +
                 ", appName='" + appName + '\'' +

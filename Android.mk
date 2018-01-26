@@ -30,7 +30,8 @@ LOCAL_STATIC_JAVA_LIBRARIES += image-loader
 LOCAL_SRC_FILES := $(call all-java-files-under, src) \
     $(call all-renderscript-files-under, src) \
     $(call all-proto-files-under, protos) \
-    $(call all-subdir-Java-files)
+    $(call all-subdir-Java-files) \
+    ../../../frameworks/base/packages/OtoSetupWizard/src/com/otosoft/IAppStoreCallback.aidl
 
 LOCAL_RESOURCE_DIR := $(LOCAL_PATH)/res
 

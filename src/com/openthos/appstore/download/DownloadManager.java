@@ -23,7 +23,7 @@ public class DownloadManager {
     private int mCount = 0;
     private boolean mIsSupportFTP;
     private ThreadPoolExecutor mPool;
-    private ArrayList<Downloader> mTaskList;
+    public ArrayList<Downloader> mTaskList;
     private SharedPreferences mSharedPreferences;
     private DownloadListener mAlltasklistener;
     private SQLOperator mSQLOperator;
@@ -54,7 +54,7 @@ public class DownloadManager {
             for (int i = 0; i < listSize; i++) {
                 AppItemInfo downloadInfo = downloadInfoList.get(i);
                 Downloader sqlDownloader = new Downloader(
-                        context, downloadInfo, mPool, userID, mIsSupportFTP, false);
+                        context, downloadInfo, mPool, userID, mIsSupportFTP, false, true);
                 sqlDownloader.setDownloadListener("public", mAlltasklistener);
                 mTaskList.add(sqlDownloader);
             }
@@ -73,7 +73,7 @@ public class DownloadManager {
     }
 
     public void addTask(String taskID, String url,
-                        String fileName, String packageName, String iconUrl) {
+                        String fileName, String packageName, String iconUrl, boolean needUI) {
         if (taskID == null) {
             taskID = fileName;
         }
@@ -88,7 +88,7 @@ public class DownloadManager {
         downloadinfo.setUserID(mUserID);
         downloadinfo.setDownFileSize(0);
         downloadinfo.setFileSize(0);
-        downloadinfo.setTaskId(taskID);
+        downloadinfo.setTaskId(packageName);
         downloadinfo.setFileName(fileName);
         downloadinfo.setUrl(url);
         downloadinfo.setPackageName(packageName);
@@ -96,7 +96,7 @@ public class DownloadManager {
         downloadinfo.setFilePath(FileHelper.getDownloadUrlPath(url));
 
         Downloader taskDownloader = new Downloader(
-                mContext, downloadinfo, mPool, mUserID, mIsSupportFTP, true);
+                mContext, downloadinfo, mPool, mUserID, mIsSupportFTP, true, needUI);
         if (mIsSupportFTP) {
             taskDownloader.setSupportFTP(true);
         } else {

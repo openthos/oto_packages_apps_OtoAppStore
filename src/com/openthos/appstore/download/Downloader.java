@@ -51,9 +51,10 @@ public class Downloader {
     private AppItemInfo mDownloadInfo;
     private DownloadThread mDownloadThread;
     private ThreadPoolExecutor mPool;
+    private boolean mNeedUI;
 
     public Downloader(Context context, AppItemInfo sqlFileInfo, ThreadPoolExecutor pool,
-                      String userID, boolean isSupportFTP, boolean isNewTask) {
+                      String userID, boolean isSupportFTP, boolean isNewTask, boolean needUI) {
         mContext = context;
         mIsSupportFTP = isSupportFTP;
         mPool = pool;
@@ -67,6 +68,7 @@ public class Downloader {
         if (isNewTask) {
             saveDownloadInfo();
         }
+        mNeedUI = needUI;
     }
 
     public String getTaskID() {
@@ -421,8 +423,13 @@ public class Downloader {
                 mDownloadInfo.setSpeed(0);
                 successNotice();
                 saveDownloadInfo();
-                MainActivity.mHandler.sendMessage(MainActivity.mHandler.
-                        obtainMessage(Constants.INSTALL_APK, mDownloadInfo));
+                if (mNeedUI) {
+                    MainActivity.mHandler.sendMessage(MainActivity.mHandler.
+                            obtainMessage(Constants.INSTALL_APK, mDownloadInfo));
+                } else {
+                    DownloadService.mHandler.sendMessage(DownloadService.mHandler.
+                            obtainMessage(DownloadService.DOWNLOAD_SUCCESS, mDownloadInfo));
+                }
             }
         }
     };

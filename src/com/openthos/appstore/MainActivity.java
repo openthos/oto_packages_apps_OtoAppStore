@@ -1,8 +1,10 @@
 package com.openthos.appstore;
 
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -10,6 +12,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.pm.Signature;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
@@ -55,7 +58,10 @@ import com.openthos.appstore.utils.Tools;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -186,7 +192,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 if (!TextUtils.isEmpty(allData)) {
                     try {
                         NetDataListInfo netDataInfos = new NetDataListInfo(
-                            new JSONObject(allData), MainActivity.this);
+                                new JSONObject(allData), MainActivity.this);
                         if (netDataInfos != null && netDataInfos.getNetDataInfoList() != null) {
                             List<AppItemInfo> appList = netDataInfos.getNetDataInfoList();
                             SPUtils.clearData(MainActivity.this, Constants.SP_ALL_DATA);
@@ -450,25 +456,80 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         }
     }
 
-    private void installApk(AppItemInfo appInfo) {
+    private void installApk(final AppItemInfo appInfo) {
         File apkFile = new File(appInfo.getFilePath());
         if (!apkFile.exists() || apkFile.length() == 0) {
             mDownloadService.startTask(appInfo.getTaskId());
         } else {
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-            intent.setDataAndType(Uri.parse("file://" + apkFile.toString()),
-                    "application/vnd.android.package-archive");
-            startActivity(intent);
+            boolean isSameSignature = true;
+            try {
+                PackageInfo infoFromApk = getPackageManager().getPackageArchiveInfo(
+                        apkFile.getAbsolutePath(), PackageManager.GET_SIGNATURES);
+                PackageInfo infoFromPM = getPackageManager().getPackageInfo(
+                        appInfo.getPackageName(), PackageManager.GET_SIGNATURES);
+                Signature[] sigsFromApk = infoFromApk.signatures;
+                Signature[] sigsFromPM = infoFromPM.signatures;
+                isSameSignature = sigsFromApk[0].toCharsString().equals(sigsFromPM[0].toCharsString());
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
+
+            if (isSameSignature) {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                intent.setDataAndType(Uri.parse("file://" + apkFile.toString()),
+                        "application/vnd.android.package-archive");
+                startActivity(intent);
+                return;
+            }
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(getString(R.string.dialog_warning));
+            builder.setMessage(getString(R.string.dialog_warning_uninstall));
+            builder.setPositiveButton(getString(R.string.continues), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            super.run();
+                            BufferedReader in = null;
+                            try {
+                                Process pro = Runtime.getRuntime().exec(new String[]{"su", "-c",
+                                        "pm uninstall --user 0 " + appInfo.getPackageName()});
+                                in = new BufferedReader(
+                                        new InputStreamReader(pro.getInputStream()));
+                                String line;
+                                while ((line = in.readLine()) != null) {
+                                }
+                                installApk(appInfo);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }.start();
+                    dialog.dismiss();
+                }
+            });
+            builder.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            builder.create().show();
         }
+
     }
 
     @Override
     public void onBackPressed() {
         if (mFragmentFlags.size() > 1) {
             Integer mesWhat = mFragmentFlags.get(mFragmentFlags.size() - 2);
-            Fragment fragment =  mManager.findFragmentByTag(String.valueOf(mesWhat));
+            Fragment fragment = mManager.findFragmentByTag(String.valueOf(mesWhat));
             switch (mesWhat) {
                 case Constants.HOME_FRAGMENT:
                     mBack.setVisibility(View.GONE);

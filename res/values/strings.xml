@@ -72,4 +72,7 @@
     <string name="file_not_found">File not found</string>
     <string name="connect_timeout">Connect timeout</string>
     <string name="updating">Updating</string>
+    <string name="dialog_warning">Warning!</string>
+    <string name="dialog_warning_uninstall">For this installation file and the installed application, for some reason, the installed application needs to be uninstalled and reinstalled first, and will it continue?</string>
+
 </resources>

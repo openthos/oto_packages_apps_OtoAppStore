@@ -70,4 +70,7 @@
     <string name="file_not_found">文件未找到</string>
     <string name="connect_timeout">连接超时</string>
     <string name="updating">更新中</string>
+    <string name="dialog_warning">警告!</string>
+    <string name="dialog_warning_uninstall">由于某些原因，该应用需要先卸载后再安装，是否继续？</string>
+
 </resources>

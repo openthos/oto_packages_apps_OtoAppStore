@@ -20,22 +20,25 @@ import java.util.List;
 import java.util.Map;
 import android.content.ComponentName;
 import android.content.ServiceConnection;
-import com.otosoft.IAppStoreCallback;
+import android.os.Parcel;
 import android.os.RemoteException;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+
+import com.openthos.seafile.ISeafileService;
 
 public class DownloadService extends Service {
     public Map<String, AppItemInfo> mAllAppItemInfos = new HashMap<>();
     private static DownloadManager mDownloadManager;
     private ArrayList<String> mPackageNameList;
-    private IAppStoreCallback iCallback;
+    private ISeafileService mBinder;
     public static Handler mHandler;
     public static final int DOWNLOAD_START = 0;
     public static final int DOWNLOAD_SUCCESS = 1;
     private List<AppItemInfo> mAppItemInfoList;
     private List<String> mDownloadablePackageNames = new ArrayList<>();
     private int mDownloadSuccessCount;
+    public static final String DESCRIPTOR = "com.openthos.seafile.ISeafileService";
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -83,18 +86,14 @@ public class DownloadService extends Service {
             filterPackageNameList(mPackageNameList);
             if (mPackageNameList != null) {
                 Intent in = new Intent();
-                in.setComponent(new ComponentName("com.otosoft.setupwizard",
-                        "com.otosoft.setupwizard.AppStoreCallbackService"));
+                in.setComponent(new ComponentName("com.openthos.seafile",
+                            "com.openthos.seafile.SeafileService"));
                 bindService(in, new ServiceConnection() {
                     @Override
                     public void onServiceConnected(ComponentName name, IBinder service) {
-                        iCallback = IAppStoreCallback.Stub.asInterface(service);
+                        mBinder = ISeafileService.Stub.asInterface(service);
                         if (mPackageNameList.size() == 0) {
-                            try {
-                                iCallback.downloadCallback(false, null, null, 0, false);
-                            } catch (RemoteException e) {
-                              e.printStackTrace();
-                            }
+                            finishDownloadForSeafile();
                         }
                     }
 
@@ -193,16 +192,41 @@ public class DownloadService extends Service {
                         mDownloadSuccessCount++;
                         AppItemInfo appItemInfo = (AppItemInfo) msg.obj;
                         boolean isDone = mDownloadablePackageNames.size() == mDownloadSuccessCount;
-                        try {
-                            iCallback.downloadCallback(true,appItemInfo.getFileName(),
-                                    appItemInfo.getAppName(),
-                                    mDownloadablePackageNames.size(), isDone);
-                        } catch (RemoteException e) {
-                          e.printStackTrace();
+                        sendInfoToSeafile(appItemInfo.getPackageName());
+                        if (isDone) {
+                            finishDownloadForSeafile();
                         }
                         break;
                 }
             }
         };
+    }
+
+    private void finishDownloadForSeafile() {
+       Parcel _data = Parcel.obtain();
+       Parcel _reply = Parcel.obtain();
+       _data.writeInterfaceToken(DESCRIPTOR);
+       try {
+           mBinder.asBinder().transact(mBinder.getCodeDownloadFinish(), _data, _reply, 0);
+       } catch (RemoteException e) {
+           e.printStackTrace();
+       } finally {
+           _data.recycle();
+           _reply.recycle();
+       }
+    }
+
+    private void sendInfoToSeafile(String appName) {
+       Parcel _data = Parcel.obtain();
+       Parcel _reply = Parcel.obtain();
+       _data.writeString(appName);
+       try {
+           mBinder.asBinder().transact(mBinder.getCodeSendInto(), _data, _reply, 0);
+       } catch (RemoteException e) {
+           e.printStackTrace();
+       } finally {
+           _data.recycle();
+           _reply.recycle();
+       }
     }
 }

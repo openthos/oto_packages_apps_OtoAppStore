@@ -6,7 +6,7 @@
               android:background="@color/main_background"
               android:orientation="vertical">
 
-    <com.openthos.appstore.view.CustomGridView
+    <org.openthos.appstore.view.CustomGridView
         android:id="@+id/fragment_search_gridview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

@@ -55,7 +55,7 @@
         android:layout_height="match_parent"
         android:weightSum="1"
         android:orientation="horizontal">
-        <com.openthos.appstore.view.CustomRecyclerView
+        <org.openthos.appstore.view.CustomRecyclerView
             android:id="@+id/app_item_layout_recycler"
             android:layout_width="0dp"
             android:layout_weight="1"

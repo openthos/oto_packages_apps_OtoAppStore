@@ -22,7 +22,7 @@
             android:textSize="@dimen/first_title_size"
             />
 
-        <com.openthos.appstore.view.CustomRatingBar
+        <org.openthos.appstore.view.CustomRatingBar
             android:id="@+id/item_comment_star"
             style="@style/customRatingBarStyleFalse"
             android:layout_width="wrap_content"

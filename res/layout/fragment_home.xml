@@ -4,14 +4,14 @@
               android:layout_height="match_parent"
               android:background="@color/main_background"
               android:orientation="vertical"
-              tools:context="com.openthos.appstore.fragment.HomeFragment">
+              tools:context="org.openthos.appstore.fragment.HomeFragment">
 
-    <com.openthos.appstore.view.BannerView
+    <org.openthos.appstore.view.BannerView
         android:id="@+id/fragment_home_carousel"
         android:layout_width="match_parent"
         android:layout_height="220dp"/>
 
-    <com.openthos.appstore.view.CustomListView
+    <org.openthos.appstore.view.CustomListView
         android:id="@+id/fragment_home_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

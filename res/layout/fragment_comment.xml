@@ -40,7 +40,7 @@
         android:layout_height="1dp"
         android:background="@color/gray"/>
 
-    <com.openthos.appstore.view.CustomListView
+    <org.openthos.appstore.view.CustomListView
         android:id="@+id/fragment_comment_listview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -117,7 +117,7 @@
                     android:textSize="@dimen/second_title_size"
                     />
 
-                <com.openthos.appstore.view.CustomRatingBar
+                <org.openthos.appstore.view.CustomRatingBar
                     android:id="@+id/fragment_comment_ratingbar"
                     style="@style/customRatingBarStyleTrue"
                     android:layout_width="wrap_content"

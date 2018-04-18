@@ -4,7 +4,7 @@
              android:layout_height="match_parent"
              android:background="@color/main_background">
 
-    <com.openthos.appstore.view.CustomGridView
+    <org.openthos.appstore.view.CustomGridView
         android:id="@+id/fragment_more_grid"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

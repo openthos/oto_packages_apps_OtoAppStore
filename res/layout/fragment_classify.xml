@@ -3,9 +3,9 @@
              android:layout_width="match_parent"
              android:layout_height="match_parent"
              android:background="@color/main_background"
-             tools:context="com.openthos.appstore.fragment.BaseClassifyFragment">
+             tools:context="org.openthos.appstore.fragment.BaseClassifyFragment">
 
-    <com.openthos.appstore.view.CustomListView
+    <org.openthos.appstore.view.CustomListView
         android:id="@+id/fragment_classify_listview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

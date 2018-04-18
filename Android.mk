@@ -31,7 +31,7 @@ LOCAL_SRC_FILES := $(call all-java-files-under, src) \
     $(call all-renderscript-files-under, src) \
     $(call all-proto-files-under, protos) \
     $(call all-subdir-Java-files) \
-    ../OtoCloudService/src/com/openthos/seafile/ISeafileService.aidl
+    ../OtoCloudService/src/org/openthos/seafile/ISeafileService.aidl
 
 LOCAL_RESOURCE_DIR := $(LOCAL_PATH)/res
 

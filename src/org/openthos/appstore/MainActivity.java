@@ -212,6 +212,9 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
     @Override
     public void onClick(View view) {
+        if (view.getId() == R.id.activity_title_search) {
+            return;
+        }
         onBackPressed();
         if (!TextUtils.isEmpty(mSearchText.getText())) {
             mIsSearch = false;

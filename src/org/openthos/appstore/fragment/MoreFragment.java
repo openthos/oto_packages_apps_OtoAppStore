@@ -2,6 +2,8 @@ package org.openthos.appstore.fragment;
 
 import android.os.Message;
 import android.view.View;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 
 import org.openthos.appstore.R;
 import org.openthos.appstore.adapter.AppItemAdapter;
@@ -36,6 +38,7 @@ public class MoreFragment extends BaseFragment {
     @Override
     public void initView(View view) {
         mGridView = (CustomGridView) view.findViewById(R.id.fragment_more_grid);
+        mGridView.setSelector(new ColorDrawable(Color.TRANSPARENT));
         mAppItemAdapter = new AppItemAdapter(getActivity(), mAppInstallMap, mDatas);
         mGridView.setAdapter(mAppItemAdapter);
     }

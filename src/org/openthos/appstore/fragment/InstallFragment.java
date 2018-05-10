@@ -1,5 +1,9 @@
 package org.openthos.appstore.fragment;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -29,6 +33,7 @@ public class InstallFragment extends Fragment {
     private TextView mState;
     private CustomListView mListView;
     private ManagerInstallAdapter mAdapter;
+    private AppAddAndRemovedReceiver mAppAddAndRemovedReceiver;
 
     public InstallFragment() {
     }
@@ -45,6 +50,12 @@ public class InstallFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         mAppInstallInfos = new ArrayList<>();
         loadExternalAppPackageInfos();
+        mAppAddAndRemovedReceiver = new AppAddAndRemovedReceiver();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_PACKAGE_ADDED);
+        filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+        filter.addDataScheme("package");
+        getActivity().registerReceiver(mAppAddAndRemovedReceiver, filter);
         mState = (TextView) view.findViewById(R.id.state);
         mState.setVisibility(View.GONE);
         mListView = (CustomListView) view.findViewById(R.id.customlistView);
@@ -56,6 +67,7 @@ public class InstallFragment extends Fragment {
     }
 
     private void loadExternalAppPackageInfos() {
+        mAppInstallInfos.clear();
         AppInstallInfo appInfo = null;
         PackageManager packageManager = ((MainActivity) getActivity()).getPackageManager();
         List<PackageInfo> pinfo = packageManager.getInstalledPackages(0);
@@ -85,5 +97,20 @@ public class InstallFragment extends Fragment {
 
     public void refresh(){
         mAdapter.refreshLayout();
+    }
+
+    @Override
+    public void onDestroy() {
+        getActivity().unregisterReceiver(mAppAddAndRemovedReceiver);
+        super.onDestroy();
+    }
+
+    private class AppAddAndRemovedReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            loadExternalAppPackageInfos();
+            mAdapter.notifyDataSetChanged();
+        }
     }
 }

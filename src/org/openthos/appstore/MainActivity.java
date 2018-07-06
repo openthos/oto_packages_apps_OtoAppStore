@@ -8,13 +8,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.pm.Signature;
 import android.content.res.Resources;
-import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Handler;
@@ -37,9 +35,7 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 
 import org.openthos.appstore.app.Constants;
-import org.openthos.appstore.app.StoreApplication;
 import org.openthos.appstore.bean.AppItemInfo;
-import org.openthos.appstore.bean.NetDataListInfo;
 import org.openthos.appstore.bean.AppInstallInfo;
 import org.openthos.appstore.download.DownloadService;
 import org.openthos.appstore.fragment.BaseFragment;
@@ -51,12 +47,7 @@ import org.openthos.appstore.fragment.ManagerFragment;
 import org.openthos.appstore.fragment.MoreFragment;
 import org.openthos.appstore.fragment.SearchFragment;
 import org.openthos.appstore.fragment.SoftwareFragment;
-import org.openthos.appstore.utils.NetUtils;
-import org.openthos.appstore.utils.SPUtils;
 import org.openthos.appstore.utils.Tools;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -123,7 +114,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        initUrl();
         initView();
         initData();
         initListener();
@@ -180,34 +170,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         mIsSearch = true;
         loadAllAppInfos();
         initHandler();
-        updateAllData();
         mHandler.sendEmptyMessage(Constants.HOME_FRAGMENT);
-    }
-
-    private void updateAllData() {
-        new Thread() {
-            @Override
-            public void run() {
-                String allData = NetUtils.getNetStr("/all");
-                if (!TextUtils.isEmpty(allData)) {
-                    try {
-                        NetDataListInfo netDataInfos = new NetDataListInfo(
-                                new JSONObject(allData), MainActivity.this);
-                        if (netDataInfos != null && netDataInfos.getNetDataInfoList() != null) {
-                            List<AppItemInfo> appList = netDataInfos.getNetDataInfoList();
-                            SPUtils.clearData(MainActivity.this, Constants.SP_ALL_DATA);
-                            for (int i = 0; i < appList.size(); i++) {
-                                AppItemInfo appInfo = appList.get(i);
-                                SPUtils.saveAllData(MainActivity.this, appInfo);
-                            }
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                mHandler.sendEmptyMessage(Constants.REFRESH);
-            }
-        }.start();
     }
 
     @Override
@@ -225,20 +188,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
     public Fragment getCurrentFragment() {
         return mCurrentFragment;
-    }
-
-    private void initUrl() {
-        Uri uriQuery = Uri.parse("content://com.otosoft.tools.myprovider/upgradeUrl");
-        if (uriQuery != null) {
-            Cursor cursor = getContentResolver().query(uriQuery, null, null, null, null);
-            if (cursor != null && cursor.moveToNext()) {
-                StoreApplication.mBaseUrl =
-                        cursor.getString(cursor.getColumnIndex("upgradeUrl")) + "appstore";
-                cursor.close();
-            } else {
-                StoreApplication.mBaseUrl = "http://dev.openthos.org/openthos/appstore";
-            }
-        }
     }
 
     private void initHandler() {
@@ -364,11 +313,12 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         unbindService(conn);
         stopService(new Intent(this, DownloadService.class));
         unregisterReceiver(mAppInstallBroadCast);
 //        finish();
+        mCurrentFragment = null;
+        super.onDestroy();
     }
 
 

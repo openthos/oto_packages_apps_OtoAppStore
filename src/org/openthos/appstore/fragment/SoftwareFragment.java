@@ -2,7 +2,6 @@ package org.openthos.appstore.fragment;
 
 import android.text.TextUtils;
 
-import org.openthos.appstore.bean.AppInstallInfo;
 import org.openthos.appstore.bean.AppItemInfo;
 import org.openthos.appstore.bean.AppItemLayoutInfo;
 import org.openthos.appstore.bean.AppLayout;
@@ -11,7 +10,6 @@ import org.openthos.appstore.utils.DataCache;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
 import java.util.List;
 
 public class SoftwareFragment extends BaseClassifyFragment {
@@ -34,11 +32,15 @@ public class SoftwareFragment extends BaseClassifyFragment {
             }
         }
         new Thread(new GetData("/data/software", GAME_SOFTWARE_BACK)).start();
+    }
 
+    @Override
+    public void refresh() {
         for (AppItemLayoutInfo appItemLayoutInfo : mDatas) {
             List<AppItemInfo> appItemInfoList = appItemLayoutInfo.getAppItemInfoList();
             mMainActivity.mDataSource.addAll(appItemInfoList);
         }
+        new Thread(new GetData("/data/software", GAME_SOFTWARE_BACK)).start();
     }
 
     @Override

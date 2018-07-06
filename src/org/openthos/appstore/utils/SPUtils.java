@@ -24,23 +24,27 @@ public class SPUtils {
                 fileName, Context.MODE_PRIVATE).getString(key, null);
     }
 
-    public static void saveAllData(Context context, AppItemInfo appInfo) {
+    public static synchronized void saveAllData(Context context, List<AppItemInfo> appItemInfos) {
         SharedPreferences.Editor edit =
                 context.getSharedPreferences(Constants.SP_ALL_DATA, Context.MODE_PRIVATE).edit();
-        String json = "{\"taskId\":" + appInfo.getTaskId() + "," +
-                "\"fileSize\":\"" + appInfo.getFileSize() + "\"," +
-                "\"packageName\":\"" + appInfo.getPackageName() + "\"," +
-                "\"appName\":\"" + appInfo.getAppName() + "\"," +
-                "\"versionName\":\"" + appInfo.getVersionName() + "\"," +
-                "\"versionCode\":\"" + appInfo.getVersionCode() + "\"," +
-                "\"downloadUrl\":\"" + appInfo.getDownloadUrl() + "\"," +
-                "\"iconUrl\":\"" + appInfo.getIconUrl() + "\"," +
-                "\"describle\":\"" + appInfo.getDescrible() + "\"," +
-                "\"type\":\"" + appInfo.getType() + "\"," +
-                "\"company\":\"" + appInfo.getCompany() + "\"," +
-                "\"star\":" + appInfo.getStar() +
-                "}";
-        edit.putString(appInfo.getPackageName(), json);
+        edit.clear();
+        String json = null;
+        for (AppItemInfo appInfo : appItemInfos) {
+            json = "{\"taskId\":" + appInfo.getTaskId() + "," +
+                    "\"fileSize\":\"" + appInfo.getFileSize() + "\"," +
+                    "\"packageName\":\"" + appInfo.getPackageName() + "\"," +
+                    "\"appName\":\"" + appInfo.getAppName() + "\"," +
+                    "\"versionName\":\"" + appInfo.getVersionName() + "\"," +
+                    "\"versionCode\":\"" + appInfo.getVersionCode() + "\"," +
+                    "\"downloadUrl\":\"" + appInfo.getDownloadUrl() + "\"," +
+                    "\"iconUrl\":\"" + appInfo.getIconUrl() + "\"," +
+                    "\"describle\":\"" + appInfo.getDescrible() + "\"," +
+                    "\"type\":\"" + appInfo.getType() + "\"," +
+                    "\"company\":\"" + appInfo.getCompany() + "\"," +
+                    "\"star\":" + appInfo.getStar() +
+                    "}";
+            edit.putString(appInfo.getPackageName(), json);
+        }
         edit.commit();
     }
 

@@ -7,15 +7,16 @@ import android.view.View;
 import org.openthos.appstore.R;
 import org.openthos.appstore.adapter.AppItemLayoutAdapter;
 import org.openthos.appstore.app.Constants;
-import org.openthos.appstore.bean.AppInstallInfo;
 import org.openthos.appstore.bean.AppItemInfo;
 import org.openthos.appstore.bean.AppItemLayoutInfo;
 import org.openthos.appstore.bean.AppLayout;
+import org.openthos.appstore.bean.NetDataListInfo;
 import org.openthos.appstore.utils.DataCache;
-import org.openthos.appstore.view.BannerView;
-import org.openthos.appstore.view.CustomListView;
+import org.openthos.appstore.utils.NetUtils;
 import org.openthos.appstore.utils.SPUtils;
 import org.openthos.appstore.utils.Tools;
+import org.openthos.appstore.view.BannerView;
+import org.openthos.appstore.view.CustomListView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,7 +30,7 @@ public class HomeFragment extends BaseFragment {
     private AppItemLayoutAdapter mAdapter;
     private List<AppItemLayoutInfo> mDatas;
 
-    public HomeFragment(){
+    public HomeFragment() {
         super();
         mDatas = new ArrayList<>();
     }
@@ -45,7 +46,8 @@ public class HomeFragment extends BaseFragment {
 
     @Override
     public void refresh() {
-        initData();
+        new Thread(new GetData("/data/home", HOME_DATA_BACK)).start();
+        new Thread(new LoadAllDataRunnable()).start();
     }
 
     public void initView(View view) {
@@ -82,12 +84,14 @@ public class HomeFragment extends BaseFragment {
                         continue;
                     } else {
                         mMainActivity.mDataSource.add(appItemInfo);
+
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
         }
+        new Thread(new LoadAllDataRunnable()).start();
     }
 
     @Override
@@ -112,6 +116,27 @@ public class HomeFragment extends BaseFragment {
                 mBannerView.removeCallbacksAndMessages();
             } else {
                 mBannerView.startPlay();
+            }
+        }
+    }
+
+    private class LoadAllDataRunnable implements Runnable {
+        @Override
+        public void run() {
+            String allData = NetUtils.getNetStr("/all");
+            if (!TextUtils.isEmpty(allData)) {
+                try {
+                    NetDataListInfo netDataInfos = new NetDataListInfo(
+                            new JSONObject(allData), mMainActivity);
+                    if (netDataInfos != null && netDataInfos.getNetDataInfoList() != null) {
+                        List<AppItemInfo> appList = netDataInfos.getNetDataInfoList();
+                        mMainActivity.mDataSource.clear();
+                        mMainActivity.mDataSource.addAll(appList);
+                        SPUtils.saveAllData(mMainActivity, appList);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

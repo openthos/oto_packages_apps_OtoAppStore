@@ -5,7 +5,6 @@ import android.view.View;
 
 import org.openthos.appstore.R;
 import org.openthos.appstore.adapter.AppItemLayoutAdapter;
-import org.openthos.appstore.bean.AppInstallInfo;
 import org.openthos.appstore.bean.AppItemLayoutInfo;
 import org.openthos.appstore.bean.AppLayout;
 import org.openthos.appstore.view.CustomListView;
@@ -14,7 +13,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public abstract class BaseClassifyFragment extends BaseFragment {
@@ -30,11 +28,6 @@ public abstract class BaseClassifyFragment extends BaseFragment {
     @Override
     public int getLayoutId() {
         return R.layout.fragment_classify;
-    }
-
-    @Override
-    public void refresh() {
-        initData();
     }
 
     @Override

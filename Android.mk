@@ -18,9 +18,6 @@ LOCAL_PATH := $(call my-dir)
 # Build app code.
 #
 include $(CLEAR_VARS)
-
-LOCAL_MODULE_TAGS := optional
-
 LOCAL_STATIC_JAVA_LIBRARIES := android-support-v4
 LOCAL_STATIC_JAVA_LIBRARIES += android-support-v7-appcompat
 LOCAL_STATIC_JAVA_LIBRARIES += android-support-v7-recyclerview
@@ -29,7 +26,6 @@ LOCAL_STATIC_JAVA_LIBRARIES += image-loader
 
 LOCAL_SRC_FILES := $(call all-java-files-under, src) \
     $(call all-renderscript-files-under, src) \
-    $(call all-proto-files-under, protos) \
     $(call all-subdir-Java-files) \
     ../OtoCloudService/src/org/openthos/seafile/ISeafileService.aidl
 

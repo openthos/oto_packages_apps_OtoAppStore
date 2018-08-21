@@ -22,7 +22,7 @@ LOCAL_STATIC_JAVA_LIBRARIES := android-support-v4
 LOCAL_STATIC_JAVA_LIBRARIES += android-support-v7-appcompat
 LOCAL_STATIC_JAVA_LIBRARIES += android-support-v7-recyclerview
 LOCAL_STATIC_JAVA_LIBRARIES += design
-LOCAL_STATIC_JAVA_LIBRARIES += image-loader
+LOCAL_STATIC_JAVA_LIBRARIES += imageloader
 
 LOCAL_SRC_FILES := $(call all-java-files-under, src) \
     $(call all-renderscript-files-under, src) \
@@ -47,8 +47,7 @@ include $(BUILD_PACKAGE)
 
 include $(CLEAR_VARS)
 
-LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES := design:libs/android-support-design.jar \
-                                        image-loader:libs/universal-image-loader-1.9.3.jar
+LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES := design:libs/android-support-design.jar
 
 include $(BUILD_MULTI_PREBUILT)
 

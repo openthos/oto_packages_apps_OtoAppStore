@@ -2,32 +2,44 @@ package org.openthos.appstore.download;
 
 import android.annotation.SuppressLint;
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageInfo;
+import android.content.pm.ResolveInfo;
+import android.content.res.AssetManager;
+import android.content.res.Resources;
+import android.content.ServiceConnection;
+import android.os.AsyncTask;
 import android.os.Binder;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.os.Parcel;
+import android.os.RemoteException;
 import android.text.TextUtils;
-import org.openthos.appstore.app.StoreApplication;
-import org.openthos.appstore.bean.AppItemInfo;
-import org.openthos.appstore.bean.NetDataListInfo;
-import org.openthos.appstore.utils.NetUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
+
+import java.io.DataOutputStream;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import android.content.ComponentName;
-import android.content.ServiceConnection;
-import android.os.Parcel;
-import android.os.RemoteException;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import org.openthos.appstore.app.StoreApplication;
+import org.openthos.appstore.bean.AppItemInfo;
+import org.openthos.appstore.bean.NetDataListInfo;
+import org.openthos.appstore.utils.NetUtils;
 import org.openthos.seafile.ISeafileService;
 
 public class DownloadService extends Service {
+    private static final String APPSTORE_DOWNLOAD_PATH
+            = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+            .getAbsolutePath() + "/app";
     public Map<String, AppItemInfo> mAllAppItemInfos = new HashMap<>();
     private static DownloadManager mDownloadManager;
     private ArrayList<String> mPackageNameList;
@@ -38,6 +50,8 @@ public class DownloadService extends Service {
     private List<AppItemInfo> mAppItemInfoList;
     private List<String> mDownloadablePackageNames = new ArrayList<>();
     private int mDownloadSuccessCount;
+    private ArrayList<String> mApkPaths = new ArrayList();
+    private int mTotalApks;
     public static final String DESCRIPTOR = "org.openthos.seafile.ISeafileService";
 
     @Override
@@ -202,20 +216,6 @@ public class DownloadService extends Service {
         };
     }
 
-    private void finishDownloadForSeafile() {
-       Parcel _data = Parcel.obtain();
-       Parcel _reply = Parcel.obtain();
-       _data.writeInterfaceToken(DESCRIPTOR);
-       try {
-           mBinder.asBinder().transact(mBinder.getCodeDownloadFinish(), _data, _reply, 0);
-       } catch (RemoteException e) {
-           e.printStackTrace();
-       } finally {
-           _data.recycle();
-           _reply.recycle();
-       }
-    }
-
     private void sendInfoToSeafile(String appName) {
        Parcel _data = Parcel.obtain();
        Parcel _reply = Parcel.obtain();
@@ -228,5 +228,72 @@ public class DownloadService extends Service {
            _data.recycle();
            _reply.recycle();
        }
+    }
+
+    private void finishDownloadForSeafile() {
+       new InstallAsyncTask().execute();
+    }
+
+    public class InstallAsyncTask extends AsyncTask<Void, Object, Void> {
+        private static final int CURRENT_INDEX = 0;
+        private static final int APPNAME = 1;
+
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            initializeApp();
+            for (int i = 0; i < mTotalApks; i++) {
+                installSlient(mApkPaths.get(i));
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void avoid) {
+            Intent intent = new Intent();
+            intent.setComponent(new ComponentName("org.openthos.seafile",
+                    "org.openthos.seafile.RecoveryService"));
+            intent.putExtra("restore", true);
+            startService(intent);
+        }
+    }
+
+    private void initializeApp() {
+        mApkPaths.clear();
+        File file = new File(APPSTORE_DOWNLOAD_PATH);
+        File[] files = file.listFiles();
+        try {
+            for (File apk: files) {
+                mApkPaths.add(apk.getAbsolutePath());
+            }
+        } catch (Exception e) {
+        }
+        mTotalApks = mApkPaths.size();
+    }
+
+    private void installSlient(String apkPath) {
+        apkPath = apkPath.replace(Environment.getExternalStorageDirectory().getAbsolutePath(),
+                "/storage/emulated/legacy");
+        String cmd = "pm install " + apkPath;
+        DataOutputStream os = null;
+        try {
+            Process process = Runtime.getRuntime().exec("su");
+            os = new DataOutputStream(process.getOutputStream());
+            os.write(cmd.getBytes());
+            os.writeBytes("\n");
+            os.writeBytes("exit\n");
+            os.flush();
+            process.waitFor();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (os != null) {
+                try {
+                    os.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }

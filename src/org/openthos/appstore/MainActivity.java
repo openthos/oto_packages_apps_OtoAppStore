@@ -20,6 +20,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.FileProvider;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -432,9 +433,16 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             if (isSameSignature) {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-                intent.setDataAndType(Uri.parse("file://" + apkFile.toString()),
-                        "application/vnd.android.package-archive");
+                if (android.os.Build.VERSION.SDK_INT >= 24) {
+                    intent.setDataAndType(FileProvider.getUriForFile(this,
+                            "org.openthos.support.fileprovider", apkFile),
+                            "application/vnd.android.package-archive");
+                } else {
+                    intent.setDataAndType(Uri.parse("file://" + apkFile.toString()),
+                            "application/vnd.android.package-archive");
+                }
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                 startActivity(intent);
                 return;
             }

@@ -34,6 +34,7 @@ import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
+import android.widget.Toast;
 
 import org.openthos.appstore.app.Constants;
 import org.openthos.appstore.bean.AppItemInfo;
@@ -54,6 +55,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -431,19 +434,41 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             }
 
             if (isSameSignature) {
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                if (android.os.Build.VERSION.SDK_INT >= 24) {
-                    intent.setDataAndType(FileProvider.getUriForFile(this,
-                            "org.openthos.support.fileprovider", apkFile),
-                            "application/vnd.android.package-archive");
-                } else {
-                    intent.setDataAndType(Uri.parse("file://" + apkFile.toString()),
-                            "application/vnd.android.package-archive");
-                }
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                startActivity(intent);
+                PackageManager packageManager = getPackageManager();
+                android.app.PackageInstallObserver PIO = new android.app.PackageInstallObserver() {
+                    @Override
+                    public void onPackageInstalled(String basePackageName, int returnCode,
+                            String msg, Bundle extras) {
+                        int tmpRes = 0;
+                        if (returnCode != 1) {
+                            tmpRes = R.string.failed_to_install;
+                        } else {
+                            tmpRes = R.string.success_to_install;
+                        }
+			final int res = tmpRes;
+                        MainActivity.this.runOnUiThread(new Runnable() {
+                            public void run() {
+                                Toast.makeText(MainActivity.this, appInfo.getPackageName()
+                                        + getString(res), Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
+                };
+                packageManager.installPackage(Uri.fromFile(apkFile), PIO,
+                        PackageManager.INSTALL_REPLACE_EXISTING, null);
+                //Intent intent = new Intent(Intent.ACTION_VIEW);
+                //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                //if (android.os.Build.VERSION.SDK_INT >= 24) {
+                //    intent.setDataAndType(FileProvider.getUriForFile(this,
+                //            "org.openthos.support.fileprovider", apkFile),
+                //            "application/vnd.android.package-archive");
+                //} else {
+                //    intent.setDataAndType(Uri.parse("file://" + apkFile.toString()),
+                //            "application/vnd.android.package-archive");
+                //}
+                //intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                //intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                //startActivity(intent);
                 return;
             }
 

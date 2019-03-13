@@ -72,5 +72,6 @@
     <string name="updating">更新中</string>
     <string name="dialog_warning">警告!</string>
     <string name="dialog_warning_uninstall">由于某些原因，该应用需要先卸载后再安装，是否继续？</string>
-
+    <string name="success_to_install">&#160;安装成功！</string>
+    <string name="failed_to_install">&#160;安装失败！</string>
 </resources>

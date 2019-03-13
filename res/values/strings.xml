@@ -74,5 +74,7 @@
     <string name="updating">Updating</string>
     <string name="dialog_warning">Warning!</string>
     <string name="dialog_warning_uninstall">For this installation file and the installed application, for some reason, the installed application needs to be uninstalled and reinstalled first, and will it continue?</string>
+    <string name="success_to_install">&#160;is success to install!</string>
+    <string name="failed_to_install">&#160;is failed to install!</string>
 
 </resources>
